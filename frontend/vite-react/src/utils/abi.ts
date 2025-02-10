@@ -12,7 +12,14 @@ export const abi = [
   },
   {
     "anonymous": false,
-    "inputs": [],
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "started",
+        "type": "bool"
+      }
+    ],
     "name": "GameStarted",
     "type": "event"
   },

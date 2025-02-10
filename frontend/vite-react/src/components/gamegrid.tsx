@@ -3,12 +3,12 @@ import {
   useConnect,
   useDisconnect,
   useReadContract,
-  useTransaction,
-  useTransactionCount,
   useSendTransaction,
   useWriteContract,
+  useWatchContractEvent,
 } from "wagmi";
 import { abi } from "../utils/abi";
+import { contractAddress } from "../utils/contractAddress";
 import { useEffect, useState } from "react";
 import { parseEther } from "viem";
 import {
@@ -94,18 +94,28 @@ function GameGrid() {
   const account = useAccount();
   const { connectors, connect, status, error } = useConnect();
   const { disconnect } = useDisconnect();
-  const result = useReadContract({
+  const player1 = useReadContract({
     abi,
-    address: "0x200F48Fb23fA9851D5a67DA1B6566932690A341E",
+    address: contractAddress,
+    functionName: "player1",
   });
 
-  const transaction = useTransaction({
-    hash: "0x432f41f020038fcece54fde812578b2c71ac6f805ed7bc528957bdece6bfa63b",
+  const player2 = useReadContract({
+    abi,
+    address: contractAddress,
+    functionName: "player2",
   });
 
-  const transactionCount = useTransactionCount({
-    address: "0x200F48Fb23fA9851D5a67DA1B6566932690A341E",
+  const gameStartedEvent = useWatchContractEvent({
+    address: contractAddress,
+    abi,
+    eventName: "GameStarted",
   });
+
+  useEffect(() => {
+    // DEBUGGING
+    console.log("gameStartedEvent", gameStartedEvent);
+  }, [grid]);
 
   /** 
 
@@ -266,12 +276,6 @@ function GameGrid() {
     setPlaceShips(!placeShip);
   };
 
-  useEffect(() => {
-    // DEBUGGING
-    console.log(grid);
-    console.log(shipData);
-  }, [grid]);
-
   function colorByState(state: number) {
     if (state == 0) {
       return "#3d3d3d";
@@ -298,7 +302,7 @@ function GameGrid() {
           onClick={() =>
             writeContract({
               abi,
-              address: "0x200F48Fb23fA9851D5a67DA1B6566932690A341E",
+              address: contractAddress,
               functionName: "join",
               args: [playerData, shipsArray],
             })
@@ -322,6 +326,17 @@ function GameGrid() {
         >
           <h3>Place ships</h3>
         </button>
+
+        <p>Player1: {player1.data}</p>
+
+        <p>Player2: {player2.data}</p>
+
+        {player1.data && player2.data && (
+          <p>Both players have joined, let the game begin!</p>
+        )}
+
+        <p>X</p>
+        
 
         <DndContext
           onDragEnd={handleDragEnd}
@@ -416,7 +431,7 @@ function GameGrid() {
                     onClick={() =>
                       writeContract({
                         abi,
-                        address: "0x200F48Fb23fA9851D5a67DA1B6566932690A341E",
+                        address: contractAddress,
                         functionName: "move",
                         args: [rowIndex, colIndex],
                       })
