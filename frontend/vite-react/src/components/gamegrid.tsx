@@ -115,7 +115,7 @@ function GameGrid() {
   useEffect(() => {
     // DEBUGGING
     console.log("gameStartedEvent", gameStartedEvent);
-  }, [grid]);
+  }, [gameStartedEvent]);
 
   /** 
 
