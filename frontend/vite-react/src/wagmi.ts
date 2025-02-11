@@ -1,6 +1,6 @@
 import { http, createConfig } from 'wagmi'
-import { base, mainnet, sepolia } from 'wagmi/chains'
-import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors'
+import { mainnet, sepolia } from 'wagmi/chains'
+import { injected } from 'wagmi/connectors'
 import { PrivateKeyConnector } from "../utils/privateKeyConnector"
 
 export const config = createConfig({
