@@ -10,49 +10,11 @@ export const abi = [
       {
         "indexed": false,
         "internalType": "bool",
-        "name": "ended",
-        "type": "bool"
-      }
-    ],
-    "name": "GameOver",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bool",
         "name": "started",
         "type": "bool"
       }
     ],
     "name": "GameStarted",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "player",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "x",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "y",
-        "type": "uint8"
-      }
-    ],
-    "name": "MoveMade",
     "type": "event"
   },
   {
@@ -75,48 +37,8 @@ export const abi = [
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [],
-    "name": "TimeoutStarted",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "betAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "cancel",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "claimTimeout",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "eventToggler",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "eventToggler2",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -183,7 +105,7 @@ export const abi = [
     ],
     "name": "join",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -314,45 +236,12 @@ export const abi = [
   },
   {
     "inputs": [],
-    "name": "startTimeout",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "state",
+    "name": "whoseTurn",
     "outputs": [
       {
         "internalType": "address",
-        "name": "whoseTurn",
+        "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "timeout",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "timeoutInterval",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",

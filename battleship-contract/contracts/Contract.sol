@@ -85,7 +85,7 @@ contract Battleship {
         if (opponentData.grid[x][y] == 1) {
             // Ship hit
             opponentData.grid[x][y] = 3; // Mark as hit
-
+    
             // Check if any ship is destroyed
             uint shipIndex = shipCoordinates[opponentOf(msg.sender)][x][y];
             Ship storage ship = ships[opponentOf(msg.sender)][shipIndex];
