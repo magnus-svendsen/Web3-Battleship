@@ -1,8 +1,7 @@
-// custom-elements.d.ts
 declare global {
     namespace JSX {
       interface IntrinsicElements {
-        'vipps-checkout-button': React.DetailedHTMLProps<
+        'vipps-mobilepay-button': React.DetailedHTMLProps<
           React.HTMLAttributes<HTMLElement>,
           HTMLElement
         > & {

@@ -1,16 +1,45 @@
-import { useState } from "react";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import { useAccount, useBalance, useConnect, useDisconnect } from 'wagmi'
 import GameGrid from "./components/gamegrid";
 
 function App() {
-  const account = useAccount();
-  const { connectors, connect, status, error } = useConnect();
-  const { disconnect } = useDisconnect();
-
-  const vippsAPI = () => {
+  const account = useAccount()
+  const { connectors, connect, status, error } = useConnect()
+  const { disconnect } = useDisconnect()
+  
+  const vippsAPI = async () => {
     // Redirect
-    console.log("Redirect");
-  };
+    console.log(connectors)
+    if (localStorage.getItem("accesstoken") != null) {
+      console.log(connectors)
+      connect({connector: connectors[1]})
+    }
+    else {
+      try {
+        window.location.href = "http://localhost:5173/auth/vipps"; 
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  }
+
+
+
+  // Get Accesstoken if present in URL, then remove it from the URL
+  useEffect(() => {
+    const search = new URLSearchParams(window.location.search)
+    const accessToken = search.get("accesstoken") as string
+    if (accessToken != null) {
+      localStorage.setItem("accesstoken", accessToken)
+      window.history.replaceState("","",'http://localhost:3000')  // Remove accesstoken from URL
+      connect({connector: connectors[1]})
+    }
+  },[])
+
+  useEffect(() => {
+    console.log("balance")
+  },[account])
 
   return (
     <>
@@ -28,7 +57,6 @@ function App() {
           onClick={vippsAPI}
         ></vipps-mobilepay-button>
         <h2>Account</h2>
-
         <div>
           status: {account.status}
           <br />
@@ -51,7 +79,7 @@ function App() {
             onClick={() => connect({ connector })}
             type="button"
           >
-            {connector.name}
+            {connector.name }
           </button>
         ))}
         <div>{status}</div>
