@@ -1,45 +1,37 @@
-import axios from 'axios'
-import { useEffect, useState } from 'react'
-import { useAccount, useBalance, useConnect, useDisconnect } from 'wagmi'
+import { useEffect } from "react";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
 import GameGrid from "./components/gamegrid";
 
 function App() {
-  const account = useAccount()
-  const { connectors, connect, status, error } = useConnect()
-  const { disconnect } = useDisconnect()
-  
+  const account = useAccount();
+  const { connectors, connect } = useConnect();
+  const { disconnect } = useDisconnect();
+
   const vippsAPI = async () => {
     // Redirect
-    console.log(connectors)
+    console.log(connectors);
     if (localStorage.getItem("accesstoken") != null) {
-      console.log(connectors)
-      connect({connector: connectors[1]})
-    }
-    else {
+      console.log(connectors);
+      connect({ connector: connectors[1] });
+    } else {
       try {
-        window.location.href = "http://localhost:5173/auth/vipps"; 
+        window.location.href = "http://localhost:5173/auth/vipps";
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     }
-  }
-
-
+  };
 
   // Get Accesstoken if present in URL, then remove it from the URL
   useEffect(() => {
-    const search = new URLSearchParams(window.location.search)
-    const accessToken = search.get("accesstoken") as string
+    const search = new URLSearchParams(window.location.search);
+    const accessToken = search.get("accesstoken") as string;
     if (accessToken != null) {
-      localStorage.setItem("accesstoken", accessToken)
-      window.history.replaceState("","",'http://localhost:3000')  // Remove accesstoken from URL
-      connect({connector: connectors[1]})
+      localStorage.setItem("accesstoken", accessToken);
+      window.history.replaceState("", "", "http://localhost:3000"); // Remove accesstoken from URL
+      connect({ connector: connectors[1] });
     }
-  },[])
-
-  useEffect(() => {
-    console.log("balance")
-  },[account])
+  }, []);
 
   return (
     <>
@@ -70,6 +62,16 @@ function App() {
             Disconnect
           </button>
         )}
+
+        {connectors.map((connector) => (
+          <button
+            key={connector.uid}
+            onClick={() => connect({ connector })}
+            type="button"
+          >
+            {connector.name}
+          </button>
+        ))}
       </div>
       <GameGrid />
     </>
