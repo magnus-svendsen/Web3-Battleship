@@ -7,16 +7,18 @@ import {
   useWriteContract,
   useWatchContractEvent,
 } from "wagmi";
+import { watchContractEvent } from "@wagmi/core";
 import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
 import { useEffect, useState } from "react";
 import { parseEther } from "viem";
 import {
   DndContext,
-  DragEndEvent,
-  DragOverEvent,
-  DragStartEvent,
+  type DragEndEvent,
+  type DragOverEvent,
+  type DragStartEvent,
 } from "@dnd-kit/core";
+import { config } from "../wagmi"
 import type { GridData } from "../types/gridTypes";
 import type { ShipDataContract } from "../types/shipTypes";
 import Ship from "./ship";
@@ -63,6 +65,8 @@ function GameGrid() {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
+
+  const [gameStarted, setGameStarted] = useState(false);
   const [placeShip, setPlaceShips] = useState(false);
   const [playGame, setPlayGame] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -104,18 +108,24 @@ function GameGrid() {
     abi,
     address: contractAddress,
     functionName: "player2",
-  });
+  });  
 
-  const gameStartedEvent = useWatchContractEvent({
+  useWatchContractEvent({
     address: contractAddress,
     abi,
     eventName: "GameStarted",
+    onLogs(logs) {
+      setGameStarted(logs["0"].args.started ?? false);
+    },
+    onError(error) {
+      console.log('Error', error)
+    }
   });
 
   useEffect(() => {
     // DEBUGGING
-    console.log("gameStartedEvent", gameStartedEvent);
-  }, [gameStartedEvent]);
+    gameStarted && console.log("Game started!");
+  }, [gameStarted]);
 
   /** 
 
@@ -286,12 +296,48 @@ function GameGrid() {
 
   return (
     <>
+      {gameStarted &&
+        <h1
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            padding: "15px 32px",
+            textAlign: "center",
+            textDecoration: "none",
+            fontSize: "16px",
+          }}
+        >Game has started!
+      </h1>}
       <div>
         <button
           onClick={() =>
+            writeContract({
+              abi,
+              address: contractAddress,
+              functionName: "eventToggler",
+            })
+          }
+        >
+          Toggle
+        </button>
+
+        <button
+          onClick={() =>
+            writeContract({
+              abi,
+              address: contractAddress,
+              functionName: "eventToggler2",
+            })
+          }
+        >
+          Toggle back
+        </button>
+
+        <button
+          onClick={() =>
             sendTransaction({
-              to: "0xd2135CfB216b74109775236E36d4b433F1DF507B",
-              value: parseEther("0.00001"),
+              to: "0x71b604B6C2F41Fa91Dd0e3e41221C9c6c6c75313",
+              value: parseEther("0.1"),
             })
           }
         >
