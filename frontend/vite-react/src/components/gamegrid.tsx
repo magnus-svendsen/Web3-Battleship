@@ -6,6 +6,7 @@ import {
   useSendTransaction,
   useWriteContract,
   useWatchContractEvent,
+  usePublicClient,
 } from "wagmi";
 import { watchContractEvent } from "@wagmi/core";
 import { abi } from "../utils/abi";
@@ -24,8 +25,11 @@ import type { ShipDataContract } from "../types/shipTypes";
 import Ship from "./ship";
 import DroppableGridCell from "./cell";
 
+
+
 function GameGrid() {
   const { writeContract } = useWriteContract();
+  const publicClient = usePublicClient()
 
   const [grid, setGrid] = useState<GridData>([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -108,7 +112,7 @@ function GameGrid() {
     abi,
     address: contractAddress,
     functionName: "player2",
-  });  
+  });
 
   useWatchContractEvent({
     address: contractAddress,
@@ -127,17 +131,39 @@ function GameGrid() {
     gameStarted && console.log("Game started!");
   }, [gameStarted]);
 
-  /** 
-
+  // Used for getting the last events emitted. Usefull for keeping redudant data on refresh.
+  // Add additional events in here
   useEffect(() => {
-    /** 
-    console.log('result', result)
-    console.log('transaction', transaction.data)
-    console.log('account', account)
-    console.log('account', account.addresses)
-    console.log('transactionCount', transactionCount.data)
-    */
-  //}, [transaction, result])**/
+    const fetchLastLogs = async () => {
+      try {
+        const latestBlock = await publicClient.getBlockNumber() // Get current block
+        const fromBlock = latestBlock - BigInt(500) // Fetch last 500 blocks. Equivalent to about last 2 hours
+
+
+        const pastGameStartedEvents = await publicClient.getContractEvents({
+          address: contractAddress, // Example: DAI contract
+          abi: abi,
+          eventName: "GameStarted",
+          fromBlock: fromBlock,
+          toBlock: 'latest', // Fetch up to the latest block
+        })
+
+        
+
+        if(pastGameStartedEvents.length > 0) {
+          const latestEvent = pastGameStartedEvents[pastGameStartedEvents.length-1]
+          setGameStarted(latestEvent.args.started ?? false)
+        } else {
+          console.log("OLD DATA: CONSIDER RESETTING GAME")
+        }
+      } catch (error) {
+        console.error('Error fetching logs:', error)
+      }
+    }
+
+    fetchLastLogs()
+  }, [publicClient])
+
 
   const handleOrientationChange = (id: number, isHorizontal: boolean) => {
     const oldShipOrientation = shipOrientations;
@@ -307,7 +333,7 @@ function GameGrid() {
             fontSize: "16px",
           }}
         >Game has started!
-      </h1>}
+        </h1>}
       <div>
         <button
           onClick={() =>
@@ -382,7 +408,7 @@ function GameGrid() {
         )}
 
         <p>X</p>
-        
+
 
         <DndContext
           onDragEnd={handleDragEnd}
