@@ -109,6 +109,20 @@ export const abi = [
   },
   {
     "inputs": [],
+    "name": "eventToggler",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "eventToggler2",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "gameOver",
     "outputs": [
       {
