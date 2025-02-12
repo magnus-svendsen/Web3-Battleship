@@ -62,7 +62,7 @@ export const abi = [
         "components": [
           {
             "internalType": "uint8",
-            "name": "shipsRemaining",
+            "name": "shipTilesHit",
             "type": "uint8"
           },
           {
@@ -74,33 +74,6 @@ export const abi = [
         "internalType": "struct Battleship.PlayerData",
         "name": "pl",
         "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint8",
-            "name": "length",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "timesHit",
-            "type": "uint8"
-          },
-          {
-            "internalType": "bool",
-            "name": "isDestroyed",
-            "type": "bool"
-          },
-          {
-            "internalType": "uint8[2][]",
-            "name": "coordinates",
-            "type": "uint8[2][]"
-          }
-        ],
-        "internalType": "struct Battleship.Ship[]",
-        "name": "_ships",
-        "type": "tuple[]"
       }
     ],
     "name": "join",
@@ -164,71 +137,8 @@ export const abi = [
     "outputs": [
       {
         "internalType": "uint8",
-        "name": "shipsRemaining",
+        "name": "shipTilesHit",
         "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "name": "shipCoordinates",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "ships",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "length",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "timesHit",
-        "type": "uint8"
-      },
-      {
-        "internalType": "bool",
-        "name": "isDestroyed",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
