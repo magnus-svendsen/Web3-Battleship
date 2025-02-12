@@ -1,14 +1,10 @@
 import {
-  useAccount,
-  useConnect,
-  useDisconnect,
   useReadContract,
   useSendTransaction,
   useWriteContract,
   useWatchContractEvent,
   usePublicClient,
 } from "wagmi";
-import { watchContractEvent } from "@wagmi/core";
 import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
 import { useEffect, useState } from "react";
@@ -19,17 +15,14 @@ import {
   type DragOverEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import { config } from "../wagmi"
 import type { GridData } from "../types/gridTypes";
 import type { ShipDataContract } from "../types/shipTypes";
 import Ship from "./ship";
 import DroppableGridCell from "./cell";
 
-
-
 function GameGrid() {
   const { writeContract } = useWriteContract();
-  const publicClient = usePublicClient()
+  const publicClient = usePublicClient();
 
   const [grid, setGrid] = useState<GridData>([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -72,7 +65,6 @@ function GameGrid() {
 
   const [gameStarted, setGameStarted] = useState(false);
   const [placeShip, setPlaceShips] = useState(false);
-  const [playGame, setPlayGame] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [shipOrientations, setShipsOrientations] = useState<boolean[]>([
     false,
@@ -89,19 +81,14 @@ function GameGrid() {
     false,
   ]);
   const [shipData, setShipData] = useState<ShipDataContract[]>([]);
+  // New state for storing encoded ship positions (each as row * 10 + col)
+  const [shipPositions, setShipPositions] = useState<number[]>([]);
 
-  const playerData = {
-    shipsRemaining: 5, // or the number of ships you intend to deploy
-    grid: grid, // your 10x10 grid state
-  };
-
-  const shipsArray: any[] = []; // adjust type as needed (e.g., ShipDataContract[]
+  // (We no longer need playerData for joining the game)
+  // const playerData = { grid: grid, hitsReceived: 0 };
 
   const { sendTransaction } = useSendTransaction();
 
-  const account = useAccount();
-  const { connectors, connect, status, error } = useConnect();
-  const { disconnect } = useDisconnect();
   const player1 = useReadContract({
     abi,
     address: contractAddress,
@@ -122,8 +109,8 @@ function GameGrid() {
       setGameStarted(logs["0"].args.started ?? false);
     },
     onError(error) {
-      console.log('Error', error)
-    }
+      console.log("Error", error);
+    },
   });
 
   useEffect(() => {
@@ -131,44 +118,40 @@ function GameGrid() {
     gameStarted && console.log("Game started!");
   }, [gameStarted]);
 
-  // Used for getting the last events emitted. Usefull for keeping redudant data on refresh.
-  // Add additional events in here
+  // Used for fetching recent events (helps keep data on refresh)
   useEffect(() => {
     const fetchLastLogs = async () => {
       try {
-        const latestBlock = await publicClient.getBlockNumber() // Get current block
-        const fromBlock = latestBlock - BigInt(500) // Fetch last 500 blocks. Equivalent to about last 2 hours
-
+        const latestBlock = await publicClient.getBlockNumber();
+        const fromBlock = latestBlock - BigInt(500);
 
         const pastGameStartedEvents = await publicClient.getContractEvents({
-          address: contractAddress, // Example: DAI contract
+          address: contractAddress,
           abi: abi,
           eventName: "GameStarted",
           fromBlock: fromBlock,
-          toBlock: 'latest', // Fetch up to the latest block
-        })
+          toBlock: "latest",
+        });
 
-        
-
-        if(pastGameStartedEvents.length > 0) {
-          const latestEvent = pastGameStartedEvents[pastGameStartedEvents.length-1]
-          setGameStarted(latestEvent.args.started ?? false)
+        if (pastGameStartedEvents.length > 0) {
+          const latestEvent =
+            pastGameStartedEvents[pastGameStartedEvents.length - 1];
+          setGameStarted(latestEvent.args.started ?? false);
         } else {
-          console.log("OLD DATA: CONSIDER RESETTING GAME")
+          console.log("OLD DATA: CONSIDER RESETTING GAME");
         }
       } catch (error) {
-        console.error('Error fetching logs:', error)
+        console.error("Error fetching logs:", error);
       }
-    }
+    };
 
-    fetchLastLogs()
-  }, [publicClient])
-
+    fetchLastLogs();
+  }, [publicClient]);
 
   const handleOrientationChange = (id: number, isHorizontal: boolean) => {
     const oldShipOrientation = shipOrientations;
     oldShipOrientation[id] = !oldShipOrientation[id];
-    setShipsOrientations(oldShipOrientation);
+    setShipsOrientations([...oldShipOrientation]);
   };
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -181,7 +164,7 @@ function GameGrid() {
     const tempHover = String(event.over?.id).split("-") || [0, 0, 0];
     const row = Number(tempHover[1]);
     const col = Number(tempHover[2]);
-    const updatedPlacedShips = placedShips;
+    const updatedPlacedShips = [...placedShips];
 
     let coordinates: [number, number][] = [];
     const updatedGrid = grid.map((rowArr, rowIndex) =>
@@ -202,6 +185,7 @@ function GameGrid() {
             }
           }
         } else {
+          // Vertical ship placement
           if (
             colIndex === col &&
             rowIndex >= row &&
@@ -209,30 +193,37 @@ function GameGrid() {
           ) {
             if (row + lengthOfShip <= 10) {
               updatedPlacedShips[shipID] = true;
+              coordinates.push([rowIndex, colIndex]);
               return 1;
             } else {
-              grid[rowIndex][colIndex];
+              return grid[rowIndex][colIndex];
             }
           }
         }
-        // Default state for cells outside hover area
         return grid[rowIndex][colIndex];
       })
     );
+
+    // Build a ship data object for UI purposes (if needed)
     const ship: ShipDataContract = {
       length: lengthOfShip,
       timesHit: 0,
       isDestroyed: false,
       coordinates: coordinates,
     };
-    const shipsContract: ShipDataContract[] = shipData;
-    shipsContract.push(ship);
-    setShipData(shipsContract);
+    setShipData((prevShips) => [...prevShips, ship]);
 
+    // Update grid and placedShips states
     setGrid(updatedGrid);
     setPlacedShips(updatedPlacedShips);
-    setTempGrid(grid);
+    setTempGrid(updatedGrid);
     setIsDragging(false);
+
+    // NEW: Convert the coordinate pairs to encoded values and update shipPositions.
+    const encodedPositions = coordinates.map(
+      ([r, c]) => r * 10 + c
+    );
+    setShipPositions((prevPositions) => [...prevPositions, ...encodedPositions]);
   };
 
   const handleDragOver = (event: DragOverEvent) => {
@@ -245,27 +236,24 @@ function GameGrid() {
     const updatedTempGrid = tempGrid.map((rowArr, rowIndex) =>
       rowArr.map((cell, colIndex) => {
         if (!shipOrientations[shipID]) {
-          // Horizontal ship placement
+          // Horizontal ship placement preview
           if (
             rowIndex === row &&
             colIndex >= col &&
             colIndex < col + lengthOfShip
           ) {
-            // Ensure ship does not overflow grid width
             return col + lengthOfShip <= 10 ? 3 : grid[rowIndex][colIndex];
           }
         } else {
-          // Vertical ship placement
+          // Vertical ship placement preview
           if (
             colIndex === col &&
             rowIndex >= row &&
             rowIndex < row + lengthOfShip
           ) {
-            // Ensure ship does not overflow grid height
             return row + lengthOfShip <= 10 ? 3 : grid[rowIndex][colIndex];
           }
         }
-        // Default state for cells outside hover area
         return grid[rowIndex][colIndex];
       })
     );
@@ -273,39 +261,21 @@ function GameGrid() {
   };
 
   const lengthByID = (id: number) => {
-    if (id === 1) {
-      return 5;
-    }
-    if (id === 2) {
-      return 4;
-    }
-    if (id === 3) {
-      return 3;
-    }
-    if (id === 4) {
-      return 3;
-    }
-    if (id === 5) {
-      return 2;
-    } else return 0;
+    if (id === 1) return 5;
+    if (id === 2) return 4;
+    if (id === 3) return 3;
+    if (id === 4) return 3;
+    if (id === 5) return 2;
+    return 0;
   };
 
   const lengthByIDShipRendering = (id: number) => {
-    if (id === 0) {
-      return 5;
-    }
-    if (id === 1) {
-      return 4;
-    }
-    if (id === 2) {
-      return 3;
-    }
-    if (id === 3) {
-      return 3;
-    }
-    if (id === 4) {
-      return 2;
-    } else return 0;
+    if (id === 0) return 5;
+    if (id === 1) return 4;
+    if (id === 2) return 3;
+    if (id === 3) return 3;
+    if (id === 4) return 2;
+    return 0;
   };
 
   const placeShipsButton = () => {
@@ -313,16 +283,13 @@ function GameGrid() {
   };
 
   function colorByState(state: number) {
-    if (state == 0) {
-      return "#3d3d3d";
-    } else if (state == 1) {
-      return "#bb1010";
-    }
+    if (state === 0) return "#3d3d3d";
+    if (state === 1) return "#bb1010";
   }
 
   return (
     <>
-      {gameStarted &&
+      {gameStarted && (
         <h1
           style={{
             display: "flex",
@@ -332,34 +299,21 @@ function GameGrid() {
             textDecoration: "none",
             fontSize: "16px",
           }}
-        >Game has started!
-        </h1>}
-      <div>
-        <button
-          onClick={() =>
-            writeContract({
-              abi,
-              address: contractAddress,
-              functionName: "eventToggler",
-            })
-          }
         >
-          Toggle
-        </button>
-
+          Game has started!
+        </h1>
+      )}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "10px",
+          marginTop: "20px",
+        }}
+      >
         <button
-          onClick={() =>
-            writeContract({
-              abi,
-              address: contractAddress,
-              functionName: "eventToggler2",
-            })
-          }
-        >
-          Toggle back
-        </button>
-
-        <button
+          type="button"
           onClick={() =>
             sendTransaction({
               to: "0x71b604B6C2F41Fa91Dd0e3e41221C9c6c6c75313",
@@ -370,13 +324,15 @@ function GameGrid() {
           Send Transaction
         </button>
 
+        {/* Updated Join button: now calls join() without passing extra data */}
         <button
+          type="button"
           onClick={() =>
             writeContract({
               abi,
               address: contractAddress,
               functionName: "join",
-              args: [playerData, shipsArray],
+              args: [],
             })
           }
         >
@@ -384,11 +340,13 @@ function GameGrid() {
         </button>
 
         <button
+          type="button"
           style={{
             backgroundColor: "#04AA6D",
             border: "none",
             color: "white",
-            padding: "15px 32px",
+            padding: "6px 22px",
+            borderRadius: "12px",
             textAlign: "center",
             textDecoration: "none",
             display: "inline-block",
@@ -399,16 +357,41 @@ function GameGrid() {
           <h3>Place ships</h3>
         </button>
 
-        <p>Player1: {player1.data}</p>
-
-        <p>Player2: {player2.data}</p>
-
-        {player1.data && player2.data && (
-          <p>Both players have joined, let the game begin!</p>
+        {/* New Submit Ships button: sends the encoded ship positions to the contract */}
+        {shipPositions.length > 0 && (
+          <button
+            type="button"
+            style={{
+              backgroundColor: "#007BFF",
+              border: "none",
+              color: "white",
+              padding: "6px 22px",
+              borderRadius: "12px",
+              textAlign: "center",
+              textDecoration: "none",
+              display: "inline-block",
+              fontSize: "16px",
+            }}
+            onClick={() =>
+              writeContract({
+                abi,
+                address: contractAddress,
+                functionName: "placeShips",
+                args: [shipPositions],
+              })
+            }
+          >
+            Submit Ships
+          </button>
         )}
 
-        <p>X</p>
-
+        <div>
+          <p>Player1: {player1.data}</p>
+          <p>Player2: {player2.data}</p>
+          {player1.data && player2.data && (
+            <p>Both players have joined, let the game begin!</p>
+          )}
+        </div>
 
         <DndContext
           onDragEnd={handleDragEnd}
@@ -487,7 +470,7 @@ function GameGrid() {
             {enemyGrid.map((row, rowIndex) =>
               row.map((cell, colIndex) => (
                 <div
-                  key={`${row}-${colIndex}`} // Unique key for each cell
+                  key={`${row}-${colIndex}`}
                   style={{
                     width: "40px",
                     height: "40px",
@@ -496,10 +479,11 @@ function GameGrid() {
                     justifyContent: "center",
                     border: "1px solid black",
                     cursor: "pointer",
-                    backgroundColor: colorByState(cell), // White for empty, black for ship
+                    backgroundColor: colorByState(cell),
                   }}
                 >
                   <button
+                    type="button"
                     onClick={() =>
                       writeContract({
                         abi,
