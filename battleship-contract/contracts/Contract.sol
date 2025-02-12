@@ -2,118 +2,119 @@
 pragma solidity ^0.8.9;
 
 contract Battleship {
+    // Addresses of the two players.
     address public player1;
     address public player2;
+    // Indicates if the game is over.
     bool public gameOver;
+    // Whose turn it is.
     address public whoseTurn;
 
+    // Each player's data. Instead of a full grid, we only store the ship positions.
     struct PlayerData {
-        uint8 shipsRemaining;
-        uint8[10][10] grid; // Player's grid
+        // Mapping from an encoded cell (0 to 99) to a bool indicating whether a ship exists there.
+        // When a ship is hit, the mapping value is set to false.
+        mapping(uint8 => bool) ships;
+        // How many ship cells (blocks) the player has that are still intact.
+        uint8 remainingCells;
+        // To prevent placing ships more than once.
+        bool shipsPlaced;
     }
 
-    struct Ship {
-        uint8 length;
-        uint8 timesHit;
-        bool isDestroyed;
-        uint8[2][] coordinates; // array of (x, y) coordinates
-    }
+    // Mapping from player address to their game data.
+    mapping(address => PlayerData) private players;
 
-    mapping(address => PlayerData) public players;
-    mapping(address => Ship[]) public ships;
-    mapping(address => mapping(uint8 => mapping(uint8 => uint))) public shipCoordinates; // Mapping to track ship coordinates
-
+    // Events to inform off-chain listeners about game state changes.
     event GameStarted(bool started);
-    event RegisterHit(address player, uint8 hit);
+    event ShipPlacement(address indexed player, uint8[] positions);
+    event MoveResult(address indexed player, bool hit, uint8 pos);
+    event GameOver(address winner);
 
-    constructor() {
-        gameOver = true; // Initialize gameOver to true
-    }
+    /// @notice Join the game. The first caller becomes player1; the second becomes player2.
+    function join() public {
+        require(player1 == address(0) || player2 == address(0), "Game already has 2 players");
 
-    function join(PlayerData memory pl, Ship[] memory _ships) public {
-        require(player2 == address(0), "Game has already started.");
-        require(gameOver, "A game is already in progress.");
-
-        if (address(player1) != address(0) && msg.sender != address(player1)) {
-            player2 = msg.sender;
-
-            players[player2] = pl;
-            for (uint i = 0; i < _ships.length; i++) {
-                ships[player2].push(_ships[i]);
-            }
-
-            // Store player grid and ships
-            PlayerData storage player2Data = players[player2];
-            player2Data.shipsRemaining = uint8(_ships.length);
-
-            // Set turn to player 1
-            whoseTurn = player1;
-            gameOver = false; // Set gameOver to false when the game starts
-            emit GameStarted(true); // Emit GameStarted event with true
-        } else {
+        if (player1 == address(0)) {
             player1 = msg.sender;
-
-            players[player1] = pl;
-            for (uint i = 0; i < _ships.length; i++) {
-                ships[player1].push(_ships[i]);
-            }
-        }
-    }
-
-    function cancel() public {
-        require(msg.sender == player1, "Only first player may cancel.");
-        require(player2 == address(0), "Game has already started.");
-
-        gameOver = true;
-        emit GameStarted(false);
-    }
-
-    function move(uint8 x, uint8 y) public {
-        require(!gameOver, "Game has ended.");
-        require(msg.sender == whoseTurn, "Not your turn.");
-        require(
-            (x >= 0 && x < 10) && (y >= 0 && y < 10),
-            "Move out of range. X and Y coordinates must be between 0 and 9."
-        );
-
-        address opponent = opponentOf(msg.sender);
-        PlayerData storage opponentData = players[opponent];
-        require(
-            opponentData.shipsRemaining > 0,
-            "Game over, no ships remaining!"
-        );
-
-        uint8 cell = opponentData.grid[x][y];
-        if (cell == 1) {
-            // Ship hit
-            opponentData.grid[x][y] = 3; // Mark as hit
-
-            // Check if any ship is destroyed
-            uint shipIndex = shipCoordinates[opponent][x][y];
-            Ship storage ship = ships[opponent][shipIndex];
-
-            ship.timesHit += 1;
-            emit RegisterHit(msg.sender, 3);
-            if (ship.timesHit == ship.length) {
-                ship.isDestroyed = true;
-                opponentData.shipsRemaining -= 1;
-
-                if (opponentData.shipsRemaining == 0) {
-                    gameOver = true;
-                    emit GameStarted(false);
-                }
-            }
         } else {
-            // No ships hit
-            emit RegisterHit(msg.sender, 0);
+            require(msg.sender != player1, "Already joined as player1");
+            player2 = msg.sender;
+            // Start the game once both players have joined.
+            whoseTurn = player1;
+            gameOver = false;
+            emit GameStarted(true);
         }
-
-        // Switch turns
-        whoseTurn = opponent;
     }
 
-    function opponentOf(address player) internal view returns (address) {
-        require(player2 != address(0), "Game has not started.");
-        return player == player1 ? player2 : player1;
+    /// @notice Place your ships by providing an array of encoded positions.
+    /// Each position is a number between 0 and 99 (calculated as row * 10 + col).
+    /// For example, a ship cell at (1, 1) is encoded as 11.
+    function placeShips(uint8[] calldata positions) public {
+        require(msg.sender == player1 || msg.sender == player2, "Only players can place ships");
+        PlayerData storage pd = players[msg.sender];
+        require(!pd.shipsPlaced, "Ships have already been placed");
+        require(positions.length > 0, "No ship positions provided");
+
+        for (uint i = 0; i < positions.length; i++) {
+            uint8 pos = positions[i];
+            require(pos < 100, "Position out of range");
+            // Prevent duplicate positions.
+            require(!pd.ships[pos], "Duplicate position provided");
+            pd.ships[pos] = true;
+        }
+        // Set the remaining cell count to the number of positions provided.
+        pd.remainingCells = uint8(positions.length);
+        pd.shipsPlaced = true;
+        emit ShipPlacement(msg.sender, positions);
+    }
+
+    /// @notice Make a move by specifying coordinates (x, y).
+    /// The coordinates are encoded using the same formula (x * 10 + y) and then checked against the opponent's ship mapping.
+    function move(uint8 x, uint8 y) public {
+        require(!gameOver, "Game is over");
+        require(msg.sender == whoseTurn, "Not your turn");
+        require(x < 10 && y < 10, "Coordinates out of range");
+        require(player1 != address(0) && player2 != address(0), "Game not started, missing player");
+
+        // Determine the opponent.
+        address opponent = msg.sender == player1 ? player2 : player1;
+        PlayerData storage opponentData = players[opponent];
+
+        // Encode the move coordinates.
+        uint8 pos = x * 10 + y;
+        bool hit = false;
+
+        // Check if the opponent has a ship at that position.
+        if (opponentData.ships[pos]) {
+            // Mark the cell as hit by setting the mapping value to false.
+            opponentData.ships[pos] = false;
+            opponentData.remainingCells--;
+            hit = true;
+
+            // If no intact ship cells remain, the game is over.
+            if (opponentData.remainingCells == 0) {
+                gameOver = true;
+                emit GameOver(msg.sender);
+            }
+        }
+
+        emit MoveResult(msg.sender, hit, pos);
+
+        // Switch turns if the game is not over.
+        if (!gameOver) {
+            whoseTurn = opponent;
+        }
+    }
+
+    /// @notice Returns whether a player's ship exists at the given encoded position.
+    /// This is useful for off-chain verification.
+    function hasShip(address player, uint8 pos) public view returns (bool) {
+        require(pos < 100, "Position out of range");
+        return players[player].ships[pos];
+    }
+
+    /// @notice Returns the number of intact ship cells a player has remaining.
+    function getRemainingCells(address player) public view returns (uint8) {
+        return players[player].remainingCells;
     }
 }
