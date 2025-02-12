@@ -1,8 +1,16 @@
 export const abi = [
   {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "winner",
+        "type": "address"
+      }
+    ],
+    "name": "GameOver",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -21,27 +29,45 @@ export const abi = [
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "player",
         "type": "address"
       },
       {
         "indexed": false,
-        "internalType": "uint8",
+        "internalType": "bool",
         "name": "hit",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "pos",
         "type": "uint8"
       }
     ],
-    "name": "RegisterHit",
+    "name": "MoveResult",
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "cancel",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "player",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8[]",
+        "name": "positions",
+        "type": "uint8[]"
+      }
+    ],
+    "name": "ShipPlacement",
+    "type": "event"
   },
   {
     "inputs": [],
@@ -59,50 +85,48 @@ export const abi = [
   {
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "uint8",
-            "name": "shipsRemaining",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8[10][10]",
-            "name": "grid",
-            "type": "uint8[10][10]"
-          }
-        ],
-        "internalType": "struct Battleship.PlayerData",
-        "name": "pl",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint8",
-            "name": "length",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "timesHit",
-            "type": "uint8"
-          },
-          {
-            "internalType": "bool",
-            "name": "isDestroyed",
-            "type": "bool"
-          },
-          {
-            "internalType": "uint8[2][]",
-            "name": "coordinates",
-            "type": "uint8[2][]"
-          }
-        ],
-        "internalType": "struct Battleship.Ship[]",
-        "name": "_ships",
-        "type": "tuple[]"
+        "internalType": "address",
+        "name": "player",
+        "type": "address"
       }
     ],
+    "name": "getRemainingCells",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "player",
+        "type": "address"
+      },
+      {
+        "internalType": "uint8",
+        "name": "pos",
+        "type": "uint8"
+      }
+    ],
+    "name": "hasShip",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "join",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -122,6 +146,19 @@ export const abi = [
       }
     ],
     "name": "move",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8[]",
+        "name": "positions",
+        "type": "uint8[]"
+      }
+    ],
+    "name": "placeShips",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -147,88 +184,6 @@ export const abi = [
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "players",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "shipsRemaining",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "name": "shipCoordinates",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "ships",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "length",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "timesHit",
-        "type": "uint8"
-      },
-      {
-        "internalType": "bool",
-        "name": "isDestroyed",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
