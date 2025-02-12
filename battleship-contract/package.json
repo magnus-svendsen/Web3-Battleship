@@ -7,13 +7,16 @@
   },
   "devDependencies": {
     "@matterlabs/hardhat-zksync-solc": "^0.3.17",
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "chai": "^5.1.2",
+    "ethers": "^5.7.2",
     "hardhat": "^2.22.16"
   },
   "dependencies": {
     "@thirdweb-dev/contracts": "^3.8.0",
-    "zksync-web3": "^0.14.3",
-    "thirdweb": "^5.88.1",
     "react": "^18.2.0",
-    "react-native": "^0.77.0"
+    "react-native": "^0.77.0",
+    "thirdweb": "^5.88.1",
+    "zksync-web3": "^0.14.3"
   }
 }
