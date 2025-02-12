@@ -76,19 +76,21 @@ contract Battleship {
             "Move out of range. X and Y coordinates must be between 0 and 9."
         );
 
-        PlayerData storage opponentData = players[opponentOf(msg.sender)];
+        address opponent = opponentOf(msg.sender);
+        PlayerData storage opponentData = players[opponent];
         require(
             opponentData.shipsRemaining > 0,
             "Game over, no ships remaining!"
         );
 
-        if (opponentData.grid[x][y] == 1) {
+        uint8 cell = opponentData.grid[x][y];
+        if (cell == 1) {
             // Ship hit
             opponentData.grid[x][y] = 3; // Mark as hit
-    
+
             // Check if any ship is destroyed
-            uint shipIndex = shipCoordinates[opponentOf(msg.sender)][x][y];
-            Ship storage ship = ships[opponentOf(msg.sender)][shipIndex];
+            uint shipIndex = shipCoordinates[opponent][x][y];
+            Ship storage ship = ships[opponent][shipIndex];
 
             ship.timesHit += 1;
             emit RegisterHit(msg.sender, 3);
@@ -99,7 +101,6 @@ contract Battleship {
                 if (opponentData.shipsRemaining == 0) {
                     gameOver = true;
                     emit GameStarted(false);
-
                 }
             }
         } else {
@@ -108,7 +109,7 @@ contract Battleship {
         }
 
         // Switch turns
-        whoseTurn = opponentOf(msg.sender);
+        whoseTurn = opponent;
     }
 
     function opponentOf(address player) internal view returns (address) {
