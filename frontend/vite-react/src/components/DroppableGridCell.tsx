@@ -15,7 +15,7 @@ const DroppableGridCell: React.FC<GridCellData> = ({row, col, state}) => {
         if (color === 1) {return "#050505"}
         if (color === 3) {return "#bb1010"}
         if (color === 2) {return "#10b910"}
-        else return "#000000"
+        return "#000000"
     }
 
 
