@@ -1,9 +1,9 @@
 import {
   useReadContract,
-  useSendTransaction,
   useWriteContract,
   useWatchContractEvent,
   usePublicClient,
+  useAccount,
 } from "wagmi";
 import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
@@ -18,9 +18,10 @@ import {
 import type { GridData } from "../types/gridTypes";
 import type { ShipDataContract } from "../types/shipTypes";
 import Ship from "./ship";
-import DroppableGridCell from "./cell";
+import DroppableGridCell from "./DroppableGridCell";
 
-function GameGrid() {
+const GameGrid = () => {
+  const account = useAccount();
   const { writeContract } = useWriteContract();
   const publicClient = usePublicClient();
 
@@ -63,6 +64,7 @@ function GameGrid() {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
+  const [playerJoined, setPlayerJoined] = useState("");
   const [gameStarted, setGameStarted] = useState(false);
   const [placeShip, setPlaceShips] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -86,8 +88,6 @@ function GameGrid() {
 
   // (We no longer need playerData for joining the game)
   // const playerData = { grid: grid, hitsReceived: 0 };
-
-  const { sendTransaction } = useSendTransaction();
 
   const player1 = useReadContract({
     abi,
@@ -113,13 +113,51 @@ function GameGrid() {
     },
   });
 
+  useWatchContractEvent({
+    address: contractAddress,
+    abi,
+    eventName: "PlayerJoined",
+    onLogs(logs) {
+      setPlayerJoined(logs["0"].args.player ?? "");
+    },
+    onError(error) {
+      console.log("Error", error);
+    },
+  });
+
   useEffect(() => {
     // DEBUGGING
+    account.address && console.log("Address of this player: ", account.address);
+    playerJoined && console.log("Player joined:", playerJoined);
     gameStarted && console.log("Game started!");
-  }, [gameStarted]);
+  }, [account.address, playerJoined, gameStarted]);
 
   // Used for fetching recent events (helps keep data on refresh)
   useEffect(() => {
+    const fetchRecentEvents = async () => {
+      try {
+        const latestBlock = await publicClient.getBlockNumber();
+        const fromBlock = latestBlock - BigInt(500);
+        const pastPlayerJoinedEvents = await publicClient.getContractEvents({
+          address: contractAddress,
+          abi: abi,
+          eventName: "PlayerJoined",
+          fromBlock: fromBlock,
+          toBlock: "latest",
+        });
+
+        if (pastPlayerJoinedEvents.length > 0) {
+          const latestEvent =
+            pastPlayerJoinedEvents[pastPlayerJoinedEvents.length - 1];
+          setPlayerJoined(latestEvent.args.player ?? "");
+        } else {
+          console.log("OLD DATA: CONSIDER RESETTING GAME");
+        }
+      } catch (error) {
+        console.error("Error fetching logs:", error);
+      }  
+    }
+
     const fetchLastLogs = async () => {
       try {
         const latestBlock = await publicClient.getBlockNumber();
@@ -145,6 +183,7 @@ function GameGrid() {
       }
     };
 
+    fetchRecentEvents();
     fetchLastLogs();
   }, [publicClient]);
 
@@ -312,32 +351,24 @@ function GameGrid() {
           marginTop: "20px",
         }}
       >
-        <button
-          type="button"
-          onClick={() =>
-            sendTransaction({
-              to: "0x71b604B6C2F41Fa91Dd0e3e41221C9c6c6c75313",
-              value: parseEther("0.1"),
-            })
-          }
-        >
-          Send Transaction
-        </button>
 
-        {/* Updated Join button: now calls join() without passing extra data */}
-        <button
-          type="button"
-          onClick={() =>
-            writeContract({
-              abi,
-              address: contractAddress,
-              functionName: "join",
-              args: [],
-            })
-          }
-        >
-          Join a game!
-        </button>
+        {account.address === playerJoined ? (
+          <h2 className="font-bold text-2xl py-8">Waiting for opponent...</h2>
+        ) : (
+            <button
+              type="button"
+              onClick={() =>
+                writeContract({
+                  abi,
+                  address: contractAddress,
+                  functionName: "join",
+                  args: [],
+                })
+              }
+            >
+              Join a game!
+            </button>
+        )}
 
         <button
           type="button"
