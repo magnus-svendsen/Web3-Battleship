@@ -30,11 +30,6 @@ db.on("error", (error) => {
 
 db.once("open", () => console.log("Server connected to DB"))
 
-var corsOptions = {
-    origin: ['http://apitest.vipps.no', 'localhost:5173'],
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-  }
-
 app.use(bodyParser.json())
 app.use(cors({
     origin: 'http://localhost:3000',
@@ -44,24 +39,29 @@ app.use(cors({
 }))
 
 app.get("/auth/vipps", async (req: Request, res: Response) => {
-    //Should be randomly generated for secret stuffs
-    const nonce = "123hemmelig"
-    const state = "321hemmelig"
+    try {
+        //Should be randomly generated for secret stuffs
+        const nonce = "123hemmelig"
+        const state = "321hemmelig"
 
-    //What data we want to fetch. Only phone to test
-    const scope = "phoneNumber nin"
+        //What data we want to fetch. Only phone to test
+        const scope = "phoneNumber nin"
 
-    const authParams = qs.stringify({
-        client_id: VIPPS_CLIENT_ID,
-        redirect_uri: VIPPS_REDIRECT_URI,
-        response_type: 'code',
-        scope,
-        state,
-        nonce
-    })
+        const authParams = qs.stringify({
+            client_id: VIPPS_CLIENT_ID,
+            redirect_uri: VIPPS_REDIRECT_URI,
+            response_type: 'code',
+            scope,
+            state,
+            nonce
+        })
 
-    const authURL = `${VIPPS_AUTH_URL}?${authParams}`;
-    res.redirect(authURL)
+        const authURL = `${VIPPS_AUTH_URL}?${authParams}`;
+        res.redirect(authURL)
+    }
+    catch (error) {
+        console.error(error)
+    }
 })
 
 
@@ -69,57 +69,55 @@ app.get("/auth/vipps", async (req: Request, res: Response) => {
 
 
 app.get("/", async (req: Request, res: Response) => {
-    const { code, state, error } = req.query;
+    try {
+        const { code, state, error } = req.query;
 
-    if (error) {
-        res.send(`Vipps returned an error: ${error}`);
-    }
-
-    if (!code) {
-        res.send('No code returned from Vipps');
-    }
-
-    const data = qs.stringify({
-        grant_type: 'authorization_code',
-        code: code,
-        redirect_uri: VIPPS_REDIRECT_URI,
-    });
-
-    const tokenResponse = await axios.post(
-        VIPPS_TOKEN_URL as string,
-        data,
-        {
-            auth: {
-                username: VIPPS_CLIENT_ID as string,
-                password: VIPPS_CLIENT_SECRET as string,
-            },
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        if (error) {
+            res.send(`Vipps returned an error: ${error}`);
         }
-    );
 
-    const { access_token, id_token, refresh_token, token_type } = tokenResponse.data;
-    console.log('Token response:', tokenResponse.data);
+        if (!code) {
+            res.send('No code returned from Vipps');
+        }
 
-    const userInfoResponse = await axios.get(VIPPS_USERINFO_URL as string, {
-        headers: {
-            Authorization: `Bearer ${access_token}`,
-        },
-    });
+        const data = qs.stringify({
+            grant_type: 'authorization_code',
+            code: code,
+            redirect_uri: VIPPS_REDIRECT_URI,
+        });
 
-    const userInfo = userInfoResponse.data;
-    console.log('User info:', userInfo);
+        const tokenResponse = await axios.post(
+            VIPPS_TOKEN_URL as string,
+            data,
+            {
+                auth: {
+                    username: VIPPS_CLIENT_ID as string,
+                    password: VIPPS_CLIENT_SECRET as string,
+                },
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            }
+        );
+
+        const { access_token, id_token, refresh_token, token_type } = tokenResponse.data;
+        console.log('Token response:', tokenResponse.data);
+
+        const userInfoResponse = await axios.get(VIPPS_USERINFO_URL as string, {
+            headers: {
+                Authorization: `Bearer ${access_token}`,
+            },
+        });
+
+        const userInfo = userInfoResponse.data;
+        console.log('User info:', userInfo);
 
 
-    res.redirect(`http://localhost:3000/?accesstoken=${access_token as string}`);
-        /*
-        res.json({
-        message: 'Login successful!',
-        access_token,
-        id_token,
-        refresh_token,
-        userInfo,
-    });
-    */
+        res.redirect(`http://localhost:3000/?accesstoken=${access_token as string}`);
+    }
+    catch (error) {
+        console.error(error)
+        res.redirect(`http://localhost:3000/`);
+
+    }
 })
 
 
@@ -150,15 +148,16 @@ app.post("/privatekey", async (req: Request, res: Response) => {
     try {
         const access_token = req.body["accesstoken"]
 
+
         // Validate using userinfo API
         const userInfoResponse = await axios.get(VIPPS_USERINFO_URL as string, {
             headers: {
                 Authorization: `Bearer ${access_token}`,
             },
         });
-        
-        const clientID = userInfoResponse.data.nin
 
+
+        const clientID = Number(userInfoResponse.data.nin)
         const account = await Account.findOne({ clientID: clientID })
         console.log(account)
         if (account != null) {
@@ -181,15 +180,5 @@ app.post("/privatekey", async (req: Request, res: Response) => {
 
 
 
-/*
-app.get("/get/account", async (req: Request, res: Response) => {
-    console.log(req.body["key"])
-    // Check DB if key exist
-    //   -> Return privateKey
-    // Else
-    //   -> Generate key and add to DB. Return Key
-    res.send("Skibidi")
-})
-*/
 app.listen(port, () => console.log("Server Started"))
 
