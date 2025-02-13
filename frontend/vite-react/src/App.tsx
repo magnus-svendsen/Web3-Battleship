@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import GameGrid from "./components/GameGrid";
+import { Button } from '@mantine/core';
 
 function App() {
   const account = useAccount();
@@ -34,15 +35,15 @@ function App() {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen bg-[#002642] text-white">
       <div className="flex flex-col items-center">
         <div className="pt-4 pb-12 flex justify-between w-full">
           <h2 className="font-bold text-2xl ml-1">Web3 Battleship</h2>
           {account.status === "connected" && (
             <div className="flex">
-              <button className="" type="button" onClick={() => disconnect()}>
+              <Button variant="white" color="teal" size="sm" radius="sm" className="mr-2" type="button" onClick={() => disconnect()}>
                 Disconnect
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -60,17 +61,18 @@ function App() {
               loading="false"
               onClick={vippsAPI}
             />
-            <button
+            <Button
+              variant="white" color="orange" size="xl" radius="xl"
               type="button"
               onClick={() => connect({ connector: connectors[0] })}
             >
               Log in with Metamask
-            </button>
+            </Button>
           </div>
         )}
       </div>
       <GameGrid />
-    </>
+    </div>
   );
 }
 

@@ -20,6 +20,8 @@ import type { ShipDataContract } from "../types/shipTypes";
 import Ship from "./ship";
 import DroppableGridCell from "./DroppableGridCell";
 
+import { Button } from '@mantine/core';
+
 const GameGrid = () => {
   const account = useAccount();
   const { writeContract } = useWriteContract();
@@ -355,7 +357,8 @@ const GameGrid = () => {
         {account.address === playerJoined ? (
           <h2 className="font-bold text-2xl py-8">Waiting for opponent...</h2>
         ) : (
-            <button
+            <Button
+              variant="filled" color="green" size="xl" radius="xl"
               type="button"
               onClick={() =>
                 writeContract({
@@ -367,26 +370,15 @@ const GameGrid = () => {
               }
             >
               Join a game!
-            </button>
+            </Button>
         )}
 
-        <button
+        <Button variant="filled" color="teal" size="lg" radius="lg"
           type="button"
-          style={{
-            backgroundColor: "#04AA6D",
-            border: "none",
-            color: "white",
-            padding: "6px 22px",
-            borderRadius: "12px",
-            textAlign: "center",
-            textDecoration: "none",
-            display: "inline-block",
-            fontSize: "16px",
-          }}
           onClick={placeShipsButton}
         >
-          <h3>Place ships</h3>
-        </button>
+          Place ships
+        </Button>
 
         {/* New Submit Ships button: sends the encoded ship positions to the contract */}
         {shipPositions.length > 0 && (
