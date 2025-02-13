@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express, { Request, Response } from "express";
-import bodyParser, { BodyParser } from "body-parser";
+import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import { generatePrivateKey } from "viem/accounts"
 import qs from "qs";
@@ -13,6 +13,7 @@ const port = 5173
 
 const {
     DB_CONNECTION_STRING,
+    FRONTEND_URL,
     VIPPS_CLIENT_ID,
     VIPPS_CLIENT_SECRET,
     VIPPS_REDIRECT_URI,
@@ -31,12 +32,7 @@ db.on("error", (error) => {
 db.once("open", () => console.log("Server connected to DB"))
 
 app.use(bodyParser.json())
-app.use(cors({
-    origin: 'http://localhost:3000',
-    methods: 'GET,POST,PUT,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type, Authorization',
-    credentials: true,
-}))
+app.use(cors())
 
 app.get("/auth/vipps", async (req: Request, res: Response) => {
     try {
@@ -70,7 +66,7 @@ app.get("/auth/vipps", async (req: Request, res: Response) => {
 
 app.get("/", async (req: Request, res: Response) => {
     try {
-        const { code, state, error } = req.query;
+        const { code, error } = req.query;
 
         if (error) {
             res.send(`Vipps returned an error: ${error}`);
@@ -99,7 +95,6 @@ app.get("/", async (req: Request, res: Response) => {
         );
 
         const { access_token, id_token, refresh_token, token_type } = tokenResponse.data;
-        console.log('Token response:', tokenResponse.data);
 
         const userInfoResponse = await axios.get(VIPPS_USERINFO_URL as string, {
             headers: {
@@ -107,15 +102,11 @@ app.get("/", async (req: Request, res: Response) => {
             },
         });
 
-        const userInfo = userInfoResponse.data;
-        console.log('User info:', userInfo);
-
-
-        res.redirect(`http://localhost:3000/?accesstoken=${access_token as string}`);
+        res.redirect(FRONTEND_URL + `?accesstoken=${access_token as string}`);
     }
     catch (error) {
         console.error(error)
-        res.redirect(`http://localhost:3000/`);
+        res.redirect(FRONTEND_URL!);
 
     }
 })
@@ -125,7 +116,6 @@ app.post("/test", async (req: Request, res: Response) => {
     try {
         const clientID = req.body["clientID"]
         const account = await Account.findOne({ clientID: clientID })
-        console.log(account)
         if (account != null) {
             var privateKey = account.privateKey
             res.status(200).json(privateKey)
@@ -159,7 +149,6 @@ app.post("/privatekey", async (req: Request, res: Response) => {
 
         const clientID = Number(userInfoResponse.data.nin)
         const account = await Account.findOne({ clientID: clientID })
-        console.log(account)
         if (account != null) {
             var privateKey = account.privateKey
             res.status(200).json(privateKey)
@@ -180,5 +169,5 @@ app.post("/privatekey", async (req: Request, res: Response) => {
 
 
 
-app.listen(port, () => console.log("Server Started"))
+app.listen(port, () => console.log("Server Started, listening on PORT:", port))
 
