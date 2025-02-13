@@ -32,7 +32,7 @@ function App() {
       window.history.replaceState("", "", "http://localhost:3000"); // Remove accesstoken from URL
       connect({ connector: connectors[1] });
     }
-  }, []);
+  }, [connect, connectors]);
 
   return (
     <div className="min-h-screen bg-[#002642] text-white">
@@ -48,7 +48,7 @@ function App() {
           )}
         </div>
         {account.status !== "connected" && (
-          <div className="flex flex-col items-center gap-8">
+          <div className="flex items-center my-28 gap-10">
             <vipps-mobilepay-button
               type="button"
               brand="vipps"
@@ -60,9 +60,10 @@ function App() {
               branded="true"
               loading="false"
               onClick={vippsAPI}
+              onKeyUp={(e) => { if (e.key === 'Enter') vippsAPI(); }}
             />
             <Button
-              variant="white" color="orange" size="xl" radius="xl"
+              variant="white" color="orange" size="lg" radius="xl"
               type="button"
               onClick={() => connect({ connector: connectors[0] })}
             >
@@ -71,7 +72,7 @@ function App() {
           </div>
         )}
       </div>
-      <GameGrid />
+      {account.status === "connected" && <GameGrid />}
     </div>
   );
 }
