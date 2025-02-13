@@ -20,6 +20,7 @@ contract Battleship {
     mapping(address => PlayerData) private players;
 
     // Events to inform off-chain listeners about game state changes.
+    event PlayerJoined(address indexed player);
     event GameStarted(bool started);
     event ShipPlacement(address indexed player, uint8[] positions);
     event MoveResult(address indexed player, bool hit, uint8 pos);
@@ -31,6 +32,7 @@ contract Battleship {
 
         if (player1 == address(0)) {
             player1 = msg.sender;
+            emit PlayerJoined(player1);
         } else {
             require(msg.sender != player1, "Already joined as player1");
             player2 = msg.sender;
