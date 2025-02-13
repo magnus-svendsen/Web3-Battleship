@@ -2,12 +2,9 @@
 pragma solidity ^0.8.9;
 
 contract Battleship {
-    // Addresses of the two players.
     address public player1;
     address public player2;
-    // Indicates if the game is over.
     bool public gameOver;
-    // Whose turn it is.
     address public whoseTurn;
 
     // Each player's data. Instead of a full grid, we only store the ship positions.
@@ -15,13 +12,11 @@ contract Battleship {
         // Mapping from an encoded cell (0 to 99) to a bool indicating whether a ship exists there.
         // When a ship is hit, the mapping value is set to false.
         mapping(uint8 => bool) ships;
-        // How many ship cells (blocks) the player has that are still intact.
         uint8 remainingCells;
         // To prevent placing ships more than once.
         bool shipsPlaced;
     }
 
-    // Mapping from player address to their game data.
     mapping(address => PlayerData) private players;
 
     // Events to inform off-chain listeners about game state changes.
@@ -48,7 +43,7 @@ contract Battleship {
 
     /// @notice Place your ships by providing an array of encoded positions.
     /// Each position is a number between 0 and 99 (calculated as row * 10 + col).
-    /// For example, a ship cell at (1, 1) is encoded as 11.
+    /// For example, a ship cell at (3, 1) is encoded as 31.
     function placeShips(uint8[] calldata positions) public {
         require(msg.sender == player1 || msg.sender == player2, "Only players can place ships");
         PlayerData storage pd = players[msg.sender];
@@ -104,17 +99,5 @@ contract Battleship {
         if (!gameOver) {
             whoseTurn = opponent;
         }
-    }
-
-    /// @notice Returns whether a player's ship exists at the given encoded position.
-    /// This is useful for off-chain verification.
-    function hasShip(address player, uint8 pos) public view returns (bool) {
-        require(pos < 100, "Position out of range");
-        return players[player].ships[pos];
-    }
-
-    /// @notice Returns the number of intact ship cells a player has remaining.
-    function getRemainingCells(address player) public view returns (uint8) {
-        return players[player].remainingCells;
     }
 }
