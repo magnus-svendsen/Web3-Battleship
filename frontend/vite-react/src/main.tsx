@@ -9,6 +9,9 @@ import { config } from './wagmi.ts'
 
 import './index.css'
 
+import '@mantine/core/styles.css';
+import { MantineProvider } from '@mantine/core';
+
 globalThis.Buffer = Buffer
 
 const queryClient = new QueryClient()
@@ -17,7 +20,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <App />
+        <MantineProvider>
+          <App />
+        </MantineProvider>
       </QueryClientProvider>
     </WagmiProvider>
   </React.StrictMode>,
