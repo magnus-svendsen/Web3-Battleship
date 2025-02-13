@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
-import GameGrid from "./components/gamegrid";
+import GameGrid from "./components/GameGrid";
 
 function App() {
   const account = useAccount();
@@ -35,43 +35,39 @@ function App() {
 
   return (
     <>
-      <div>
-        <vipps-mobilepay-button
-          type="button"
-          brand="vipps"
-          language="en"
-          variant="primary"
-          rounded="true"
-          verb="login"
-          stretched="false"
-          branded="true"
-          loading="false"
-          onClick={vippsAPI}
-        ></vipps-mobilepay-button>
-        <h2>Account</h2>
-        <div>
-          status: {account.status}
-          <br />
-          addresses: {JSON.stringify(account.addresses)}
-          <br />
-          chainId: {account.chainId}
+      <div className="flex flex-col items-center">
+        <div className="pt-4 pb-12 flex justify-between w-full">
+          <h2 className="font-bold text-2xl ml-1">Web3 Battleship</h2>
+          {account.status === "connected" && (
+            <div className="flex">
+              <button className="" type="button" onClick={() => disconnect()}>
+                Disconnect
+              </button>
+            </div>
+          )}
         </div>
-
-        {account.status === "connected" && (
-          <button type="button" onClick={() => disconnect()}>
-            Disconnect
-          </button>
+        {account.status !== "connected" && (
+          <div className="flex flex-col items-center gap-8">
+            <vipps-mobilepay-button
+              type="button"
+              brand="vipps"
+              language="en"
+              variant="primary"
+              rounded="true"
+              verb="login"
+              stretched="false"
+              branded="true"
+              loading="false"
+              onClick={vippsAPI}
+            />
+            <button
+              type="button"
+              onClick={() => connect({ connector: connectors[0] })}
+            >
+              Log in with Metamask
+            </button>
+          </div>
         )}
-
-        {connectors.map((connector) => (
-          <button
-            key={connector.uid}
-            onClick={() => connect({ connector })}
-            type="button"
-          >
-            {connector.name}
-          </button>
-        ))}
       </div>
       <GameGrid />
     </>
