@@ -65,6 +65,8 @@ const GameGrid = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
+  const [bothPlayersPlacedShips, setBothPlayersPlacedShips] = useState(false);
+  const [shipPlacementPlayer ,setShipPlacementPlayer] = useState("");
   const [playerJoined, setPlayerJoined] = useState("");
   const [gameStarted, setGameStarted] = useState(false);
   const [placeShip, setPlaceShips] = useState(true);
@@ -126,15 +128,99 @@ const GameGrid = () => {
     },
   });
 
+  useWatchContractEvent({
+    address: contractAddress,
+    abi,
+    eventName: "ShipPlacement",
+    onLogs(logs) {
+      setShipPlacementPlayer(logs["0"].args.player ?? "");
+    },
+    onError(error) {
+      console.log("Error", error);
+    },
+  });
+
+  useWatchContractEvent({
+    address: contractAddress,
+    abi,
+    eventName: "BothPlayersPlacedShips",
+    onLogs(logs) {
+      setBothPlayersPlacedShips(logs["0"].args.placed ?? false);
+    },
+    onError(error) {
+      console.log("Error", error);
+    },
+  });
+
+  useWatchContractEvent({
+    address: contractAddress,
+    abi,
+    eventName: "MoveResult",
+    onLogs(logs) {
+      console.log(logs["0"].args ?? "");
+      const data = logs["0"].args 
+      const coordinate = data.pos
+      if (data.player == account.address) {
+        // Du skjøyt. Endre farge på motstander brett
+        // Endre enemyGrid
+        if (data.hit) {
+          // Treff
+        } else {
+          // Ikkje treff
+        }
+      } else {
+        // Du skjøyt ikkje. Endra farge på ditt brett
+        // Endre Grids
+        if (data.hit) {
+          // Treff
+        } else {
+          // Ikkje treff
+        }
+      }
+
+    },
+    onError(error) {
+      console.log("Error", error);
+    },
+  });
+
+
+  
   useEffect(() => {
     // DEBUGGING
-    account.address && console.log("Address of this player: ", account.address);
+    //account.address && console.log("Address of this player: ", account.address);
     playerJoined && console.log("Player joined:", playerJoined);
-    gameStarted && console.log("Game started!");
-  }, [account.address, playerJoined, gameStarted]);
+    //gameStarted && console.log("Game started!");
+    shipPlacementPlayer && console.log("Ship placement player:", shipPlacementPlayer);
+    bothPlayersPlacedShips && console.log("Both players placed ships!");
+  }, [account.address, playerJoined, gameStarted, shipPlacementPlayer]);
 
   // Used for fetching recent events (helps keep data on refresh)
   useEffect(() => {
+    const fetchshipPlacementPlayer = async () => {
+      try {
+        const latestBlock = await publicClient.getBlockNumber();
+        const fromBlock = latestBlock - BigInt(500);
+        const pastShipPlacementEvents = await publicClient.getContractEvents({
+          address: contractAddress,
+          abi: abi,
+          eventName: "ShipPlacement",
+          fromBlock: fromBlock,
+          toBlock: "latest",
+        });
+
+        if (pastShipPlacementEvents.length > 0) {
+          const latestEvent =
+            pastShipPlacementEvents[pastShipPlacementEvents.length - 1];
+          setShipPlacementPlayer(latestEvent.args.player ?? "");
+        } else {
+          console.log("OLD DATA: CONSIDER RESETTING GAME");
+        }
+      } catch (error) {
+        console.error("Error fetching logs:", error);
+      }
+    }
+
     const fetchRecentEvents = async () => {
       try {
         const latestBlock = await publicClient.getBlockNumber();
@@ -184,6 +270,7 @@ const GameGrid = () => {
       }
     };
 
+    fetchshipPlacementPlayer();
     fetchRecentEvents();
     fetchLastLogs();
   }, [publicClient]);
@@ -354,24 +441,29 @@ const GameGrid = () => {
           )}
         </div>
 
-        {account.address === playerJoined ? (
-          <h2 className="font-bold text-2xl py-8">Waiting for opponent...</h2>
-        ) : (
-            <Button
-              variant="filled" color="green" size="xl" radius="xl"
-              type="button"
-              onClick={() =>
-                writeContract({
-                  abi,
-                  address: contractAddress,
-                  functionName: "join",
-                  args: [],
-                })
-              }
-            >
-              Join a game!
-            </Button>
+        {!gameStarted && (
+          <div>
+            {account.address === playerJoined ? (
+              <h2 className="font-bold text-2xl py-8">Waiting for opponent...</h2>
+            ) : (
+                <Button
+                  variant="filled" color="green" size="xl" radius="xl"
+                  type="button"
+                  onClick={() =>
+                    writeContract({
+                      abi,
+                      address: contractAddress,
+                      functionName: "join",
+                      args: [],
+                    })
+                  }
+                >
+                  Join a game!
+                </Button>
+            )} 
+          </div> 
         )}
+        
 
         {gameStarted && (
           <div>
@@ -431,7 +523,7 @@ const GameGrid = () => {
                 </div>
               </div>
             </DndContext>
-            {shipPositions.length > 0 && (
+            {placedShips.every(Boolean) && (
               <button
                 type="button"
                 style={{
@@ -459,57 +551,67 @@ const GameGrid = () => {
             )}
           </div>
         )}
-
-        <h2>ENEMY TERRITORY</h2>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(10, 40px)",
-              gap: "2px",
-              backgroundColor: "#1212ab",
-              padding: "2px",
-            }}
-          >
-            {enemyGrid.map((row, rowIndex) =>
-              row.map((cell, colIndex) => (
-                <div
-                  key={`${row}-${colIndex}`}
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: "1px solid black",
-                    cursor: "pointer",
-                    backgroundColor: colorByState(cell),
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={() =>
-                      writeContract({
-                        abi,
-                        address: contractAddress,
-                        functionName: "move",
-                        args: [rowIndex, colIndex],
-                      })
-                    }
-                  >
-                    Fire
-                  </button>
-                </div>
-              ))
+  
+        {!bothPlayersPlacedShips ? (
+          <div>
+            {shipPlacementPlayer === account.address && (
+              <h2>Waiting for opponent to place their ships...</h2>  
             )}
           </div>
-        </div>
+        ) : (
+          <div>
+            <h2>ENEMY TERRITORY</h2>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(10, 40px)",
+                  gap: "2px",
+                  backgroundColor: "#1212ab",
+                  padding: "2px",
+                }}
+              >
+                {enemyGrid.map((row, rowIndex) =>
+                  row.map((cell, colIndex) => (
+                    <div
+                      key={`${row}-${colIndex}`}
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "1px solid black",
+                        cursor: "pointer",
+                        backgroundColor: colorByState(cell),
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() =>
+                          writeContract({
+                            abi,
+                            address: contractAddress,
+                            functionName: "move",
+                            args: [rowIndex, colIndex],
+                          })
+                        }
+                      >
+                        Fire
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
