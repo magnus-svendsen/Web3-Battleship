@@ -63,7 +63,7 @@ function App() {
               onKeyUp={(e) => { if (e.key === 'Enter') vippsAPI(); }}
             />
             <Button
-              variant="white" color="orange" size="lg" radius="xl"
+              variant="white" color="orange" size="md" radius="xl"
               type="button"
               onClick={() => connect({ connector: connectors[0] })}
             >
