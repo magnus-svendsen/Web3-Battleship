@@ -1,13 +1,16 @@
 import { useEffect } from "react";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect, useWriteContract } from "wagmi";
 import GameGrid from "./components/GameGrid";
 import { Button } from '@mantine/core';
+import { contractAddress } from "./utils/contractAddress";
+import { abi } from "./utils/abi";
 
 function App() {
   const account = useAccount();
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
-
+  const { writeContract } = useWriteContract();
+  
   const vippsAPI = async () => {
     // Redirect
     console.log(connectors);
@@ -22,6 +25,7 @@ function App() {
       }
     }
   };
+
 
   // Get Accesstoken if present in URL, then remove it from the URL
   useEffect(() => {
@@ -44,6 +48,17 @@ function App() {
               <Button variant="white" color="teal" size="sm" radius="sm" className="mr-2" type="button" onClick={() => disconnect()}>
                 Disconnect
               </Button>
+
+              <Button variant="red" color="teal" size="sm" radius="sm" className="mr-2" type="button" 
+              onClick={() => writeContract({
+                abi,
+                address: contractAddress,
+                functionName: "resetGame",
+                args: [],
+              })}>
+                Reset game
+              </Button>
+              
             </div>
           )}
         </div>
