@@ -25,6 +25,7 @@ contract Battleship {
     event ShipPlacement(address indexed player, uint8[] positions);
     event MoveResult(address indexed player, bool hit, uint8 pos);
     event GameOver(address winner);
+    event GameReset(bool reset);
 
     /// @notice Join the game. The first caller becomes player1; the second becomes player2.
     function join() public {
@@ -101,5 +102,23 @@ contract Battleship {
         if (!gameOver) {
             whoseTurn = opponent;
         }
+    }
+
+    function resetGame() public {
+        // Save current player addresses locally.
+        address _player1 = player1;
+        address _player2 = player2;
+        // Delete data
+        if (_player1 != address(0)) {
+            delete players[_player1];
+        }
+        if (_player2 != address(0)) {
+            delete players[_player2];
+        }
+        player1 = address(0);
+        player2 = address(0);
+        whoseTurn = address(0);
+        
+        emit GameReset(true);
     }
 }
