@@ -20,6 +20,7 @@ import Ship from "./ship";
 import DroppableGridCell from "./DroppableGridCell";
 
 import { Button } from '@mantine/core';
+import { Coordinate } from "../types/coordinate";
 
 const GameGrid = () => {
   const account = useAccount();
@@ -159,22 +160,29 @@ const GameGrid = () => {
     onLogs(logs) {
       console.log(logs["0"].args ?? "");
       const data = logs["0"].args 
-      const coordinate = data.pos
-      if (data.player == account.address) {
+      if (typeof data.pos === 'number') {} else {throw new Error("data.pos is undefined")}
+      const coordinate = intToCoordinate(data.pos)
+      if (data.player === account.address) {
         // Du skjøyt. Endre farge på motstander brett
         // Endre enemyGrid
         if (data.hit) {
           // Treff
+          enemyGrid[coordinate.x][coordinate.y] = 3
+          console.log("Du skøyt og du traff!")
         } else {
           // Ikkje treff
+          enemyGrid[coordinate.x][coordinate.y] = 2
+          console.log("Du skøyt og du bomma!")
         }
       } else {
         // Du skjøyt ikkje. Endra farge på ditt brett
         // Endre Grids
         if (data.hit) {
-          // Treff
+          grid[coordinate.x][coordinate.y] = 3
+          console.log("Motstander skøyt og traff!")
         } else {
-          // Ikkje treff
+          grid[coordinate.x][coordinate.y] = 2
+          console.log("Motstander bommet!")
         }
       }
 
@@ -184,8 +192,12 @@ const GameGrid = () => {
     },
   });
 
+  const intToCoordinate = (value: number): Coordinate => {
+    const x = Math.floor(value / 10);
+    const y = value % 10;
+    return {x, y}
+  }
 
-  
   useEffect(() => {
     // DEBUGGING
     //account.address && console.log("Address of this player: ", account.address);
@@ -524,30 +536,21 @@ const GameGrid = () => {
               </div>
             </DndContext>
             {placedShips.every(Boolean) && (
-              <button
-                type="button"
-                style={{
-                  backgroundColor: "#007BFF",
-                  border: "none",
-                  color: "white",
-                  padding: "6px 22px",
-                  borderRadius: "12px",
-                  textAlign: "center",
-                  textDecoration: "none",
-                  display: "inline-block",
-                  fontSize: "16px",
-                }}
-                onClick={() =>
-                  writeContract({
-                    abi,
-                    address: contractAddress,
-                    functionName: "placeShips",
-                    args: [shipPositions],
-                  })
-                }
-              >
-                Submit Ships
-              </button>
+              <div className="flex justify-center mt-2">
+                <Button
+                  size="md" radius="md"
+                  onClick={() =>
+                    writeContract({
+                      abi,
+                      address: contractAddress,
+                      functionName: "placeShips",
+                      args: [shipPositions],
+                    })
+                  }
+                >
+                  Submit Ships
+                </Button>
+              </div>
             )}
           </div>
         )}
