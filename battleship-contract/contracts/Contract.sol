@@ -96,6 +96,7 @@ contract Battleship {
             }
         }
 
+        // Your own address
         emit MoveResult(msg.sender, hit, pos);
 
         // Switch turns if the game is not over.
