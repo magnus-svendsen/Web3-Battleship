@@ -23,6 +23,7 @@ contract Battleship {
     event PlayerJoined(address indexed player);
     event GameStarted(bool started);
     event ShipPlacement(address indexed player, uint8[] positions);
+    event BothPlayersPlacedShips(bool placed);
     event MoveResult(address indexed player, bool hit, uint8 pos);
     event GameOver(address winner);
     event GameReset(bool reset);
@@ -64,6 +65,11 @@ contract Battleship {
         pd.remainingCells = uint8(positions.length);
         pd.shipsPlaced = true;
         emit ShipPlacement(msg.sender, positions);
+
+        // Check if both players have placed their ships.
+        if (players[player1].shipsPlaced && players[player2].shipsPlaced) {
+            emit BothPlayersPlacedShips(true);
+        }
     }
 
     /// @notice Make a move by specifying coordinates (x, y).
