@@ -4,6 +4,19 @@ export const abi = [
     "inputs": [
       {
         "indexed": false,
+        "internalType": "bool",
+        "name": "placed",
+        "type": "bool"
+      }
+    ],
+    "name": "BothPlayersPlacedShips",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "winner",
         "type": "address"
