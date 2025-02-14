@@ -8,7 +8,6 @@ import {
 import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
 import { useEffect, useState } from "react";
-import { parseEther } from "viem";
 import {
   DndContext,
   type DragEndEvent,
@@ -68,7 +67,7 @@ const GameGrid = () => {
 
   const [playerJoined, setPlayerJoined] = useState("");
   const [gameStarted, setGameStarted] = useState(false);
-  const [placeShip, setPlaceShips] = useState(false);
+  const [placeShip, setPlaceShips] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const [shipOrientations, setShipsOrientations] = useState<boolean[]>([
     false,
@@ -207,7 +206,7 @@ const GameGrid = () => {
     const col = Number(tempHover[2]);
     const updatedPlacedShips = [...placedShips];
 
-    let coordinates: [number, number][] = [];
+    const coordinates: [number, number][] = [];
     const updatedGrid = grid.map((rowArr, rowIndex) =>
       rowArr.map((cell, colIndex) => {
         if (!shipOrientations[shipID]) {
@@ -221,9 +220,8 @@ const GameGrid = () => {
               updatedPlacedShips[shipID] = true;
               coordinates.push([rowIndex, colIndex]);
               return 1;
-            } else {
-              return grid[rowIndex][colIndex];
             }
+              return grid[rowIndex][colIndex];
           }
         } else {
           // Vertical ship placement
@@ -236,9 +234,8 @@ const GameGrid = () => {
               updatedPlacedShips[shipID] = true;
               coordinates.push([rowIndex, colIndex]);
               return 1;
-            } else {
-              return grid[rowIndex][colIndex];
             }
+              return grid[rowIndex][colIndex];
           }
         }
         return grid[rowIndex][colIndex];
@@ -319,10 +316,6 @@ const GameGrid = () => {
     return 0;
   };
 
-  const placeShipsButton = () => {
-    setPlaceShips(!placeShip);
-  };
-
   function colorByState(state: number) {
     if (state === 0) return "#3d3d3d";
     if (state === 1) return "#bb1010";
@@ -353,6 +346,13 @@ const GameGrid = () => {
           marginTop: "20px",
         }}
       >
+        <div>
+          <p>Player1: {player1.data}</p>
+          <p>Player2: {player2.data}</p>
+          {player1.data && player2.data && (
+            <p>Both players have joined, let the game begin!</p>
+          )}
+        </div>
 
         {account.address === playerJoined ? (
           <h2 className="font-bold text-2xl py-8">Waiting for opponent...</h2>
@@ -373,105 +373,92 @@ const GameGrid = () => {
             </Button>
         )}
 
-        <Button variant="filled" color="teal" size="lg" radius="lg"
-          type="button"
-          onClick={placeShipsButton}
-        >
-          Place ships
-        </Button>
-
-        {/* New Submit Ships button: sends the encoded ship positions to the contract */}
-        {shipPositions.length > 0 && (
-          <button
-            type="button"
-            style={{
-              backgroundColor: "#007BFF",
-              border: "none",
-              color: "white",
-              padding: "6px 22px",
-              borderRadius: "12px",
-              textAlign: "center",
-              textDecoration: "none",
-              display: "inline-block",
-              fontSize: "16px",
-            }}
-            onClick={() =>
-              writeContract({
-                abi,
-                address: contractAddress,
-                functionName: "placeShips",
-                args: [shipPositions],
-              })
-            }
-          >
-            Submit Ships
-          </button>
-        )}
-
-        <div>
-          <p>Player1: {player1.data}</p>
-          <p>Player2: {player2.data}</p>
-          {player1.data && player2.data && (
-            <p>Both players have joined, let the game begin!</p>
-          )}
-        </div>
-
-        <DndContext
-          onDragEnd={handleDragEnd}
-          onDragOver={handleDragOver}
-          onDragStart={handleDragStart}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(10, 40px)",
-                gap: "2px",
-                backgroundColor: "#1212ab",
-                padding: "2px",
-              }}
+        {gameStarted && (
+          <div>
+            <DndContext
+              onDragEnd={handleDragEnd}
+              onDragOver={handleDragOver}
+              onDragStart={handleDragStart}
             >
-              {(isDragging ? tempGrid : grid).map((row, rowIndex) =>
-                row.map((cell, colIndex) => (
-                  <DroppableGridCell
-                    key={`${rowIndex}-${colIndex}`}
-                    row={rowIndex}
-                    col={colIndex}
-                    state={cell}
-                  />
-                ))
-              )}
-            </div>
-            <div>
-              {placeShip && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    padding: "20px",
+                    display: "grid",
+                    gridTemplateColumns: "repeat(10, 40px)",
+                    gap: "2px",
+                    backgroundColor: "#1212ab",
+                    padding: "2px",
                   }}
                 >
-                  {[0, 1, 2, 3, 4].map((id) =>
-                    !placedShips[id] ? (
-                      <Ship
-                        key={id}
-                        id={id}
-                        length={lengthByIDShipRendering(id)}
-                        onOrientationChange={handleOrientationChange}
+                  {(isDragging ? tempGrid : grid).map((row, rowIndex) =>
+                    row.map((cell, colIndex) => (
+                      <DroppableGridCell
+                        key={`${rowIndex}-${colIndex}`}
+                        row={rowIndex}
+                        col={colIndex}
+                        state={cell}
                       />
-                    ) : null
+                    ))
                   )}
                 </div>
-              )}
-            </div>
+                <div>
+                  {placeShip && (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        padding: "20px",
+                      }}
+                    >
+                      {[0, 1, 2, 3, 4].map((id) =>
+                        !placedShips[id] ? (
+                          <Ship
+                            key={id}
+                            id={id}
+                            length={lengthByIDShipRendering(id)}
+                            onOrientationChange={handleOrientationChange}
+                          />
+                        ) : null
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </DndContext>
+            {shipPositions.length > 0 && (
+              <button
+                type="button"
+                style={{
+                  backgroundColor: "#007BFF",
+                  border: "none",
+                  color: "white",
+                  padding: "6px 22px",
+                  borderRadius: "12px",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  display: "inline-block",
+                  fontSize: "16px",
+                }}
+                onClick={() =>
+                  writeContract({
+                    abi,
+                    address: contractAddress,
+                    functionName: "placeShips",
+                    args: [shipPositions],
+                  })
+                }
+              >
+                Submit Ships
+              </button>
+            )}
           </div>
-        </DndContext>
+        )}
 
         <h2>ENEMY TERRITORY</h2>
         <div
