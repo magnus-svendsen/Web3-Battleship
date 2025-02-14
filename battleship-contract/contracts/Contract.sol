@@ -126,6 +126,11 @@ contract Battleship {
         player2 = address(0);
         whoseTurn = address(0);
         
+        emit GameStarted(false);
+        emit ShipPlacement(address(0), new uint8[](0));
+        emit BothPlayersPlacedShips(false);
+        emit MoveResult(address(0), false, 0);
+
         emit GameReset(true);
     }
 }
