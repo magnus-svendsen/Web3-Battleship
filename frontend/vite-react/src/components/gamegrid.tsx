@@ -282,9 +282,9 @@ const GameGrid = () => {
       }
     };
 
-    fetchshipPlacementPlayer();
-    fetchRecentEvents();
-    fetchLastLogs();
+    //fetchshipPlacementPlayer();
+    //fetchRecentEvents();
+    //fetchLastLogs();
   }, [publicClient]);
 
   const handleOrientationChange = (id: number, isHorizontal: boolean) => {
