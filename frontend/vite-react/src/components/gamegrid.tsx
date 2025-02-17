@@ -65,6 +65,7 @@ const GameGrid = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
+  const [shipsSubmitted, setShipsSubmitted] = useState(false);
   const [moveMessage, setMoveMessage] = useState("");
   const [turnMessage, setTurnMessage] = useState("");
   const [bothPlayersPlacedShips, setBothPlayersPlacedShips] = useState(false);
@@ -519,18 +520,19 @@ const GameGrid = () => {
                   </div>
                 </div>
               </DndContext>
-              {placedShips.every(Boolean) && !shipPlacementPlayer && (
+              {placedShips.every(Boolean) && !shipsSubmitted && (
                 <div className="flex justify-center mt-2">
                   <Button
                     size="md" radius="md"
-                    onClick={() =>
+                    onClick={() => {
+                      setShipsSubmitted(true)
                       writeContract({
                         abi,
                         address: contractAddress,
                         functionName: "placeShips",
                         args: [shipPositions],
                       })
-                    }
+                    }}
                   >
                     Submit Ships
                   </Button>
