@@ -1,5 +1,10 @@
 export const abi = [
   {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
@@ -107,6 +112,19 @@ export const abi = [
     ],
     "name": "ShipPlacement",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "gameId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
