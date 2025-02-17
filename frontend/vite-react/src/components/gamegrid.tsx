@@ -65,6 +65,8 @@ const GameGrid = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
+  const [moveMessage, setMoveMessage] = useState("");
+  const [turnMessage, setTurnMessage] = useState("");
   const [bothPlayersPlacedShips, setBothPlayersPlacedShips] = useState(false);
   const [shipPlacementPlayer ,setShipPlacementPlayer] = useState("");
   const [playerJoined, setPlayerJoined] = useState("");
@@ -149,30 +151,31 @@ const GameGrid = () => {
       const data = logs["0"].args 
       if (typeof data.pos === 'number') {} else {throw new Error("data.pos is undefined")}
       const coordinate = intToCoordinate(data.pos)
+      
+      
       if (data.player === account.address) {
-        // Du skjøyt. Endre farge på motstander brett
-        // Endre enemyGrid
+        // Your move was made, so update enemy grid.
         if (data.hit) {
-          // Treff
-          enemyGrid[coordinate.x][coordinate.y] = 3
-          console.log("Du skøyt og du traff!")
+          enemyGrid[coordinate.x][coordinate.y] = 3;
+          setMoveMessage("You shot and hit!");
         } else {
-          // Ikkje treff
-          enemyGrid[coordinate.x][coordinate.y] = 2
-          console.log("Du skøyt og du bomma!")
+          enemyGrid[coordinate.x][coordinate.y] = 2;
+          setMoveMessage("You shot and missed!");
         }
+        // After your move, it's your opponent's turn.
+        setTurnMessage("Opponent's turn");
       } else {
-        // Du skjøyt ikkje. Endra farge på ditt brett
-        // Endre Grids
+        // Opponent's move; update your grid.
         if (data.hit) {
-          grid[coordinate.x][coordinate.y] = 3
-          console.log("Motstander skøyt og traff!")
+          grid[coordinate.x][coordinate.y] = 3;
+          setMoveMessage("Opponent shot and hit!");
         } else {
-          grid[coordinate.x][coordinate.y] = 2
-          console.log("Motstander bommet!")
+          grid[coordinate.x][coordinate.y] = 2;
+          setMoveMessage("Opponent shot and missed!");
         }
+        // After opponent's move, it's your turn.
+        setTurnMessage("Your turn");
       }
-
     },
     onError(error) {
       console.log("Error", error);
@@ -516,7 +519,7 @@ const GameGrid = () => {
                   </div>
                 </div>
               </DndContext>
-              {placedShips.every(Boolean) && (
+              {placedShips.every(Boolean) && !shipPlacementPlayer && (
                 <div className="flex justify-center mt-2">
                   <Button
                     size="md" radius="md"
@@ -608,6 +611,10 @@ const GameGrid = () => {
               </div>
             </div>
           )}
+        </div>
+        <div>
+          <h2>{moveMessage}</h2>
+          <h2>{turnMessage}</h2>
         </div>
       </div>
     </>
