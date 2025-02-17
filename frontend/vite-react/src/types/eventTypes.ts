@@ -1,11 +1,14 @@
-interface GameStateEvent {
+export interface GameStartedEvent {
   args: {
     started: boolean;
   };
 }
 
-export interface GameStartedEvent extends GameStateEvent {}
-export interface BothPlayersPlacedShipsEvent extends GameStateEvent {}
+export interface BothPlayersPlacedShipsEvent {
+  args: {
+    placed: boolean;
+  };
+}
 
 interface PlayerEvent {
   args: {

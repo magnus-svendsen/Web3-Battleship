@@ -15,6 +15,9 @@ const useWatchContractEventListener = ({ eventName, onEvent }: WatchEventParams)
     onLogs(logs) {
       onEvent(logs);
     },
+    onError(error) {
+      console.error(`Error on event ${eventName}:`, error);
+    },
   });
 };
 
