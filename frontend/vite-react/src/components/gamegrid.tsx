@@ -1,8 +1,8 @@
 import {
   useWriteContract,
-  useWatchContractEvent,
   usePublicClient,
   useAccount,
+  useWatchContractEvent,
 } from "wagmi";
 import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
@@ -112,6 +112,60 @@ const GameGrid = () => {
     },
   });
 
+  useWatchContractEvent({
+    address: contractAddress,
+    abi,
+    eventName: "ShipPlacement",
+    onLogs(logs) {
+      setShipPlacementPlayer(logs["0"].args.player ?? "");
+    },
+  })
+
+  useWatchContractEvent({
+    address: contractAddress,
+    abi,
+    eventName: "BothPlayersPlacedShips",
+    onLogs(logs) {
+      setBothPlayersPlacedShips(logs["0"].args.placed ?? false);
+    },
+  })
+
+  useWatchContractEvent({
+    address: contractAddress,
+    abi,
+    eventName: "MoveResult",
+    onLogs(logs) {
+      const data = logs["0"].args;
+      if (typeof data.pos === 'number') {} else {throw new Error("data.pos is undefined")}
+      const coordinate = intToCoordinate(data.pos);
+      
+      if (data.player === account.address) {
+        // Your move was made, so update enemy grid.
+        if (data.hit) {
+          enemyGrid[coordinate.x][coordinate.y] = 3;
+          setMoveMessage("You shot and hit!");
+        } else {
+          enemyGrid[coordinate.x][coordinate.y] = 2;
+          setMoveMessage("You shot and missed!");
+        }
+        // After your move, it's your opponent's turn.
+        setTurnMessage("Opponent's turn");
+      } else {
+        // Opponent's move; update your grid.
+        if (data.hit) {
+          grid[coordinate.x][coordinate.y] = 3;
+          setMoveMessage("Opponent shot and hit!");
+        } else {
+          grid[coordinate.x][coordinate.y] = 2;
+          setMoveMessage("Opponent shot and missed!");
+        }
+        // After opponent's move, it's your turn.
+        setTurnMessage("Your turn");
+      }
+    }
+  });
+
+  /** 
   useWatchContractEventListener({
     eventName: "ShipPlacement",
     onEvent: (logs: ShipPlacementEvent[]) => {
@@ -158,6 +212,8 @@ const GameGrid = () => {
       }
     }
   });
+
+  */
 
   const intToCoordinate = (value: number): Coordinate => {
     const x = Math.floor(value / 10);
@@ -249,9 +305,9 @@ const GameGrid = () => {
       }
     };
 
-    fetchshipPlacementPlayer();
-    fetchRecentEvents();
-    fetchLastLogs();
+    //fetchshipPlacementPlayer();
+    //fetchRecentEvents();
+    //fetchLastLogs();
   }, [publicClient]);
 
   const handleOrientationChange = (id: number, isHorizontal: boolean) => {
