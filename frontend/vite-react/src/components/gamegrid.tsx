@@ -21,6 +21,9 @@ import DroppableGridCell from "./DroppableGridCell";
 import { Button } from '@mantine/core';
 import { Coordinate } from "../types/coordinate";
 
+import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
+import type { BothPlayersPlacedShipsEvent, GameStartedEvent, MoveResultEvent, PlayerJoinedEvent, ShipPlacementEvent } from "../types/contractEvents";
+
 const GameGrid = () => {
   const account = useAccount();
   const { writeContract } = useWriteContract();
@@ -95,64 +98,40 @@ const GameGrid = () => {
   // (We no longer need playerData for joining the game)
   // const playerData = { grid: grid, hitsReceived: 0 };
 
-  useWatchContractEvent({
-    address: contractAddress,
-    abi,
+  useWatchContractEventListener<GameStartedEvent>({
     eventName: "GameStarted",
-    onLogs(logs) {
-      setGameStarted(logs["0"].args.started ?? false);
-    },
-    onError(error) {
-      console.log("Error", error);
+    onEvent: (logs: GameStartedEvent[]) => {
+      setGameStarted(logs[0].args.started ?? false);
     },
   });
 
-  useWatchContractEvent({
-    address: contractAddress,
-    abi,
+  useWatchContractEventListener<PlayerJoinedEvent>({
     eventName: "PlayerJoined",
-    onLogs(logs) {
-      setPlayerJoined(logs["0"].args.player ?? "");
-    },
-    onError(error) {
-      console.log("Error", error);
+    onEvent: (logs: PlayerJoinedEvent[]) => {
+      setPlayerJoined(logs[0].args.player ?? "");
     },
   });
 
-  useWatchContractEvent({
-    address: contractAddress,
-    abi,
+  useWatchContractEventListener<ShipPlacementEvent>({
     eventName: "ShipPlacement",
-    onLogs(logs) {
-      setShipPlacementPlayer(logs["0"].args.player ?? "");
-    },
-    onError(error) {
-      console.log("Error", error);
+    onEvent: (logs: ShipPlacementEvent[]) => {
+      setShipPlacementPlayer(logs[0].args.player ?? "");
     },
   });
 
-  useWatchContractEvent({
-    address: contractAddress,
-    abi,
+  useWatchContractEventListener<BothPlayersPlacedShipsEvent>({
     eventName: "BothPlayersPlacedShips",
-    onLogs(logs) {
-      setBothPlayersPlacedShips(logs["0"].args.placed ?? false);
-    },
-    onError(error) {
-      console.log("Error", error);
+    onEvent: (logs: BothPlayersPlacedShipsEvent[]) => {
+      setBothPlayersPlacedShips(logs[0].args.started ?? false);
     },
   });
 
-  useWatchContractEvent({
-    address: contractAddress,
-    abi,
+  useWatchContractEventListener<MoveResultEvent>({
     eventName: "MoveResult",
-    onLogs(logs) {
-      console.log(logs["0"].args ?? "");
-      const data = logs["0"].args 
+    onEvent: (logs: MoveResultEvent[]) => {
+      const data = logs[0].args;
       if (typeof data.pos === 'number') {} else {throw new Error("data.pos is undefined")}
-      const coordinate = intToCoordinate(data.pos)
-      
+      const coordinate = intToCoordinate(data.pos);
       
       if (data.player === account.address) {
         // Your move was made, so update enemy grid.
@@ -177,10 +156,7 @@ const GameGrid = () => {
         // After opponent's move, it's your turn.
         setTurnMessage("Your turn");
       }
-    },
-    onError(error) {
-      console.log("Error", error);
-    },
+    }
   });
 
   const intToCoordinate = (value: number): Coordinate => {
