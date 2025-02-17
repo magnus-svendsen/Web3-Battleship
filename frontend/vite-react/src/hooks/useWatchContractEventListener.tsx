@@ -4,7 +4,7 @@ import { abi } from "../utils/abi";
 
 interface WatchEventParams {
   eventName: "BothPlayersPlacedShips" | "GameOver" | "GameReset" | "GameStarted" | "MoveResult" | "PlayerJoined" | "ShipPlacement";
-  onEvent: (logs: unknown[]) => void;
+  onEvent: (logs: any[]) => void;
 }
 
 const useWatchContractEventListener = ({ eventName, onEvent }: WatchEventParams) => {
@@ -14,9 +14,6 @@ const useWatchContractEventListener = ({ eventName, onEvent }: WatchEventParams)
     eventName,
     onLogs(logs) {
       onEvent(logs);
-    },
-    onError(error) {
-      console.error(`Error on event ${eventName}:`, error);
     },
   });
 };

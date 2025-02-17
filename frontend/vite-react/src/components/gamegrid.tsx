@@ -22,7 +22,7 @@ import { Button } from '@mantine/core';
 import { Coordinate } from "../types/coordinate";
 
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
-import type { BothPlayersPlacedShipsEvent, GameStartedEvent, MoveResultEvent, PlayerJoinedEvent, ShipPlacementEvent } from "../types/contractEvents";
+import type { BothPlayersPlacedShipsEvent, GameStartedEvent, MoveResultEvent, PlayerJoinedEvent, ShipPlacementEvent } from "../types/eventTypes";
 
 const GameGrid = () => {
   const account = useAccount();
@@ -98,35 +98,35 @@ const GameGrid = () => {
   // (We no longer need playerData for joining the game)
   // const playerData = { grid: grid, hitsReceived: 0 };
 
-  useWatchContractEventListener<GameStartedEvent>({
+  useWatchContractEventListener({
     eventName: "GameStarted",
     onEvent: (logs: GameStartedEvent[]) => {
       setGameStarted(logs[0].args.started ?? false);
     },
   });
 
-  useWatchContractEventListener<PlayerJoinedEvent>({
+  useWatchContractEventListener({
     eventName: "PlayerJoined",
     onEvent: (logs: PlayerJoinedEvent[]) => {
       setPlayerJoined(logs[0].args.player ?? "");
     },
   });
 
-  useWatchContractEventListener<ShipPlacementEvent>({
+  useWatchContractEventListener({
     eventName: "ShipPlacement",
     onEvent: (logs: ShipPlacementEvent[]) => {
       setShipPlacementPlayer(logs[0].args.player ?? "");
     },
   });
 
-  useWatchContractEventListener<BothPlayersPlacedShipsEvent>({
+  useWatchContractEventListener({
     eventName: "BothPlayersPlacedShips",
     onEvent: (logs: BothPlayersPlacedShipsEvent[]) => {
       setBothPlayersPlacedShips(logs[0].args.started ?? false);
     },
   });
 
-  useWatchContractEventListener<MoveResultEvent>({
+  useWatchContractEventListener({
     eventName: "MoveResult",
     onEvent: (logs: MoveResultEvent[]) => {
       const data = logs[0].args;
@@ -249,9 +249,9 @@ const GameGrid = () => {
       }
     };
 
-    //fetchshipPlacementPlayer();
-    //fetchRecentEvents();
-    //fetchLastLogs();
+    fetchshipPlacementPlayer();
+    fetchRecentEvents();
+    fetchLastLogs();
   }, [publicClient]);
 
   const handleOrientationChange = (id: number, isHorizontal: boolean) => {
