@@ -1,7 +1,7 @@
 import { createConnector } from '@wagmi/core';
 import { createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts'
-import type { Chain, WalletClient } from 'viem';
+import { Chain, WalletClient, createPublicClient } from 'viem';
 import axios from 'axios';
 
 
@@ -19,36 +19,7 @@ export function PrivateKeyConnector({
         type: 'privateKey',
 
         async connect() {
-            // Get Accesstoken from storage
-            const accessToken = localStorage.getItem("accesstoken")
-
-            // Get privatekey from server/db
-            let rawPrivateKey = ""
-            try {
-                await axios.post("http://localhost:5173/privatekey", { accesstoken: accessToken })
-                    .then(response => {
-                        if (response.status == 200) {
-                            rawPrivateKey = response.data
-                        }
-                        else {
-                            localStorage.removeItem("accesstoken")
-                            throw new Error('Access token is invalid')
-
-                        }
-                    })
-            }
-            catch (error) {
-                window.location.href = "http://localhost:5173/auth/vipps"; 
-            }
-            if (!rawPrivateKey) {
-                localStorage.removeItem("accesstoken")
-                throw new Error('Private key is required')
-            }
-
-            const formattedPrivateKey = rawPrivateKey.startsWith('0x')
-                ? rawPrivateKey
-                : `0x${rawPrivateKey}`
-
+            //Init chain and RPC values
             //Sepolia chain, not mainnet
             const chain = chains[1]
             currentChain = chain
@@ -62,6 +33,46 @@ export function PrivateKeyConnector({
                 throw new Error('No valid RPC URL found for chain')
             }
 
+            // DEBUGGING
+            rpcUrl = "https://eth-sepolia.g.alchemy.com/v2/TP8LLuBZxjwI3RlpoTNsdImOlO_iLdNo";
+
+            //Get Accesstoken from storage
+            const accessToken = localStorage.getItem("accesstoken")
+            const publicClient = createPublicClient({
+                chain: chains[1],
+                transport: http(rpcUrl)
+            })
+
+            //Get privatekey from server/db
+            let rawPrivateKey = ""
+            try {
+                await axios.post("http://localhost:5173/privatekey", { accesstoken: accessToken })
+                    .then(response => {
+                        if (response.status == 200) {
+                            rawPrivateKey = response.data
+                            console.log(rawPrivateKey)
+                        }
+                        else {
+                            localStorage.removeItem("accesstoken")
+                            throw new Error('Access token is invalid')
+
+                        }
+                    })
+            }
+            catch (error) {
+                window.location.href = "http://localhost:5173/auth/vipps";
+            }
+            if (!rawPrivateKey) {
+                localStorage.removeItem("accesstoken")
+                throw new Error('Private key is required')
+            }
+
+            const formattedPrivateKey = rawPrivateKey.startsWith('0x')
+                ? rawPrivateKey
+                : `0x${rawPrivateKey}`
+
+
+
             //Convert the private key to an account.
             const account = privateKeyToAccount(formattedPrivateKey as `0x${string}`)
             if (!account) throw new Error('Failed to create account from private key')
@@ -74,7 +85,52 @@ export function PrivateKeyConnector({
             })
 
             config.emitter.emit('message', { type: 'connecting' })
+            const originalRequest = walletClient.request.bind(walletClient);
+            walletClient.request = async (args) => {
+                if (args.method === "eth_sendTransaction" || args.method === "wallet_sendTransaction") {
+                    let [transaction] = args.params as [any];
+                    try {
+                        //Check if gas price is missing, then add if missing
+                        if (!transaction.gasPrice && !transaction.maxGasPrice) {
+                            let gasPrice = await publicClient.getGasPrice();
+                            gasPrice = gasPrice* (15n/10n)  //Bump gas price by 10%
+                            transaction = { ...transaction, gasPrice }
+                        }
 
+                        if (!transaction.gas && !transaction.gasLimit) {
+                            const estimatedGas = await publicClient.estimateGas(transaction);
+                            console.log("Estimated gas:", estimatedGas);
+                            // Add a 20% buffer to the estimated gas
+                            const gasLimit = estimatedGas * 200n / 100n;
+                            console.log("Using gasLimit (with buffer):", gasLimit);
+                            transaction = { ...transaction, gas: gasLimit, gasLimit: gasLimit };
+                        }
+
+                        // This fetches the current transaction count (nonce) for the account.
+                        const currentNonce = await publicClient.getTransactionCount({ address: account.address });
+                        transaction = { ...transaction, nonce: currentNonce };
+
+                        // 4. Sign the transaction using the wallet client.
+                        const signedTx = await walletClient!.signTransaction(transaction);
+                        if (!signedTx) {
+                            throw new Error("Signed transaction is null");
+                        }
+
+                        // 5. Send the signed transaction using a direct RPC call.
+                        const txHash = await publicClient.request({
+                            method: "eth_sendRawTransaction",
+                            params: [signedTx],
+                        });
+                        console.log("Signed1: ", txHash)
+                        return txHash;
+                    }
+                    catch (error) {
+                        console.log("Error while intercepting transaction: ", error);
+                        throw error;
+                    }
+                }
+                return originalRequest(args as any)
+            }
             return {
                 //Cast the address to the expected literal type.
                 accounts: [account.address as `0x${string}`],
@@ -123,5 +179,6 @@ export function PrivateKeyConnector({
         onDisconnect() {
             config.emitter.emit('disconnect')
         },
+          
     }))
 }
