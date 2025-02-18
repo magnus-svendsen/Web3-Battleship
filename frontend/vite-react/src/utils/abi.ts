@@ -9,6 +9,12 @@ export const abi = [
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
         "internalType": "bool",
         "name": "placed",
         "type": "bool"
@@ -20,6 +26,12 @@ export const abi = [
   {
     "anonymous": false,
     "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      },
       {
         "indexed": false,
         "internalType": "address",
@@ -35,9 +47,9 @@ export const abi = [
     "inputs": [
       {
         "indexed": false,
-        "internalType": "bool",
-        "name": "reset",
-        "type": "bool"
+        "internalType": "uint256",
+        "name": "newGameId",
+        "type": "uint256"
       }
     ],
     "name": "GameReset",
@@ -46,6 +58,12 @@ export const abi = [
   {
     "anonymous": false,
     "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      },
       {
         "indexed": false,
         "internalType": "bool",
@@ -59,6 +77,12 @@ export const abi = [
   {
     "anonymous": false,
     "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      },
       {
         "indexed": true,
         "internalType": "address",
@@ -85,6 +109,12 @@ export const abi = [
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      },
+      {
         "indexed": true,
         "internalType": "address",
         "name": "player",
@@ -97,6 +127,12 @@ export const abi = [
   {
     "anonymous": false,
     "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      },
       {
         "indexed": true,
         "internalType": "address",

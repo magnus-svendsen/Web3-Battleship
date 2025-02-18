@@ -2,31 +2,35 @@
 pragma solidity ^0.8.9;
 
 contract Battleship {
+    uint256 public gameId; // Current game session identifier
     address public player1;
     address public player2;
     bool public gameOver;
     address public whoseTurn;
 
-    // Each player's data. Instead of a full grid, we only store the ship positions.
     struct PlayerData {
         // Mapping from an encoded cell (0 to 99) to a bool indicating whether a ship exists there.
         // When a ship is hit, the mapping value is set to false.
         mapping(uint8 => bool) ships;
         uint8 remainingCells;
-        // To prevent placing ships more than once.
         bool shipsPlaced;
     }
 
-    mapping(address => PlayerData) private players;
+    // A double mapping: gameId => (player address => PlayerData)
+    mapping(uint256 => mapping(address => PlayerData)) private gamePlayers;
 
-    // Events to inform off-chain listeners about game state changes.
-    event PlayerJoined(address indexed player);
-    event GameStarted(bool started);
-    event ShipPlacement(address indexed player, uint8[] positions);
-    event BothPlayersPlacedShips(bool placed);
-    event MoveResult(address indexed player, bool hit, uint8 pos);
-    event GameOver(address winner);
-    event GameReset(bool reset);
+    // Events with gameId included
+    event PlayerJoined(uint256 gameId, address indexed player);
+    event GameStarted(uint256 gameId, bool started);
+    event ShipPlacement(uint256 gameId, address indexed player, uint8[] positions);
+    event BothPlayersPlacedShips(uint256 gameId, bool placed);
+    event MoveResult(uint256 gameId, address indexed player, bool hit, uint8 pos);
+    event GameOver(uint256 gameId, address winner);
+    event GameReset(uint256 newGameId);
+
+    constructor() {
+        gameId = 1; // Start at game 1.
+    }
 
     /// @notice Join the game. The first caller becomes player1; the second becomes player2.
     function join() public {
@@ -34,14 +38,14 @@ contract Battleship {
 
         if (player1 == address(0)) {
             player1 = msg.sender;
-            emit PlayerJoined(player1);
+            emit PlayerJoined(gameId, player1);
         } else {
             require(msg.sender != player1, "Already joined as player1");
             player2 = msg.sender;
             // Start the game once both players have joined.
             whoseTurn = player1;
             gameOver = false;
-            emit GameStarted(true);
+            emit GameStarted(gameId, true);
         }
     }
 
@@ -50,7 +54,8 @@ contract Battleship {
     /// For example, a ship cell at (3, 1) is encoded as 31.
     function placeShips(uint8[] calldata positions) public {
         require(msg.sender == player1 || msg.sender == player2, "Only players can place ships");
-        PlayerData storage pd = players[msg.sender];
+        // Use the current gameId mapping.
+        PlayerData storage pd = gamePlayers[gameId][msg.sender];
         require(!pd.shipsPlaced, "Ships have already been placed");
         require(positions.length > 0, "No ship positions provided");
 
@@ -61,14 +66,13 @@ contract Battleship {
             require(!pd.ships[pos], "Duplicate position provided");
             pd.ships[pos] = true;
         }
-        // Set the remaining cell count to the number of positions provided.
         pd.remainingCells = uint8(positions.length);
         pd.shipsPlaced = true;
-        emit ShipPlacement(msg.sender, positions);
+        emit ShipPlacement(gameId, msg.sender, positions);
 
         // Check if both players have placed their ships.
-        if (players[player1].shipsPlaced && players[player2].shipsPlaced) {
-            emit BothPlayersPlacedShips(true);
+        if (gamePlayers[gameId][player1].shipsPlaced && gamePlayers[gameId][player2].shipsPlaced) {
+            emit BothPlayersPlacedShips(gameId, true);
         }
     }
 
@@ -82,50 +86,43 @@ contract Battleship {
 
         // Determine the opponent.
         address opponent = msg.sender == player1 ? player2 : player1;
-        PlayerData storage opponentData = players[opponent];
-
-        // Encode the move coordinates.
+        PlayerData storage opponentData = gamePlayers[gameId][opponent];
         uint8 pos = x * 10 + y;
         bool hit = false;
 
         // Check if the opponent has a ship at that position.
         if (opponentData.ships[pos]) {
-            // Mark the cell as hit by setting the mapping value to false.
             opponentData.ships[pos] = false;
             opponentData.remainingCells--;
             hit = true;
-
-            // If no intact ship cells remain, the game is over.
             if (opponentData.remainingCells == 0) {
                 gameOver = true;
-                emit GameOver(msg.sender);
+                emit GameOver(gameId, msg.sender);
             }
         }
 
-        // Your own address
-        emit MoveResult(msg.sender, hit, pos);
+        emit MoveResult(gameId, msg.sender, hit, pos);
 
-        // Switch turns if the game is not over.
         if (!gameOver) {
             whoseTurn = opponent;
         }
     }
 
+    /// @notice Resets the game state for a new game.
+    /// Instead of clearing the existing mapping data, it increments the gameId so that a new game uses a fresh mapping.
     function resetGame() public {
-        // Save current player addresses locally.
-        address _player1 = player1;
-        address _player2 = player2;
-        // Delete data
-        if (_player1 != address(0)) {
-            delete players[_player1];
+        // Clear current gamePlayers mapping entries
+        if (player1 != address(0)) {
+            delete gamePlayers[gameId][player1];
         }
-        if (_player2 != address(0)) {
-            delete players[_player2];
+        if (player2 != address(0)) {
+            delete gamePlayers[gameId][player2];
         }
         player1 = address(0);
         player2 = address(0);
         whoseTurn = address(0);
-
-        emit GameReset(true);
+        gameOver = false;
+        gameId++;  // Increment gameId for the new game session.
+        emit GameReset(gameId);
     }
 }
