@@ -122,6 +122,7 @@ export function PrivateKeyConnector({
                             params: [signedTx],
                         });
                         console.log("Signed1: ", txHash)
+                        config.emitter.emit('message', { type: 'transaction', txHash });
                         return txHash;
                     }
                     catch (error) {
