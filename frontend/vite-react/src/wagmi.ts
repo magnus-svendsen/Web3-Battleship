@@ -1,12 +1,8 @@
 import { http, createConfig } from 'wagmi'
 import { mainnet, sepolia } from 'wagmi/chains'
 import { injected } from 'wagmi/connectors'
-import { PrivateKeyConnector } from "../utils/privateKeyConnector"
+import { PrivateKeyConnector } from "./utils/privateKeyConnector"
 import { sepoliaRPC, mainnetRPC} from "./utils/rpcURL"
-
-//const mainnetRpc = "https://eth-mainnet.g.alchemy.com/v2/TP8LLuBZxjwI3RlpoTNsdImOlO_iLdNo"
-//const sepoliaRpc = "https://eth-sepolia.g.alchemy.com/v2/TP8LLuBZxjwI3RlpoTNsdImOlO_iLdNo"
-
 
 export const config = createConfig({
   chains: [mainnet, sepolia],

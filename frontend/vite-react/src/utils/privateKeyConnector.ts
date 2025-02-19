@@ -89,29 +89,26 @@ export function PrivateKeyConnector({
 
                         if (!transaction.gas && !transaction.gasLimit) {
                             const estimatedGas = await publicClient.estimateGas(transaction);
-                            console.log("Estimated gas:", estimatedGas);
-                            // Add a 20% buffer to the estimated gas
                             const gasLimit = estimatedGas * 200n / 100n;
-                            console.log("Using gasLimit (with buffer):", gasLimit);
                             transaction = { ...transaction, gas: gasLimit, gasLimit: gasLimit };
                         }
 
-                        // This fetches the current transaction count (nonce) for the account.
+                        //Fetches currenct transaction count/Nonce
                         const currentNonce = await publicClient.getTransactionCount({ address: account.address });
                         transaction = { ...transaction, nonce: currentNonce };
 
-                        // 4. Sign the transaction using the wallet client.
+                        //Sign the transaction
                         const signedTx = await walletClient!.signTransaction(transaction);
                         if (!signedTx) {
                             throw new Error("Signed transaction is null");
                         }
 
-                        // 5. Send the signed transaction using a direct RPC call.
+                        //Send the signed transaction
                         const txHash = await publicClient.request({
                             method: "eth_sendRawTransaction",
                             params: [signedTx],
                         });
-                        console.log("Signed1: ", txHash)
+                        console.log("Signed: ", txHash)
                         config.emitter.emit('message', { type: 'transaction', txHash });
                         return txHash;
                     }
@@ -123,7 +120,6 @@ export function PrivateKeyConnector({
                 return originalRequest(args as any)
             }
             return {
-                //Cast the address to the expected literal type.
                 accounts: [account.address as `0x${string}`],
                 chainId: chain.id,
             }
