@@ -2,6 +2,11 @@ import { http, createConfig } from 'wagmi'
 import { mainnet, sepolia } from 'wagmi/chains'
 import { injected } from 'wagmi/connectors'
 import { PrivateKeyConnector } from "../utils/privateKeyConnector"
+import { sepoliaRPC, mainnetRPC} from "./utils/rpcURL"
+
+//const mainnetRpc = "https://eth-mainnet.g.alchemy.com/v2/TP8LLuBZxjwI3RlpoTNsdImOlO_iLdNo"
+//const sepoliaRpc = "https://eth-sepolia.g.alchemy.com/v2/TP8LLuBZxjwI3RlpoTNsdImOlO_iLdNo"
+
 
 export const config = createConfig({
   chains: [mainnet, sepolia],
@@ -9,12 +14,13 @@ export const config = createConfig({
     injected(),
     PrivateKeyConnector({
       chains: [mainnet, sepolia],
+      rpcUrl: sepoliaRPC,
     }),
   ],
   ssr: true,
   transports: {
-    [mainnet.id]: http("https://eth-sepolia.g.alchemy.com/v2/TP8LLuBZxjwI3RlpoTNsdImOlO_iLdNo"),
-    [sepolia.id]: http("https://eth-sepolia.g.alchemy.com/v2/TP8LLuBZxjwI3RlpoTNsdImOlO_iLdNo"),
+    [mainnet.id]: http(mainnetRPC),
+    [sepolia.id]: http(sepoliaRPC),
   },
 })
 

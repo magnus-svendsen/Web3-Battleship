@@ -7,8 +7,10 @@ import axios from 'axios';
 
 export function PrivateKeyConnector({
     chains,
+    rpcUrl,
 }: {
     chains: Chain[]
+    rpcUrl: string,
 }) {
     let walletClient: WalletClient | null = null
     let currentChain: Chain | null = null
@@ -23,18 +25,6 @@ export function PrivateKeyConnector({
             //Sepolia chain, not mainnet
             const chain = chains[1]
             currentChain = chain
-
-            let rpcUrl: string
-            if (typeof chain.rpcUrls === 'string') {
-                rpcUrl = chain.rpcUrls
-            } else if ('default' in chain.rpcUrls) {
-                rpcUrl = chain.rpcUrls.default.http[0]
-            } else {
-                throw new Error('No valid RPC URL found for chain')
-            }
-
-            // DEBUGGING
-            rpcUrl = "https://eth-sepolia.g.alchemy.com/v2/TP8LLuBZxjwI3RlpoTNsdImOlO_iLdNo";
 
             //Get Accesstoken from storage
             const accessToken = localStorage.getItem("accesstoken")
