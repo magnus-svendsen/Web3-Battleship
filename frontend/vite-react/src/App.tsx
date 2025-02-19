@@ -1,21 +1,24 @@
 import { useAccount } from "wagmi";
-import GameGrid from "./components/GameGrid";
+import BattleshipGame from "./components/BattleshipGame";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
+import { GameProvider } from "./contexts/GameContext";
 
 function App() {
   const account = useAccount();
 
   return (
-    <div className="min-h-screen bg-[#002642] text-white">
-      <div className="flex flex-col items-center">
-        <Navbar />
-        {account.status !== "connected" && (
-          <Login/>
-        )}
+    <GameProvider>
+      <div className="min-h-screen bg-[#002642] text-white">
+        <div className="flex flex-col items-center">
+          <Navbar />
+          {account.status !== "connected" && (
+            <Login/>
+          )}
+        </div>
+        {account.status === "connected" && <BattleshipGame />}
       </div>
-      {account.status === "connected" && <GameGrid />}
-    </div>
+    </GameProvider>
   );
 }
 
