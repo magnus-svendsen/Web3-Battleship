@@ -46,6 +46,8 @@ const EnemyTerritory = () => {
         setBothPlayersPlacedShips(logs[0].args.placed ?? false);
         if (playerJoined === account.address) {
           setTurnMessage("Your turn");
+        } else {
+          setTurnMessage("Opponent's turn");
         }
       },
     });
