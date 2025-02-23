@@ -73,7 +73,7 @@ const BattleshipGame = () => {
       >
         
         {!gameStarted && <GameLobby />}
-        <h2 className={`font-bold text-2xl flex justify-center mt-40 mb-10 ${(moveMessage === "Opponent shot and hit!" || moveMessage === "You shot and hit!") ? "text-red-600" : ""}`}>{moveMessage}</h2>
+        <h2 className={`font-bold text-2xl flex justify-center mt-40 mb-10 ${moveMessage === "Opponent shot and hit!" ? "text-red-600" : ""} ${moveMessage === "You shot and hit!" ? "text-green-400" : ""}`}>{moveMessage}</h2>
         <div className="flex ">
           {gameStarted && <ShipPlacementBoard />}
           <EnemyTerritory />
