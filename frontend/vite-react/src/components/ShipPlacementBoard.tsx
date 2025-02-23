@@ -70,65 +70,72 @@ const ShipPlacementBoard = () => {
     const tempHover = String(event.over?.id).split("-") || [0, 0, 0];
     const row = Number(tempHover[1]);
     const col = Number(tempHover[2]);
+    
+    // Determine intended coordinates based on orientation:
+    const intendedCoordinates: [number, number][] = [];
+    if (!shipOrientations[shipID]) {
+      // Horizontal placement
+      if (col + lengthOfShip > 10) {
+        // Out of range
+        return;
+      }
+      for (let c = col; c < col + lengthOfShip; c++) {
+        intendedCoordinates.push([row, c]);
+      }
+    } else {
+      // Vertical placement
+      if (row + lengthOfShip > 10) {
+        // Out of range
+        return;
+      }
+      for (let r = row; r < row + lengthOfShip; r++) {
+        intendedCoordinates.push([r, col]);
+      }
+    }
+  
+    // Check if any of the intended coordinates already have a ship (non-zero value)
+    const conflict = intendedCoordinates.some(
+      ([r, c]) => grid[r][c] !== 0
+    );
+    if (conflict) {
+      // Optionally, display a message to the user.
+      console.log("Cannot place ship on top of another.");
+      return;
+    }
+  
+    // If no conflict, update placedShips and grid:
     const updatedPlacedShips = [...placedShips];
-
-    const coordinates: [number, number][] = [];
     const updatedGrid = grid.map((rowArr, rowIndex) =>
       rowArr.map((cell, colIndex) => {
-        if (!shipOrientations[shipID]) {
-          // Horizontal ship placement
-          if (
-            rowIndex === row &&
-            colIndex >= col &&
-            colIndex < col + lengthOfShip
-          ) {
-            if (col + lengthOfShip <= 10) {
-              updatedPlacedShips[shipID] = true;
-              coordinates.push([rowIndex, colIndex]);
-              return 1;
-            }
-              return grid[rowIndex][colIndex];
-          }
-        } else {
-          // Vertical ship placement
-          if (
-            colIndex === col &&
-            rowIndex >= row &&
-            rowIndex < row + lengthOfShip
-          ) {
-            if (row + lengthOfShip <= 10) {
-              updatedPlacedShips[shipID] = true;
-              coordinates.push([rowIndex, colIndex]);
-              return 1;
-            }
-              return grid[rowIndex][colIndex];
-          }
+        // Check if the cell is within the intended coordinates:
+        if (intendedCoordinates.some(([r, c]) => r === rowIndex && c === colIndex)) {
+          updatedPlacedShips[shipID] = true;
+          return 1;
         }
-        return grid[rowIndex][colIndex];
+        return cell;
       })
     );
-
+  
     // Build a ship data object for UI purposes (if needed)
     const ship: ShipDataContract = {
       length: lengthOfShip,
       timesHit: 0,
       isDestroyed: false,
-      coordinates: coordinates,
+      coordinates: intendedCoordinates,
     };
     setShipData((prevShips) => [...prevShips, ship]);
-
-    // Update grid and placedShips states
+  
+    // Update grid, placedShips states, and tempGrid
     setGrid(updatedGrid);
     setPlacedShips(updatedPlacedShips);
     setTempGrid(updatedGrid);
     setIsDragging(false);
-
-    // NEW: Convert the coordinate pairs to encoded values and update shipPositions.
-    const encodedPositions = coordinates.map(
-      ([r, c]) => r * 10 + c
-    );
+  
+    // Convert the coordinate pairs to encoded values and update shipPositions.
+    const encodedPositions = intendedCoordinates.map(([r, c]) => r * 10 + c);
     setShipPositions((prevPositions) => [...prevPositions, ...encodedPositions]);
   };
+  
 
   const handleDragOver = (event: DragOverEvent) => {
     const shipID = Number(event.active.id) - 1;
@@ -136,33 +143,49 @@ const ShipPlacementBoard = () => {
     const tempHover = String(event.over?.id).split("-") || [0, 0, 0];
     const row = Number(tempHover[1]);
     const col = Number(tempHover[2]);
-
-    const updatedTempGrid = tempGrid.map((rowArr, rowIndex) =>
-      rowArr.map((cell, colIndex) => {
-        if (!shipOrientations[shipID]) {
-          // Horizontal ship placement preview
-          if (
-            rowIndex === row &&
-            colIndex >= col &&
-            colIndex < col + lengthOfShip
-          ) {
-            return col + lengthOfShip <= 10 ? 3 : grid[rowIndex][colIndex];
-          }
-        } else {
-          // Vertical ship placement preview
-          if (
-            colIndex === col &&
-            rowIndex >= row &&
-            rowIndex < row + lengthOfShip
-          ) {
-            return row + lengthOfShip <= 10 ? 3 : grid[rowIndex][colIndex];
-          }
+  
+    // Compute intended coordinates based on orientation.
+    const intendedCoordinates: [number, number][] = [];
+    if (!shipOrientations[shipID]) {
+      // Horizontal placement
+      if (col + lengthOfShip <= 10) {
+        for (let c = col; c < col + lengthOfShip; c++) {
+          intendedCoordinates.push([row, c]);
         }
-        return grid[rowIndex][colIndex];
+      }
+    } else {
+      // Vertical placement
+      if (row + lengthOfShip <= 10) {
+        for (let r = row; r < row + lengthOfShip; r++) {
+          intendedCoordinates.push([r, col]);
+        }
+      }
+    }
+  
+    // Check if any of the intended coordinates already have a ship.
+    const conflict = intendedCoordinates.some(
+      ([r, c]) => grid[r][c] !== 0
+    );
+  
+    // If conflict exists, do not show any preview.
+    if (conflict) {
+      setTempGrid(grid);
+      return;
+    }
+  
+    // Otherwise, update the temp grid to show the preview (value 3) for intended cells.
+    const updatedTempGrid = grid.map((rowArr, rowIndex) =>
+      rowArr.map((cell, colIndex) => {
+        const isInPreview = intendedCoordinates.some(
+          ([r, c]) => r === rowIndex && c === colIndex
+        );
+        return isInPreview ? 3 : cell;
       })
     );
     setTempGrid(updatedTempGrid);
   };
+  
+  
 
   // On component mount, load saved grid state:
 useEffect(() => {
