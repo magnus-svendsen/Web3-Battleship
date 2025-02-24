@@ -82,7 +82,6 @@ export function PrivateKeyConnector({
                     try {
                         //Ensure from field is applied
                         if (!transaction.from) {
-                            console.log("Missing from field: adding..")
                             transaction = { ...transaction, from: account.address };
                         }
                         transaction = { ...transaction, chainId: chain.id };
@@ -94,9 +93,7 @@ export function PrivateKeyConnector({
                         }
 
                         if (!transaction.gas && !transaction.gasLimit) {
-                            // Ensure 'from' is set before any other modifications
                             transaction = { ...transaction, from: account.address, chainId: chain.id };
-                            console.log("Transaction before gas estimation:", transaction);
                             const estimatedGas = await publicClient.estimateGas(transaction);
                             const gasLimit = estimatedGas * 200n / 100n;
                             transaction = { ...transaction, gas: gasLimit, gasLimit: gasLimit };
@@ -117,9 +114,7 @@ export function PrivateKeyConnector({
                             method: "eth_sendRawTransaction",
                             params: [signedTx],
                         });
-                        console.log("Signed: ", txHash)
                         config.emitter.emit('message', { type: 'transaction', txHash });
-                        console.log("Transaction: ", transaction)
                         return txHash;
                     }
                     catch (error) {
