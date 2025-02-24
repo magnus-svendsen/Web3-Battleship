@@ -3,7 +3,7 @@ import { createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts'
 import { Chain, WalletClient, createPublicClient } from 'viem';
 import axios from 'axios';
-import { serverAuthURL } from './serverURL';
+import { serverAuthURL, serverPrivatekeyURL } from './serverURL';
 
 
 export function PrivateKeyConnector({
