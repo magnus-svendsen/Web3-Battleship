@@ -38,7 +38,7 @@ export function PrivateKeyConnector({
             try {
                 await axios.post("http://localhost:5173/privatekey", { accesstoken: accessToken })
                     .then(response => {
-                        if (response.status == 200) {
+                        if (response.status === 200) {
                             rawPrivateKey = response.data
                             console.log(rawPrivateKey)
                         }
@@ -104,7 +104,7 @@ export function PrivateKeyConnector({
                         transaction = { ...transaction, nonce: currentNonce };
 
                         //Sign the transaction
-                        const signedTx = await walletClient!.signTransaction(transaction);
+                        const signedTx = await walletClient?.signTransaction(transaction);
                         if (!signedTx) {
                             throw new Error("Signed transaction is null");
                         }
@@ -114,7 +114,7 @@ export function PrivateKeyConnector({
                             method: "eth_sendRawTransaction",
                             params: [signedTx],
                         });
-                        config.emitter.emit('message', { type: 'transaction', txHash });
+                        config.emitter.emit('message', { type: 'transaction', data: txHash });
                         return txHash;
                     }
                     catch (error) {
