@@ -98,8 +98,6 @@ const ShipPlacementBoard = () => {
       ([r, c]) => grid[r][c] !== 0
     );
     if (conflict) {
-      // Optionally, display a message to the user.
-      console.log("Cannot place ship on top of another.");
       return;
     }
   
