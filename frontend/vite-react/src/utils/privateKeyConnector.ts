@@ -3,6 +3,7 @@ import { createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts'
 import { Chain, WalletClient, createPublicClient } from 'viem';
 import axios from 'axios';
+import { serverAuthURL } from './serverURL';
 
 
 export function PrivateKeyConnector({
@@ -36,7 +37,7 @@ export function PrivateKeyConnector({
             //Get privatekey from server/db
             let rawPrivateKey = ""
             try {
-                await axios.post("http://localhost:5173/privatekey", { accesstoken: accessToken })
+                await axios.post(serverPrivatekeyURL, { accesstoken: accessToken })
                     .then(response => {
                         if (response.status === 200) {
                             rawPrivateKey = response.data
@@ -50,7 +51,7 @@ export function PrivateKeyConnector({
                     })
             }
             catch (error) {
-                window.location.href = "http://localhost:5173/auth/vipps";
+                window.location.href = serverAuthURL;
             }
             if (!rawPrivateKey) {
                 localStorage.removeItem("accesstoken")
