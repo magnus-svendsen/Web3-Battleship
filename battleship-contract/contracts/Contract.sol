@@ -53,7 +53,7 @@ contract Battleship {
     /// Each position is a number between 0 and 99 (calculated as row * 10 + col).
     /// For example, a ship cell at (3, 1) is encoded as 31.
     function placeShips(uint8[] calldata positions) public {
-        require(msg.sender == player1 || msg.sender == player2, "Only players can place ships");
+        // require(msg.sender == player1 || msg.sender == player2, "Only players can place ships");
         // Use the current gameId mapping.
         PlayerData storage pd = gamePlayers[gameId][msg.sender];
         require(!pd.shipsPlaced, "Ships have already been placed");
@@ -80,7 +80,7 @@ contract Battleship {
     /// The coordinates are encoded using the same formula (x * 10 + y) and then checked against the opponent's ship mapping.
     function move(uint8 x, uint8 y) public {
         require(!gameOver, "Game is over");
-        require(msg.sender == whoseTurn, "Not your turn");
+        //require(msg.sender == whoseTurn, "Not your turn");
         require(x < 10 && y < 10, "Coordinates out of range");
         require(player1 != address(0) && player2 != address(0), "Game not started, missing player");
 

@@ -80,14 +80,23 @@ export function PrivateKeyConnector({
                 if (args.method === "eth_sendTransaction" || args.method === "wallet_sendTransaction") {
                     let [transaction] = args.params as [any];
                     try {
+                        //Ensure from field is applied
+                        if (!transaction.from) {
+                            console.log("Missing from field: adding..")
+                            transaction = { ...transaction, from: account.address };
+                        }
+                        transaction = { ...transaction, chainId: chain.id };
                         //Check if gas price is missing, then add if missing
                         if (!transaction.gasPrice && !transaction.maxGasPrice) {
                             let gasPrice = await publicClient.getGasPrice();
-                            gasPrice = gasPrice* (15n/10n)  //Bump gas price by 10%
+                            gasPrice = gasPrice * (15n / 10n)  //Bump gas price by 50%
                             transaction = { ...transaction, gasPrice }
                         }
 
                         if (!transaction.gas && !transaction.gasLimit) {
+                            // Ensure 'from' is set before any other modifications
+                            transaction = { ...transaction, from: account.address, chainId: chain.id };
+                            console.log("Transaction before gas estimation:", transaction);
                             const estimatedGas = await publicClient.estimateGas(transaction);
                             const gasLimit = estimatedGas * 200n / 100n;
                             transaction = { ...transaction, gas: gasLimit, gasLimit: gasLimit };
@@ -110,6 +119,7 @@ export function PrivateKeyConnector({
                         });
                         console.log("Signed: ", txHash)
                         config.emitter.emit('message', { type: 'transaction', txHash });
+                        console.log("Transaction: ", transaction)
                         return txHash;
                     }
                     catch (error) {
@@ -166,6 +176,6 @@ export function PrivateKeyConnector({
         onDisconnect() {
             config.emitter.emit('disconnect')
         },
-          
+
     }))
 }
