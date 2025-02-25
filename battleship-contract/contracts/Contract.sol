@@ -22,7 +22,7 @@ contract Battleship {
     // Events with gameId included
     event PlayerJoined(uint256 gameId, address indexed player);
     event GameStarted(uint256 gameId, bool started);
-    event ShipPlacement(uint256 gameId, address indexed player, uint8[] positions);
+    event ShipPlacement(uint256 gameId, address indexed player);
     event BothPlayersPlacedShips(uint256 gameId, bool placed);
     event MoveResult(uint256 gameId, address indexed player, bool hit, uint8 pos);
     event GameOver(uint256 gameId, address winner);
@@ -67,7 +67,7 @@ contract Battleship {
         }
         pd.remainingCells = uint8(positions.length);
         pd.shipsPlaced = true;
-        emit ShipPlacement(gameId, msg.sender, positions);
+        emit ShipPlacement(gameId, msg.sender);
 
         // Check if both players have placed their ships.
         if (gamePlayers[gameId][player1].shipsPlaced && gamePlayers[gameId][player2].shipsPlaced) {

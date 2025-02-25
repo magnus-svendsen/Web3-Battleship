@@ -138,12 +138,6 @@ export const abi = [
         "internalType": "address",
         "name": "player",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8[]",
-        "name": "positions",
-        "type": "uint8[]"
       }
     ],
     "name": "ShipPlacement",
