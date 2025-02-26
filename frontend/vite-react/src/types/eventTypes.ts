@@ -26,3 +26,9 @@ export interface MoveResultEvent {
     hit: boolean;
   };
 }
+
+export interface GameResetEvent {
+  args: {
+    newGameId: number;
+  }
+}

@@ -128,6 +128,7 @@ export function PrivateKeyConnector({
               type: "transaction",
               data: txHash,
             });
+            console.log(txHash)
             return txHash;
           } catch (error) {
             console.log("Error while intercepting transaction: ", error);
