@@ -23,7 +23,23 @@ const Navbar = () => {
 
   useEffect(() => {
     if (gameReset) {
-      // Trigger a page refresh when gameReset becomes true.
+      // Clear localStorage items related to the game.
+      localStorage.removeItem("gameStarted");
+      localStorage.removeItem("playerJoined");
+
+      localStorage.removeItem("shipPlacementPlayer");
+      localStorage.removeItem("grid");
+      localStorage.removeItem("shipsSubmitted");
+      localStorage.removeItem("placedShips");
+      localStorage.removeItem("shipPositions");
+      localStorage.removeItem("bothPlayersPlacedShips");
+
+      localStorage.removeItem("enemyGrid");
+      localStorage.removeItem("shipPositions");
+      localStorage.removeItem("moveMessage");
+      localStorage.removeItem("turnMessage");
+      
+      // Then trigger a page refresh.
       window.location.reload();
     }
   }, [gameReset]);
