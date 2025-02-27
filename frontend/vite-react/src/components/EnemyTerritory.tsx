@@ -85,8 +85,11 @@ const EnemyTerritory = () => {
           enemyGrid[coordinate.x][coordinate.y] = 2;
           setMoveMessage("You shot and missed!");
         }
+        localStorage.setItem("enemyGrid", JSON.stringify(enemyGrid));
+        localStorage.setItem("moveMessage", JSON.stringify(moveMessage));
         // After your move, it's your opponent's turn.
         setTurnMessage("Opponent's turn");
+        localStorage.setItem("turnMessage", JSON.stringify(turnMessage));
       } else {
         // Opponent's move; update your grid.
         if (data.hit === 2) {
@@ -96,17 +99,11 @@ const EnemyTerritory = () => {
           grid[coordinate.x][coordinate.y] = 2;
           setMoveMessage("Opponent shot and missed!");
         }
+        localStorage.setItem("shipGrid", JSON.stringify(grid));
+        localStorage.setItem("moveMessage", JSON.stringify(moveMessage));
         // After opponent's move, it's your turn.
         setTurnMessage("Your turn");
-      }
-      if (moveMessage) {
-        localStorage.setItem("moveMessage", JSON.stringify(moveMessage));
-      }
-      if (turnMessage) {
         localStorage.setItem("turnMessage", JSON.stringify(turnMessage));
-      }
-      if (enemyGrid) {
-        localStorage.setItem("enemyGrid", JSON.stringify(enemyGrid));
       }
     },
   });
