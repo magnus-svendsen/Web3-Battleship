@@ -1,5 +1,6 @@
 // src/contexts/GameContext.tsx
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import type React from "react";
+import { createContext, useContext, useState, type ReactNode } from "react"
 import type { GridData } from "../types/gridTypes";
 
 // Define the shape of our game context.
@@ -8,6 +9,10 @@ interface GameContextType {
   setGrid: React.Dispatch<React.SetStateAction<GridData>>;
   playerJoined: string;
   setPlayerJoined: React.Dispatch<React.SetStateAction<string>>;
+  shipPlacementPlayer: string;
+  setShipPlacementPlayer: React.Dispatch<React.SetStateAction<string>>;
+  bothPlayersPlacedShips: boolean;
+  setBothPlayersPlacedShips: React.Dispatch<React.SetStateAction<boolean>>;
   moveMessage: string;
   setMoveMessage: React.Dispatch<React.SetStateAction<string>>;
   turnMessage: string;
@@ -33,6 +38,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
   const [playerJoined, setPlayerJoined] = useState<string>("");
+  const [shipPlacementPlayer, setShipPlacementPlayer] = useState<string>("");
+  const [bothPlayersPlacedShips, setBothPlayersPlacedShips] = useState<boolean>(false);
   const [moveMessage, setMoveMessage] = useState<string>("");
   const [turnMessage, setTurnMessage] = useState<string>("");
 
@@ -44,6 +51,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setGrid,
         playerJoined,
         setPlayerJoined,
+        shipPlacementPlayer,
+        setShipPlacementPlayer,
+        bothPlayersPlacedShips,
+        setBothPlayersPlacedShips,
         moveMessage,
         turnMessage,
         setMoveMessage,
