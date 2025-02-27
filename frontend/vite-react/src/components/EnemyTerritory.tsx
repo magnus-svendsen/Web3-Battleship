@@ -1,7 +1,7 @@
 import type { GridData } from "../types/gridTypes";
 import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAccount, useWriteContract } from "wagmi";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import { useGameContext } from "../contexts/GameContext";
@@ -15,7 +15,7 @@ const EnemyTerritory = () => {
 
   const account = useAccount();
   const { writeContract } = useWriteContract();
-
+  const timeoutRef = useRef<number | null>(null);
   const [shipPlacementPlayer, setShipPlacementPlayer] = useState("");
   const [bothPlayersPlacedShips, setBothPlayersPlacedShips] = useState(false);
   const [loadingCell, setLoadingCell] = useState<{ row: number; col: number } | null>(null);
