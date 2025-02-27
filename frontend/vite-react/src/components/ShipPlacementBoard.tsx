@@ -4,19 +4,24 @@ import {
   type DragOverEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import Ship from "./Ship";
+import Ship from "./ship";
 import DroppableGridCell from "./DroppableGridCell";
 import { useEffect, useState } from "react";
 import { Button } from "@mantine/core";
 import { contractAddress } from "../utils/contractAddress";
-import { useWriteContract } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 import type { GridData } from "../types/gridTypes";
 import type { ShipDataContract } from "../types/shipTypes";
 import { abi } from "../utils/abi";
 import { useGameContext } from "../contexts/GameContext";
+import usePastEventValue from "../hooks/usePastEventValue";
+import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
+import type { BothPlayersPlacedShipsEvent, ShipPlacementEvent } from "../types/eventTypes";
 
 const ShipPlacementBoard = () => {
-  const { grid, setGrid } = useGameContext();
+  const account = useAccount();
+
+  const { playerJoined, grid, setGrid, shipPlacementPlayer, setShipPlacementPlayer, bothPlayersPlacedShips, setBothPlayersPlacedShips, setMoveMessage, setTurnMessage } = useGameContext();
 
   const { writeContract } = useWriteContract();
 
@@ -54,13 +59,44 @@ const ShipPlacementBoard = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
-  const handleOrientationChange = (id: number, isHorizontal: boolean) => {
+  const shipPlacementValue = usePastEventValue<string>(
+    "ShipPlacement",
+    (args) => args.player ?? "",
+    ""
+  );
+
+  const bothPlayersPlacedShipsValue = usePastEventValue<boolean>(
+    "BothPlayersPlacedShips",
+    (args) => args.placed ?? false,
+    false
+  );
+
+  useEffect(() => {
+    setShipPlacementPlayer(shipPlacementValue);
+  }, [shipPlacementValue]);
+
+  useEffect(() => {
+    setBothPlayersPlacedShips(bothPlayersPlacedShipsValue);
+    console.log("Both players placed ships:", bothPlayersPlacedShipsValue);
+    if (bothPlayersPlacedShipsValue || bothPlayersPlacedShips) {
+      setShipsSubmitted(true)
+      setPlacedShips([true, true, true, true, true])
+      setShipPositions(shipPositions);
+      
+      const savedGrid = localStorage.getItem("shipGrid");
+      if (savedGrid) {
+        setGrid(JSON.parse(savedGrid));
+      }
+    }
+  }, [bothPlayersPlacedShips, bothPlayersPlacedShipsValue]); 
+
+  const handleOrientationChange = (id: number) => {
     const oldShipOrientation = shipOrientations;
     oldShipOrientation[id] = !oldShipOrientation[id];
     setShipsOrientations([...oldShipOrientation]);
   };
 
-  const handleDragStart = (event: DragStartEvent) => {
+  const handleDragStart = () => {
     setIsDragging(true);
   };
 
@@ -182,39 +218,6 @@ const ShipPlacementBoard = () => {
     );
     setTempGrid(updatedTempGrid);
   };
-  
-  
-
-  // On component mount, load saved grid state:
-useEffect(() => {
-  const savedGrid = localStorage.getItem("shipGrid");
-  if (savedGrid) {
-    setGrid(JSON.parse(savedGrid));
-  }
-  const savedTempGrid = localStorage.getItem("shipTempGrid");
-  if (savedTempGrid) {
-    setTempGrid(JSON.parse(savedTempGrid));
-  }
-  const savedShipPositions = localStorage.getItem("shipPositions");
-  if (savedShipPositions) {
-    setShipPositions(JSON.parse(savedShipPositions));
-  }
-}, []);
-
-// Whenever grid state updates, persist it:
-useEffect(() => {
-  localStorage.setItem("shipGrid", JSON.stringify(grid));
-}, [grid]);
-
-useEffect(() => {
-  localStorage.setItem("shipTempGrid", JSON.stringify(tempGrid));
-}, [tempGrid]);
-
-useEffect(() => {
-  console.log("Ship positions: ", shipPositions);
-  localStorage.setItem("shipPositions", JSON.stringify(shipPositions));
-}, [shipPositions]);
-
 
   const lengthByID = (id: number) => {
     if (id === 1) return 5;
@@ -233,7 +236,6 @@ useEffect(() => {
     if (id === 4) return 2;
     return 0;
   };
-
 
   return (
     <div>
@@ -299,7 +301,6 @@ useEffect(() => {
             size="md"
             radius="md"
             onClick={() => {
-              setShipsSubmitted(true);
               writeContract({
                 abi,
                 address: contractAddress,

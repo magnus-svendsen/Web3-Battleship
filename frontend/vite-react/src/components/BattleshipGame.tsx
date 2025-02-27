@@ -10,9 +10,8 @@ import { useGameContext } from "../contexts/GameContext";
 import { useEffect, useState } from "react";
 
 const BattleshipGame = () => {
-  const { playerJoined, setPlayerJoined, moveMessage, turnMessage } = useGameContext();
-
-  const account = useAccount();
+  const { playerJoined, setPlayerJoined, moveMessage, turnMessage } =
+    useGameContext();
 
   const [gameStarted, setGameStarted] = useState(false);
 
@@ -35,10 +34,8 @@ const BattleshipGame = () => {
 
   useEffect(() => {
     // DEBUGGING
-    //account.address && console.log("Address of this player: ", account.address);
     playerJoined && console.log("Player joined:", playerJoined);
-    //gameStarted && console.log("Game started!");
-  }, [account.address, playerJoined, gameStarted]);
+  }, [playerJoined]);
 
   const playerJoinedValue = usePastEventValue<string>(
     "PlayerJoined",
@@ -71,15 +68,22 @@ const BattleshipGame = () => {
           marginTop: "60px",
         }}
       >
-        
         {!gameStarted && <GameLobby />}
-        <h2 className={`font-bold text-2xl flex justify-center mt-40 mb-10 ${moveMessage === "Opponent shot and hit!" ? "text-red-600" : ""} ${moveMessage === "You shot and hit!" ? "text-green-400" : ""}`}>{moveMessage}</h2>
+        <h2
+          className={`font-bold text-2xl flex justify-center mt-40 mb-10 ${moveMessage === "Opponent shot and hit!" ? "text-red-600" : ""} ${moveMessage === "You shot and hit!" ? "text-green-400" : ""}`}
+        >
+          {moveMessage}
+        </h2>
         <div className="flex ">
           {gameStarted && <ShipPlacementBoard />}
           <EnemyTerritory />
         </div>
         <div className="font-bold text-2xl py-8 flex justify-center">
-          <h2 className={`${turnMessage === "Your turn" ? "text-green-400" : ""}`}>{turnMessage}</h2>
+          <h2
+            className={`${turnMessage === "Your turn" ? "text-green-400" : ""}`}
+          >
+            {turnMessage}
+          </h2>
         </div>
       </div>
     </>
