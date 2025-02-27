@@ -23,6 +23,6 @@ export interface MoveResultEvent {
   args: {
     pos: number;
     player: string;
-    hit: boolean;
+    hit: number;
   };
 }
