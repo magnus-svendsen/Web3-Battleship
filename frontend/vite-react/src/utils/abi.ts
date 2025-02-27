@@ -91,9 +91,9 @@ export const abi = [
       },
       {
         "indexed": false,
-        "internalType": "bool",
+        "internalType": "uint8",
         "name": "hit",
-        "type": "bool"
+        "type": "uint8"
       },
       {
         "indexed": false,

@@ -8,10 +8,10 @@ contract Battleship {
     bool public gameOver;
     address public whoseTurn;
 
+    // Instead of using a mapping for each cell, we store all ship placements in one uint256.
+    // For cells 0–99, bit i indicates whether a ship occupies that cell.
     struct PlayerData {
-        // Mapping from an encoded cell (0 to 99) to a bool indicating whether a ship exists there.
-        // When a ship is hit, the mapping value is set to false.
-        mapping(uint8 => bool) ships;
+        uint256 ships;        // Bitmask for ship placements.
         uint8 remainingCells;
         bool shipsPlaced;
     }
@@ -24,7 +24,7 @@ contract Battleship {
     event GameStarted(uint256 gameId, bool started);
     event ShipPlacement(uint256 gameId, address indexed player);
     event BothPlayersPlacedShips(uint256 gameId, bool placed);
-    event MoveResult(uint256 gameId, address indexed player, bool hit, uint8 pos);
+    event MoveResult(uint256 gameId, address indexed player, uint8 hit, uint8 pos);
     event GameOver(uint256 gameId, address winner);
     event GameReset(uint256 newGameId);
 
@@ -51,9 +51,9 @@ contract Battleship {
 
     /// @notice Place your ships by providing an array of encoded positions.
     /// Each position is a number between 0 and 99 (calculated as row * 10 + col).
-    /// For example, a ship cell at (3, 1) is encoded as 31.
+    /// This version uses a bitmask to store ship positions to save gas.
     function placeShips(uint8[] calldata positions) public {
-        // Use the current gameId mapping.
+        require(msg.sender == player1 || msg.sender == player2, "Only players can place ships");
         PlayerData storage pd = gamePlayers[gameId][msg.sender];
         require(!pd.shipsPlaced, "Ships have already been placed");
         require(positions.length > 0, "No ship positions provided");
@@ -61,9 +61,10 @@ contract Battleship {
         for (uint i = 0; i < positions.length; i++) {
             uint8 pos = positions[i];
             require(pos < 100, "Position out of range");
-            // Prevent duplicate positions.
-            require(!pd.ships[pos], "Duplicate position provided");
-            pd.ships[pos] = true;
+            // Check for duplicates using bitmask: if bit is already set, duplicate exists.
+            require((pd.ships & (1 << pos)) == 0, "Duplicate position provided");
+            // Set the bit for this position.
+            pd.ships |= (1 << pos);
         }
         pd.remainingCells = uint8(positions.length);
         pd.shipsPlaced = true;
@@ -86,20 +87,23 @@ contract Battleship {
         address opponent = msg.sender == player1 ? player2 : player1;
         PlayerData storage opponentData = gamePlayers[gameId][opponent];
         uint8 pos = x * 10 + y;
-        bool hit = false;
+        uint8 hitVal = 0;
 
-        // Check if the opponent has a ship at that position.
-        if (opponentData.ships[pos]) {
-            opponentData.ships[pos] = false;
+        // Check if the opponent has a ship at that position using the bitmask.
+        if ((opponentData.ships & (1 << pos)) != 0) {
+            // Mark the cell as hit: clear that bit.
+            opponentData.ships &= ~(1 << pos);
             opponentData.remainingCells--;
-            hit = true;
+            hitVal = 2; // Hit
             if (opponentData.remainingCells == 0) {
                 gameOver = true;
                 emit GameOver(gameId, msg.sender);
             }
+        } else {
+            hitVal = 1; // Miss
         }
 
-        emit MoveResult(gameId, msg.sender, hit, pos);
+        emit MoveResult(gameId, msg.sender, hitVal, pos);
 
         if (!gameOver) {
             whoseTurn = opponent;
