@@ -24,7 +24,7 @@ contract Battleship {
     event GameStarted(uint256 gameId, bool started);
     event ShipPlacement(uint256 gameId, address indexed player);
     event BothPlayersPlacedShips(uint256 gameId, bool placed);
-    event MoveResult(uint256 gameId, address indexed player, uint8 hit, uint8 pos);
+    event MoveResult(uint256 gameId, address indexed player, bool hit, uint8 pos);
     event GameOver(uint256 gameId, address winner);
     event GameReset(uint256 newGameId);
 
@@ -87,23 +87,21 @@ contract Battleship {
         address opponent = msg.sender == player1 ? player2 : player1;
         PlayerData storage opponentData = gamePlayers[gameId][opponent];
         uint8 pos = x * 10 + y;
-        uint8 hitVal = 0;
+        bool hit = false;
 
         // Check if the opponent has a ship at that position using the bitmask.
         if ((opponentData.ships & (1 << pos)) != 0) {
             // Mark the cell as hit: clear that bit.
             opponentData.ships &= ~(1 << pos);
             opponentData.remainingCells--;
-            hitVal = 2; // Hit
+            hit = true; // Hit
             if (opponentData.remainingCells == 0) {
                 gameOver = true;
                 emit GameOver(gameId, msg.sender);
             }
-        } else {
-            hitVal = 1; // Miss
         }
 
-        emit MoveResult(gameId, msg.sender, hitVal, pos);
+        emit MoveResult(gameId, msg.sender, hit, pos);
 
         if (!gameOver) {
             whoseTurn = opponent;
