@@ -14,14 +14,13 @@ import type { GridData } from "../types/gridTypes";
 import type { ShipDataContract } from "../types/shipTypes";
 import { abi } from "../utils/abi";
 import { useGameContext } from "../contexts/GameContext";
-import usePastEventValue from "../hooks/usePastEventValue";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import type { BothPlayersPlacedShipsEvent, ShipPlacementEvent } from "../types/eventTypes";
 
 const ShipPlacementBoard = () => {
   const account = useAccount();
 
-  const { playerJoined, grid, setGrid, shipPlacementPlayer, setShipPlacementPlayer, bothPlayersPlacedShips, setBothPlayersPlacedShips, setMoveMessage, setTurnMessage } = useGameContext();
+  const { playerJoined, grid, setGrid, shipPlacementPlayer, setShipPlacementPlayer, bothPlayersPlacedShips, setBothPlayersPlacedShips, setMoveMessage, turnMessage, setTurnMessage } = useGameContext();
 
   const { writeContract } = useWriteContract();
 
@@ -59,36 +58,64 @@ const ShipPlacementBoard = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
-  const shipPlacementValue = usePastEventValue<string>(
-    "ShipPlacement",
-    (args) => args.player ?? "",
-    ""
-  );
-
-  const bothPlayersPlacedShipsValue = usePastEventValue<boolean>(
-    "BothPlayersPlacedShips",
-    (args) => args.placed ?? false,
-    false
-  );
-
-  useEffect(() => {
-    setShipPlacementPlayer(shipPlacementValue);
-  }, [shipPlacementValue]);
-
-  useEffect(() => {
-    setBothPlayersPlacedShips(bothPlayersPlacedShipsValue);
-    console.log("Both players placed ships:", bothPlayersPlacedShipsValue);
-    if (bothPlayersPlacedShipsValue || bothPlayersPlacedShips) {
-      setShipsSubmitted(true)
-      setPlacedShips([true, true, true, true, true])
-      setShipPositions(shipPositions);
-      
-      const savedGrid = localStorage.getItem("shipGrid");
-      if (savedGrid) {
-        setGrid(JSON.parse(savedGrid));
+  useWatchContractEventListener({
+    eventName: "ShipPlacement",
+    onEvent: (logs: ShipPlacementEvent[]) => {
+      const shipPlayer = logs[0].args.player ?? "";
+      // Only update local storage for the correct account.
+      if (shipPlayer === account.address) {
+        setShipPlacementPlayer(shipPlayer);
+        localStorage.setItem("shipPlacementPlayer", JSON.stringify(shipPlayer));
+        localStorage.setItem("grid", JSON.stringify(grid));
+  
+        setShipsSubmitted(true);
+        localStorage.setItem("shipsSubmitted", JSON.stringify(true));
+        localStorage.setItem("placedShips", JSON.stringify([true, true, true, true, true]));
+        localStorage.setItem("shipPositions", JSON.stringify(shipPositions));
       }
+    },
+  });
+
+  useWatchContractEventListener({
+    eventName: "BothPlayersPlacedShips",
+    onEvent: (logs: BothPlayersPlacedShipsEvent[]) => {
+      const placed = logs[0].args.placed ?? false;
+      setBothPlayersPlacedShips(placed);
+      localStorage.setItem("bothPlayersPlacedShips", JSON.stringify(placed));
+      if (playerJoined === account.address) {
+        const message = "Your turn";
+        setTurnMessage(message);
+        localStorage.setItem("turnMessage", JSON.stringify(message));
+      } else {
+        const message = "Opponent's turn";
+        setTurnMessage(message);
+        localStorage.setItem("turnMessage", JSON.stringify(message));
+      }
+    },
+  });
+
+  useEffect(() => {
+    const storedShipPlacementPlayer = localStorage.getItem("shipPlacementPlayer");
+    if (storedShipPlacementPlayer) {
+      setShipPlacementPlayer(JSON.parse(storedShipPlacementPlayer));
     }
-  }, [bothPlayersPlacedShips, bothPlayersPlacedShipsValue]); 
+    const storedShipsSubmitted = localStorage.getItem("shipsSubmitted");
+    if (storedShipsSubmitted) {
+      setShipsSubmitted(JSON.parse(storedShipsSubmitted));
+    }
+    const storedPlacedShips = localStorage.getItem("placedShips");
+    if (storedPlacedShips) {
+      setPlacedShips(JSON.parse(storedPlacedShips));
+    }
+    const storedBothPlayersPlacedShips = localStorage.getItem("bothPlayersPlacedShips");
+    if (storedBothPlayersPlacedShips) {
+      setBothPlayersPlacedShips(JSON.parse(storedBothPlayersPlacedShips));
+    }
+    const savedTurnMessage = localStorage.getItem("turnMessage");
+    if (savedTurnMessage) {
+      setTurnMessage(JSON.parse(savedTurnMessage));
+    }
+  }, []);
 
   const handleOrientationChange = (id: number) => {
     const oldShipOrientation = shipOrientations;
