@@ -116,6 +116,34 @@ const EnemyTerritory = () => {
     const y = value % 10;
     return { x, y };
   };
+
+  const moveResultValue = usePastEventValue<{ pos: number; player: string; hit: number }>(
+    "MoveResult",
+    (args) => ({
+      pos: args.pos,
+      player: args.player,
+      hit: args.hit,
+    }),
+    { pos: -1, player: "", hit: 0 }
+  );
+
+  useEffect(() => {
+    console.log("moveResultValue", moveResultValue);
+    if (moveResultValue?.player) {
+      const savedMoveMessage = localStorage.getItem("moveMessage");
+      if (savedMoveMessage) {
+        setMoveMessage(JSON.parse(savedMoveMessage));
+      }
+      const savedTurnMessage = localStorage.getItem("turnMessage");
+      if (savedTurnMessage) {
+        setTurnMessage(JSON.parse(savedTurnMessage));
+      }
+      const savedEnemyGrid = localStorage.getItem("enemyGrid");
+      if (savedEnemyGrid) {
+        setEnemyGrid(JSON.parse(savedEnemyGrid));
+      }
+    }
+  }, [moveResultValue]);
   
   useWatchContractEventListener({
     eventName: "GameOver",
