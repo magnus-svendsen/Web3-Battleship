@@ -7,8 +7,8 @@ import type { GridData } from "../types/gridTypes";
 interface GameContextType {
   grid: GridData;
   setGrid: React.Dispatch<React.SetStateAction<GridData>>;
-  playerJoined: string;
-  setPlayerJoined: React.Dispatch<React.SetStateAction<string>>;
+  firstPlayerJoined: string;
+  setFirstPlayerJoined: React.Dispatch<React.SetStateAction<string>>;
   shipPlacementPlayer: string;
   setShipPlacementPlayer: React.Dispatch<React.SetStateAction<string>>;
   bothPlayersPlacedShips: boolean;
@@ -37,7 +37,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
-  const [playerJoined, setPlayerJoined] = useState<string>("");
+  const [firstPlayerJoined, setFirstPlayerJoined] = useState<string>("");
   const [shipPlacementPlayer, setShipPlacementPlayer] = useState<string>("");
   const [bothPlayersPlacedShips, setBothPlayersPlacedShips] = useState<boolean>(false);
   const [moveMessage, setMoveMessage] = useState<string>("");
@@ -49,8 +49,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       value={{
         grid,
         setGrid,
-        playerJoined,
-        setPlayerJoined,
+        firstPlayerJoined,
+        setFirstPlayerJoined,
         shipPlacementPlayer,
         setShipPlacementPlayer,
         bothPlayersPlacedShips,

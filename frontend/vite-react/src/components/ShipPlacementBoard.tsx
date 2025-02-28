@@ -20,7 +20,7 @@ import type { BothPlayersPlacedShipsEvent, ShipPlacementEvent } from "../types/e
 const ShipPlacementBoard = () => {
   const account = useAccount();
 
-  const { playerJoined, grid, setGrid, shipPlacementPlayer, setShipPlacementPlayer, bothPlayersPlacedShips, setBothPlayersPlacedShips, setMoveMessage, turnMessage, setTurnMessage } = useGameContext();
+  const { firstPlayerJoined, grid, setGrid, shipPlacementPlayer, setShipPlacementPlayer, bothPlayersPlacedShips, setBothPlayersPlacedShips, setMoveMessage, turnMessage, setTurnMessage } = useGameContext();
 
   const { writeContract } = useWriteContract();
 
@@ -82,7 +82,7 @@ const ShipPlacementBoard = () => {
       const placed = logs[0].args.placed ?? false;
       setBothPlayersPlacedShips(placed);
       localStorage.setItem("bothPlayersPlacedShips", JSON.stringify(placed));
-      if (playerJoined === account.address) {
+      if (firstPlayerJoined === account.address) {
         const message = "Your turn";
         setTurnMessage(message);
         localStorage.setItem("turnMessage", JSON.stringify(message));
