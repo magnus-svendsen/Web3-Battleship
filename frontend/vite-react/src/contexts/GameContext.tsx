@@ -12,6 +12,8 @@ interface GameContextType {
   setMoveMessage: React.Dispatch<React.SetStateAction<string>>;
   turnMessage: string;
   setTurnMessage: React.Dispatch<React.SetStateAction<string>>;
+  errorMessage: string
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // Create the context with a default value (which will be overridden by the provider).
@@ -35,7 +37,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [playerJoined, setPlayerJoined] = useState<string>("");
   const [moveMessage, setMoveMessage] = useState<string>("");
   const [turnMessage, setTurnMessage] = useState<string>("");
-
+  const [errorMessage, setErrorMessage] = useState<string>("");
   // Provide all state values and setters.
   return (
     <GameContext.Provider
@@ -48,6 +50,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         turnMessage,
         setMoveMessage,
         setTurnMessage,
+        errorMessage,
+        setErrorMessage
       }}
     >
       {children}

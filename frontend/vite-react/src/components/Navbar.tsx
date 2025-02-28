@@ -5,6 +5,7 @@ import { contractAddress } from "../utils/contractAddress";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import { GameResetEvent } from "../types/eventTypes";
 import { useRef, useState } from "react";
+import { useGameContext } from "../contexts/GameContext";
 
 const Navbar = () => {
   const account = useAccount();
@@ -12,7 +13,7 @@ const Navbar = () => {
   const { writeContract } = useWriteContract();
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const timeoutRef = useRef<number | null>(null);
-
+  const {errorMessage, setErrorMessage} = useGameContext()
   useWatchContractEventListener({
     eventName: "GameReset",
     onEvent: (_logs: GameResetEvent[]) => {
@@ -38,6 +39,10 @@ const Navbar = () => {
       functionName: "resetGame",
       args: [],
     })
+  }
+
+  function testError(): void {
+    setErrorMessage("Error: Noe feil skjedde")
   }
 
   return (
@@ -68,7 +73,7 @@ const Navbar = () => {
             > <Loader></Loader>
             </Button>
             :
-            <Button
+            <><Button
               variant="red"
               color="teal"
               size="sm"
@@ -79,6 +84,10 @@ const Navbar = () => {
             >
               Reset game
             </Button>
+              <Button
+              onClick={() => testError()}>
+                Test error message
+              </Button></>
           }
         </div>
       )}
