@@ -20,7 +20,8 @@ contract Battleship {
     mapping(uint256 => mapping(address => PlayerData)) private gamePlayers;
 
     // Events with gameId included
-    event PlayerJoined(uint256 gameId, address indexed player);
+    event FirstPlayerJoined(uint256 gameId, address indexed player);
+    event SecondPlayerJoined(uint256 gameId, address indexed player);
     event GameStarted(uint256 gameId, bool started);
     event ShipPlacement(uint256 gameId, address indexed player);
     event BothPlayersPlacedShips(uint256 gameId, bool placed);
@@ -38,10 +39,11 @@ contract Battleship {
 
         if (player1 == address(0)) {
             player1 = msg.sender;
-            emit PlayerJoined(gameId, player1);
+            emit FirstPlayerJoined(gameId, player1);
         } else {
             require(msg.sender != player1, "Already joined as player1");
             player2 = msg.sender;
+            emit SecondPlayerJoined(gameId, player2);
             // Start the game once both players have joined.
             whoseTurn = player1;
             gameOver = false;
@@ -53,7 +55,6 @@ contract Battleship {
     /// Each position is a number between 0 and 99 (calculated as row * 10 + col).
     /// This version uses a bitmask to store ship positions to save gas.
     function placeShips(uint8[] calldata positions) public {
-        require(msg.sender == player1 || msg.sender == player2, "Only players can place ships");
         PlayerData storage pd = gamePlayers[gameId][msg.sender];
         require(!pd.shipsPlaced, "Ships have already been placed");
         require(positions.length > 0, "No ship positions provided");
