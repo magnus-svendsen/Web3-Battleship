@@ -25,7 +25,9 @@ const Navbar = () => {
     if (gameReset) {
       // Clear localStorage items related to the game.
       localStorage.removeItem("gameStarted");
-      localStorage.removeItem("playerJoined");
+      localStorage.removeItem("firstPlayerJoined");
+      localStorage.removeItem("secondPlayerJoined");
+      localStorage.removeItem("showGameUnderway");
 
       localStorage.removeItem("shipPlacementPlayer");
       localStorage.removeItem("grid");
@@ -38,7 +40,7 @@ const Navbar = () => {
       localStorage.removeItem("shipPositions");
       localStorage.removeItem("moveMessage");
       localStorage.removeItem("turnMessage");
-      
+
       // Then trigger a page refresh.
       window.location.reload();
     }
