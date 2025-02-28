@@ -1,7 +1,7 @@
 import { Dialog, Text } from "@mantine/core";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGameContext } from "../contexts/GameContext";
-
+import ErrorIcon from '@mui/icons-material/Error';
 
 const ErrorDialog = () => {
   const {errorMessage, setErrorMessage} = useGameContext();
@@ -25,6 +25,7 @@ const ErrorDialog = () => {
 
   return (
     <Dialog opened={displayDialog} onClose={close} size="lg" radius="md" withBorder>
+      <ErrorIcon></ErrorIcon>
       <Text size="sm" mb="xs" fw={500}>
         {errorMessage}
       </Text>

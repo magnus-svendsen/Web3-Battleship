@@ -11,7 +11,7 @@ import usePastEventValue from "../hooks/usePastEventValue";
 import { Loader } from "@mantine/core";
 
 const EnemyTerritory = () => {
-  const { playerJoined, grid, setMoveMessage, turnMessage, setTurnMessage } = useGameContext();
+  const { playerJoined, grid, setMoveMessage, turnMessage, setTurnMessage, setErrorMessage } = useGameContext();
 
   const account = useAccount();
   const { writeContract } = useWriteContract();
@@ -96,6 +96,14 @@ const EnemyTerritory = () => {
 
   const handleMoveTransaction = (rowIndex: number, colIndex: number) => {
     setLoadingCell({ row: rowIndex, col: colIndex });
+
+    if (timeoutRef.current) {clearTimeout(timeoutRef.current)}
+
+    timeoutRef.current = window.setTimeout(() => {
+      setLoadingCell(null);
+      setErrorMessage("Transaction timed out. Please try again.")
+    }, 30000)
+    
     try {
       writeContract({
         address: contractAddress,
@@ -156,6 +164,7 @@ const EnemyTerritory = () => {
 
   useEffect(() => {
     if (loadingCell) {
+      console.log("Resetting loader")
       setLoadingCell(null);
     }
   }, [turnMessage])
@@ -251,3 +260,5 @@ const EnemyTerritory = () => {
 };
 
 export default EnemyTerritory;
+
+

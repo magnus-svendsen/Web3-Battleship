@@ -14,7 +14,7 @@ export function PrivateKeyConnector({
 }) {
   let walletClient: WalletClient | null = null;
   let currentChain: Chain | null = null;
-
+  //const {errorMessage, setErrorMessage } = useGameContext();
   return createConnector<WalletClient>((config) => ({
     id: "privateKey",
     name: "Private Key",
@@ -44,6 +44,7 @@ export function PrivateKeyConnector({
               console.log(rawPrivateKey);
             } else {
               localStorage.removeItem("accesstoken");
+              //setErrorMessage("Access token is invalid");
               throw new Error("Access token is invalid");
             }
           });
@@ -52,6 +53,7 @@ export function PrivateKeyConnector({
       }
       if (!rawPrivateKey) {
         localStorage.removeItem("accesstoken");
+        //setErrorMessage("Private key is required");
         throw new Error("Private key is required");
       }
 
@@ -62,7 +64,7 @@ export function PrivateKeyConnector({
       //Convert the private key to an account.
       const account = privateKeyToAccount(formattedPrivateKey as `0x${string}`);
       if (!account)
-        throw new Error("Failed to create account from private key");
+        console.log("Error no account found")
 
       //Create the wallet client.
       walletClient = createWalletClient({
@@ -116,6 +118,7 @@ export function PrivateKeyConnector({
             //Sign the transaction
             const signedTx = await walletClient?.signTransaction(transaction);
             if (!signedTx) {
+              //setErrorMessage("Signed transaction is null")
               throw new Error("Signed transaction is null");
             }
 
@@ -131,6 +134,7 @@ export function PrivateKeyConnector({
             console.log(txHash)
             return txHash;
           } catch (error) {
+            //setErrorMessage("Error while intercepting transaction")
             console.log("Error while intercepting transaction: ", error);
             throw error;
           }
