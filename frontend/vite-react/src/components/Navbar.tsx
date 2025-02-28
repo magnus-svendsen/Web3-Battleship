@@ -2,10 +2,15 @@ import { Button, Loader } from "@mantine/core";
 import { useAccount, useDisconnect, useWriteContract } from "wagmi";
 import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
+<<<<<<< HEAD
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import { GameResetEvent } from "../types/eventTypes";
 import { useRef, useState } from "react";
 import { useGameContext } from "../contexts/GameContext";
+=======
+import { useEffect, useState } from "react";
+import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
+>>>>>>> main
 
 const Navbar = () => {
   const account = useAccount();
@@ -44,6 +49,24 @@ const Navbar = () => {
   function testError(): void {
     setErrorMessage("Error: Noe feil skjedde")
   }
+
+  const [gameReset, setGameReset] = useState<boolean>(false);
+
+  useWatchContractEventListener({
+    eventName: "GameReset",
+    onEvent: (logs: any) => {
+      console.log("GameReset event detected:", logs[0].args);
+      // When the event is detected, set gameReset to true.
+      setGameReset(true);
+    },
+  });
+
+  useEffect(() => {
+    if (gameReset) {
+      // Trigger a page refresh when gameReset becomes true.
+      window.location.reload();
+    }
+  }, [gameReset]);
 
   return (
     <div className="pt-4 pb-12 flex justify-between w-full">

@@ -3,6 +3,7 @@ import { useAccount, useWriteContract } from "wagmi";
 import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
 import { useGameContext } from "../contexts/GameContext";
+import PersonIcon from '@mui/icons-material/Person';
 
 const GameLobby = () => {
   const { playerJoined } = useGameContext();
@@ -30,7 +31,23 @@ const GameLobby = () => {
             })
           }
         >
-          Join a game!
+          {playerJoined ? (
+            <div className="flex gap-2">
+              <div className="flex ">
+                <div className="mt-0.5">
+                  1 
+                </div>
+                <div className="">
+                  <PersonIcon />
+                </div>
+              </div>
+              <div className="mt-0.5">
+                Join a game!
+              </div>
+            </div>
+          ) : (
+            <>Join a game!</>
+          )}
         </Button>
       )}
     </div>
