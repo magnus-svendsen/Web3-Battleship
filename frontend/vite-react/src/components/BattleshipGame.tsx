@@ -16,29 +16,12 @@ const BattleshipGame = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [showGameUnderway, setShowGameUnderway] = useState(false);
 
-  const checkGameUnderway = () => {
-    if (
-      firstPlayerJoined !== "0x0000000000000000000000000000000000000000" &&
-      secondPlayerJoined !== "0x0000000000000000000000000000000000000000" &&
-      account.address !== firstPlayerJoined &&
-      account.address !== secondPlayerJoined
-    ) {
-      setShowGameUnderway(true);
-      localStorage.setItem("showGameUnderway", JSON.stringify(true));
-      window.location.reload();
-    } else {
-      setShowGameUnderway(false);
-      localStorage.setItem("showGameUnderway", JSON.stringify(false));
-    }
-  };
-
   useWatchContractEventListener({
     eventName: "GameStarted",
     onEvent: (logs: GameStartedEvent[]) => {
       const started = logs[0].args.started ?? false;
       setGameStarted(started);
       localStorage.setItem("gameStarted", JSON.stringify(started));
-      checkGameUnderway();
     },
   });
 
@@ -60,6 +43,25 @@ const BattleshipGame = () => {
     },
   });
 
+  const checkGameUnderway = () => {
+    if (
+      account.address !== firstPlayerJoined &&
+      account.address !== secondPlayerJoined
+    ) {
+      setShowGameUnderway(true);
+      localStorage.setItem("showGameUnderway", JSON.stringify(true));
+    } else {
+      setShowGameUnderway(false);
+      localStorage.setItem("showGameUnderway", JSON.stringify(false));
+    }
+  };
+
+  useEffect(() => {
+    if (secondPlayerJoined) {
+      checkGameUnderway();
+    }
+  }, [secondPlayerJoined]);
+
   useEffect(() => {
     const storedGameStarted = localStorage.getItem("gameStarted");
     if (storedGameStarted) {
@@ -72,6 +74,10 @@ const BattleshipGame = () => {
     const storedSecondPlayerJoined = localStorage.getItem("secondPlayerJoined");
     if (storedSecondPlayerJoined) {
       setSecondPlayerJoined(JSON.parse(storedSecondPlayerJoined));
+    }
+    const storedShowGameUnderway = localStorage.getItem("showGameUnderway");
+    if (storedShowGameUnderway) {
+      setShowGameUnderway(JSON.parse(storedShowGameUnderway));
     }
   }, []);
 
