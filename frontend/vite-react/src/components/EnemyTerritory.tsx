@@ -6,9 +6,7 @@ import { useAccount, useWriteContract } from "wagmi";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import { useGameContext } from "../contexts/GameContext";
 
-import type {
-  MoveResultEvent,
-} from "../types/eventTypes";
+import type { MoveResultEvent } from "../types/eventTypes";
 import type { Coordinate } from "../types/coordinate";
 
 const EnemyTerritory = () => {
@@ -20,6 +18,7 @@ const EnemyTerritory = () => {
     setTurnMessage,
     shipPlacementPlayer,
     bothPlayersPlacedShips,
+    setGameReset,
   } = useGameContext();
 
   const account = useAccount();
@@ -48,13 +47,13 @@ const EnemyTerritory = () => {
       const coordinate = intToCoordinate(data.pos);
       let updatedMoveMessage = "";
       let updatedTurnMessage = "";
-      
+
       if (data.player === account.address) {
         // Your move was made, so update enemy grid.
-        if (data.hit) { 
+        if (data.hit) {
           enemyGrid[coordinate.x][coordinate.y] = 3;
           updatedMoveMessage = "You shot and hit!";
-        } else { 
+        } else {
           enemyGrid[coordinate.x][coordinate.y] = 2;
           updatedMoveMessage = "You shot and missed!";
         }
@@ -74,10 +73,10 @@ const EnemyTerritory = () => {
         setGrid(grid);
         localStorage.setItem("grid", JSON.stringify(grid));
       }
-      
+
       setMoveMessage(updatedMoveMessage);
       setTurnMessage(updatedTurnMessage);
-      
+
       localStorage.setItem("moveMessage", JSON.stringify(updatedMoveMessage));
       localStorage.setItem("turnMessage", JSON.stringify(updatedTurnMessage));
     },
@@ -108,7 +107,7 @@ const EnemyTerritory = () => {
     const y = value % 10;
     return { x, y };
   };
-  
+
   useWatchContractEventListener({
     eventName: "GameOver",
     onEvent: (logs) => {
@@ -120,15 +119,26 @@ const EnemyTerritory = () => {
       } else {
         setMoveMessage("You lost the game!");
       }
+      setTimeout(() => {
+        setGameReset(true);
+      }, 5000);
     },
   });
 
-  function colorByState(state: number) {
-    if (state === 0) return "#050505";
-    if (state === 1) return "#bb1010";
-    if (state === 2) return "#ffffff";
-    if (state === 3) return "#bb1010";
-  }
+  const colorByState = (cell: number) => {
+    switch (cell) {
+      case 0:
+        return "bg-[#050505]";
+      case 1:
+        return "bg-[#bb1010]";
+      case 2:
+        return "bg-[#ffffff]";
+      case 3:
+        return "bg-[#bb1010]";
+      default:
+        return "bg-black";
+    }
+  };
 
   return (
     <div>
@@ -139,71 +149,47 @@ const EnemyTerritory = () => {
           )}
         </div>
       ) : (
-        <div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              pointerEvents: turnMessage === "Your turn" ? "auto" : "none",
-              opacity: turnMessage === "Your turn" ? 1 : 0.5,
-            }}
-          >
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(10, 40px)",
-                gap: "2px",
-                backgroundColor: "#1212ab",
-                padding: "2px",
-              }}
-            >
-              {enemyGrid.map((row, rowIndex) =>
-                row.map((cell, colIndex) => (
-                  <div
-                    key={`${row}-${colIndex}`}
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: "1px solid black",
-                      cursor: "pointer",
-                      backgroundColor: colorByState(cell),
-                    }}
-                  >
-                    <button
-                      className=" cursor-pointer"
-                      type="button"
-                      onClick={() =>
-                        writeContract({
-                          abi,
-                          address: contractAddress,
-                          functionName: "move",
-                          args: [rowIndex, colIndex],
-                        })
-                      }
+        <div
+          className={`flex items-center justify-center ${
+            turnMessage === "Your turn"
+              ? "pointer-events-auto opacity-100"
+              : "pointer-events-none opacity-50"
+          }`}
+        >
+          <div className="grid grid-cols-10 gap-0.5 bg-[#1212ab] p-0.5">
+            {enemyGrid.map((row, rowIndex) =>
+              row.map((cell, colIndex) => (
+                <button
+                  key={`${row}-${colIndex}`}
+                  disabled={cell === 2 || cell === 3}
+                  className={`flex items-center justify-center border border-black w-10 h-10 ${colorByState(cell)} ${cell !== 2 && cell !== 3 && "cursor-pointer hover:bg-slate-700"}`}
+                  type="button"
+                  onClick={() =>
+                    writeContract({
+                      abi,
+                      address: contractAddress,
+                      functionName: "move",
+                      args: [rowIndex, colIndex],
+                    })
+                  }
+                >
+                  {cell === 2 || cell === 3 ? (
+                    <span
+                      style={{
+                        color: "#000000",
+                        fontSize: "30px",
+                        fontWeight: "bold",
+                        lineHeight: 1,
+                      }}
                     >
-                      {cell === 2 || cell === 3 ? (
-                        <span
-                          style={{
-                            color: "#000000",
-                            fontSize: "30px",
-                            fontWeight: "bold",
-                            lineHeight: 1,
-                          }}
-                        >
-                          x
-                        </span>
-                      ) : (
-                        <span>Fire</span>
-                      )}
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
+                      x
+                    </span>
+                  ) : (
+                    <span>Fire</span>
+                  )}
+                </button>
+              ))
+            )}
           </div>
         </div>
       )}
