@@ -95,7 +95,7 @@ contract Battleship {
             // Mark the cell as hit: clear that bit.
             opponentData.ships &= ~(1 << pos);
             opponentData.remainingCells--;
-            hit = true; // Hit
+            hit = true;
             if (opponentData.remainingCells == 0) {
                 gameOver = true;
                 emit GameOver(gameId, msg.sender);

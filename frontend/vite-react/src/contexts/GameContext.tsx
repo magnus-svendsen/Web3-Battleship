@@ -17,6 +17,8 @@ interface GameContextType {
   setMoveMessage: React.Dispatch<React.SetStateAction<string>>;
   turnMessage: string;
   setTurnMessage: React.Dispatch<React.SetStateAction<string>>;
+  gameReset: boolean;
+  setGameReset: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // Create the context with a default value (which will be overridden by the provider).
@@ -42,6 +44,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [bothPlayersPlacedShips, setBothPlayersPlacedShips] = useState<boolean>(false);
   const [moveMessage, setMoveMessage] = useState<string>("");
   const [turnMessage, setTurnMessage] = useState<string>("");
+  const [gameReset, setGameReset] = useState<boolean>(false);
 
   // Provide all state values and setters.
   return (
@@ -59,6 +62,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         turnMessage,
         setMoveMessage,
         setTurnMessage,
+        gameReset,
+        setGameReset,
       }}
     >
       {children}
