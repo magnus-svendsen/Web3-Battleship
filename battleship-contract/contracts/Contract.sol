@@ -53,7 +53,7 @@ contract Battleship {
 
     /// @notice Place your ships by providing an array of encoded positions.
     /// Each position is a number between 0 and 99 (calculated as row * 10 + col).
-    /// This version uses a bitmask to store ship positions to save gas.
+    /// Uses a bitmask to store ship positions to save gas.
     function placeShips(uint8[] calldata positions) public {
         PlayerData storage pd = gamePlayers[gameId][msg.sender];
         require(!pd.shipsPlaced, "Ships have already been placed");
