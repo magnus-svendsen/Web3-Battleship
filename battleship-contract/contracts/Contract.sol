@@ -6,7 +6,6 @@ contract Battleship {
     address public player1;
     address public player2;
     bool public gameOver;
-    address public whoseTurn;
 
     // Instead of using a mapping for each cell, we store all ship placements in one uint256.
     // For cells 0–99, bit i indicates whether a ship occupies that cell.
@@ -22,11 +21,9 @@ contract Battleship {
     // Events with gameId included
     event FirstPlayerJoined(uint256 gameId, address indexed player);
     event SecondPlayerJoined(uint256 gameId, address indexed player);
-    event GameStarted(uint256 gameId, bool started);
     event ShipPlacement(uint256 gameId, address indexed player);
     event BothPlayersPlacedShips(uint256 gameId, bool placed);
-    event MoveResult(uint256 gameId, address indexed player, bool hit, uint8 pos);
-    event GameOver(uint256 gameId, address winner);
+    event MoveResult(uint256 gameId, address indexed player, bool hit, uint8 pos, bool gameOver);
     event GameReset(uint256 newGameId);
 
     constructor() {
@@ -44,10 +41,6 @@ contract Battleship {
             require(msg.sender != player1, "Already joined as player1");
             player2 = msg.sender;
             emit SecondPlayerJoined(gameId, player2);
-            // Start the game once both players have joined.
-            whoseTurn = player1;
-            gameOver = false;
-            emit GameStarted(gameId, true);
         }
     }
 
@@ -98,14 +91,11 @@ contract Battleship {
             hit = true;
             if (opponentData.remainingCells == 0) {
                 gameOver = true;
-                emit GameOver(gameId, msg.sender);
+                emit MoveResult(gameId, msg.sender, hit, pos, gameOver);
             }
         }
-
-        emit MoveResult(gameId, msg.sender, hit, pos);
-
         if (!gameOver) {
-            whoseTurn = opponent;
+            emit MoveResult(gameId, msg.sender, hit, pos, gameOver);
         }
     }
 
@@ -121,7 +111,6 @@ contract Battleship {
         }
         player1 = address(0);
         player2 = address(0);
-        whoseTurn = address(0);
         gameOver = false;
         gameId++;  // Increment gameId for the new game session.
         emit GameReset(gameId);
