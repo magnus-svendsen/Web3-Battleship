@@ -13,7 +13,9 @@ const Navbar = () => {
   const { writeContract } = useWriteContract();
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const timeoutRef = useRef<number | null>(null);
-  const {errorMessage, setErrorMessage} = useGameContext()
+  const { setErrorMessage } = useGameContext()
+
+
   useWatchContractEventListener({
     eventName: "GameReset",
     onEvent: (_logs: GameResetEvent[]) => {
@@ -33,7 +35,6 @@ const Navbar = () => {
       setErrorMessage("Failed to reset game. Please try again")
     }, 20000); // 20sec timeout if no transaction is validated
 
-
     writeContract({
       abi,
       address: contractAddress,
@@ -42,9 +43,6 @@ const Navbar = () => {
     })
   }
 
-  function testError(): void {
-    setErrorMessage("Error: Noe feil skjedde")
-  }
 
   return (
     <div className="pt-4 pb-12 flex justify-between w-full">
@@ -74,7 +72,7 @@ const Navbar = () => {
             > <Loader></Loader>
             </Button>
             :
-            <><Button
+            <Button
               variant="red"
               color="teal"
               size="sm"
@@ -85,10 +83,6 @@ const Navbar = () => {
             >
               Reset game
             </Button>
-              <Button
-              onClick={() => testError()}>
-                Test error message
-              </Button></>
           }
         </div>
       )}
