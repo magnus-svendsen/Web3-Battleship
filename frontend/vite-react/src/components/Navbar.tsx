@@ -4,11 +4,12 @@ import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import { GameResetEvent } from "../types/eventTypes";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGameContext } from "../contexts/GameContext";
 
 const Navbar = () => {
   const account = useAccount();
+  const { gameReset, setGameReset } = useGameContext();
   const { disconnect } = useDisconnect();
   const { writeContract } = useWriteContract();
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -43,6 +44,40 @@ const Navbar = () => {
     })
   }
 
+
+  useWatchContractEventListener({
+    eventName: "GameReset",
+    onEvent: (logs: any) => {
+      console.log("GameReset event detected:", logs[0].args);
+      // When the event is detected, set gameReset to true.
+      setGameReset(true);
+    },
+  });
+
+  useEffect(() => {
+    if (gameReset) {
+      // Clear localStorage items related to the game.
+      localStorage.removeItem("gameStarted");
+      localStorage.removeItem("firstPlayerJoined");
+      localStorage.removeItem("secondPlayerJoined");
+      localStorage.removeItem("showGameUnderway");
+
+      localStorage.removeItem("shipPlacementPlayer");
+      localStorage.removeItem("grid");
+      localStorage.removeItem("shipsSubmitted");
+      localStorage.removeItem("placedShips");
+      localStorage.removeItem("shipPositions");
+      localStorage.removeItem("bothPlayersPlacedShips");
+
+      localStorage.removeItem("enemyGrid");
+      localStorage.removeItem("shipPositions");
+      localStorage.removeItem("moveMessage");
+      localStorage.removeItem("turnMessage");
+
+      // Then trigger a page refresh.
+      window.location.reload();
+    }
+  }, [gameReset]);
 
   return (
     <div className="pt-4 pb-12 flex justify-between w-full">

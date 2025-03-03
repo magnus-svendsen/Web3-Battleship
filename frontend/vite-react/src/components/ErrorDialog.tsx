@@ -21,7 +21,6 @@ const ErrorDialog = () => {
     }, TIMEOUT_LENGTH); 
   },[errorMessage]);
 
-  
 
   return (
     <Dialog opened={displayDialog} onClose={close} size="lg" radius="md" withBorder>

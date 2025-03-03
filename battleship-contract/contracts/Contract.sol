@@ -8,10 +8,10 @@ contract Battleship {
     bool public gameOver;
     address public whoseTurn;
 
+    // Instead of using a mapping for each cell, we store all ship placements in one uint256.
+    // For cells 0–99, bit i indicates whether a ship occupies that cell.
     struct PlayerData {
-        // Mapping from an encoded cell (0 to 99) to a bool indicating whether a ship exists there.
-        // When a ship is hit, the mapping value is set to false.
-        mapping(uint8 => bool) ships;
+        uint256 ships;        // Bitmask for ship placements.
         uint8 remainingCells;
         bool shipsPlaced;
     }
@@ -20,9 +20,10 @@ contract Battleship {
     mapping(uint256 => mapping(address => PlayerData)) private gamePlayers;
 
     // Events with gameId included
-    event PlayerJoined(uint256 gameId, address indexed player);
+    event FirstPlayerJoined(uint256 gameId, address indexed player);
+    event SecondPlayerJoined(uint256 gameId, address indexed player);
     event GameStarted(uint256 gameId, bool started);
-    event ShipPlacement(uint256 gameId, address indexed player, uint8[] positions);
+    event ShipPlacement(uint256 gameId, address indexed player);
     event BothPlayersPlacedShips(uint256 gameId, bool placed);
     event MoveResult(uint256 gameId, address indexed player, bool hit, uint8 pos);
     event GameOver(uint256 gameId, address winner);
@@ -38,10 +39,11 @@ contract Battleship {
 
         if (player1 == address(0)) {
             player1 = msg.sender;
-            emit PlayerJoined(gameId, player1);
+            emit FirstPlayerJoined(gameId, player1);
         } else {
             require(msg.sender != player1, "Already joined as player1");
             player2 = msg.sender;
+            emit SecondPlayerJoined(gameId, player2);
             // Start the game once both players have joined.
             whoseTurn = player1;
             gameOver = false;
@@ -51,9 +53,8 @@ contract Battleship {
 
     /// @notice Place your ships by providing an array of encoded positions.
     /// Each position is a number between 0 and 99 (calculated as row * 10 + col).
-    /// For example, a ship cell at (3, 1) is encoded as 31.
+    /// Uses a bitmask to store ship positions to save gas.
     function placeShips(uint8[] calldata positions) public {
-        // Use the current gameId mapping.
         PlayerData storage pd = gamePlayers[gameId][msg.sender];
         require(!pd.shipsPlaced, "Ships have already been placed");
         require(positions.length > 0, "No ship positions provided");
@@ -61,13 +62,14 @@ contract Battleship {
         for (uint i = 0; i < positions.length; i++) {
             uint8 pos = positions[i];
             require(pos < 100, "Position out of range");
-            // Prevent duplicate positions.
-            require(!pd.ships[pos], "Duplicate position provided");
-            pd.ships[pos] = true;
+            // Check for duplicates using bitmask: if bit is already set, duplicate exists.
+            require((pd.ships & (1 << pos)) == 0, "Duplicate position provided");
+            // Set the bit for this position.
+            pd.ships |= (1 << pos);
         }
         pd.remainingCells = uint8(positions.length);
         pd.shipsPlaced = true;
-        emit ShipPlacement(gameId, msg.sender, positions);
+        emit ShipPlacement(gameId, msg.sender);
 
         // Check if both players have placed their ships.
         if (gamePlayers[gameId][player1].shipsPlaced && gamePlayers[gameId][player2].shipsPlaced) {
@@ -88,9 +90,10 @@ contract Battleship {
         uint8 pos = x * 10 + y;
         bool hit = false;
 
-        // Check if the opponent has a ship at that position.
-        if (opponentData.ships[pos]) {
-            opponentData.ships[pos] = false;
+        // Check if the opponent has a ship at that position using the bitmask.
+        if ((opponentData.ships & (1 << pos)) != 0) {
+            // Mark the cell as hit: clear that bit.
+            opponentData.ships &= ~(1 << pos);
             opponentData.remainingCells--;
             hit = true;
             if (opponentData.remainingCells == 0) {

@@ -33,6 +33,25 @@ export const abi = [
         "type": "uint256"
       },
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "player",
+        "type": "address"
+      }
+    ],
+    "name": "FirstPlayerJoined",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      },
+      {
         "indexed": false,
         "internalType": "address",
         "name": "winner",
@@ -121,7 +140,7 @@ export const abi = [
         "type": "address"
       }
     ],
-    "name": "PlayerJoined",
+    "name": "SecondPlayerJoined",
     "type": "event"
   },
   {

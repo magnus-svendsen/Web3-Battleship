@@ -1,18 +1,18 @@
 import { Button } from "@mantine/core";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
 import { useGameContext } from "../contexts/GameContext";
+import PersonIcon from '@mui/icons-material/Person';
 
 const GameLobby = () => {
-  const { playerJoined } = useGameContext();
-
+  const { firstPlayerJoined } = useGameContext();
   const { writeContract } = useWriteContract();
   const account = useAccount();
 
   return (
     <div>
-      {account.address === playerJoined ? (
+      {account.address === firstPlayerJoined ? (
         <h2 className="font-bold text-2xl py-8">Waiting for opponent...</h2>
       ) : (
         <Button
@@ -30,7 +30,23 @@ const GameLobby = () => {
             })
           }
         >
-          Join a game!
+          {firstPlayerJoined ? (
+            <div className="flex gap-2">
+              <div className="flex ">
+                <div className="mt-0.5">
+                  1 
+                </div>
+                <div className="">
+                  <PersonIcon />
+                </div>
+              </div>
+              <div className="mt-0.5">
+                Join a game!
+              </div>
+            </div>
+          ) : (
+            <>Join a game!</>
+          )}
         </Button>
       )}
     </div>

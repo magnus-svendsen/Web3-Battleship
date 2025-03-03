@@ -4,19 +4,23 @@ import {
   type DragOverEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import Ship from "./Ship";
+import Ship from "./ship";
 import DroppableGridCell from "./DroppableGridCell";
 import { useEffect, useState } from "react";
 import { Button } from "@mantine/core";
 import { contractAddress } from "../utils/contractAddress";
-import { useWriteContract } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 import type { GridData } from "../types/gridTypes";
 import type { ShipDataContract } from "../types/shipTypes";
 import { abi } from "../utils/abi";
 import { useGameContext } from "../contexts/GameContext";
+import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
+import type { BothPlayersPlacedShipsEvent, ShipPlacementEvent } from "../types/eventTypes";
 
 const ShipPlacementBoard = () => {
-  const { grid, setGrid } = useGameContext();
+  const account = useAccount();
+
+  const { firstPlayerJoined, grid, setGrid, shipPlacementPlayer, setShipPlacementPlayer, bothPlayersPlacedShips, setBothPlayersPlacedShips, setMoveMessage, turnMessage, setTurnMessage } = useGameContext();
 
   const { writeContract } = useWriteContract();
 
@@ -54,13 +58,72 @@ const ShipPlacementBoard = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
-  const handleOrientationChange = (id: number, isHorizontal: boolean) => {
+  useWatchContractEventListener({
+    eventName: "ShipPlacement",
+    onEvent: (logs: ShipPlacementEvent[]) => {
+      const shipPlayer = logs[0].args.player ?? "";
+      // Only update local storage for the correct account.
+      if (shipPlayer === account.address) {
+        setShipPlacementPlayer(shipPlayer);
+        localStorage.setItem("shipPlacementPlayer", JSON.stringify(shipPlayer));
+        localStorage.setItem("grid", JSON.stringify(grid));
+        localStorage.setItem("shipsSubmitted", JSON.stringify(true));
+        localStorage.setItem("placedShips", JSON.stringify([true, true, true, true, true]));
+        localStorage.setItem("shipPositions", JSON.stringify(shipPositions));
+        setShipsSubmitted(true);
+
+      }
+    },
+  });
+
+  useWatchContractEventListener({
+    eventName: "BothPlayersPlacedShips",
+    onEvent: (logs: BothPlayersPlacedShipsEvent[]) => {
+      const placed = logs[0].args.placed ?? false;
+      setBothPlayersPlacedShips(placed);
+      localStorage.setItem("bothPlayersPlacedShips", JSON.stringify(placed));
+      if (firstPlayerJoined === account.address) {
+        const message = "Your turn";
+        setTurnMessage(message);
+        localStorage.setItem("turnMessage", JSON.stringify(message));
+      } else {
+        const message = "Opponent's turn";
+        setTurnMessage(message);
+        localStorage.setItem("turnMessage", JSON.stringify(message));
+      }
+    },
+  });
+
+  useEffect(() => {
+    const storedShipPlacementPlayer = localStorage.getItem("shipPlacementPlayer");
+    if (storedShipPlacementPlayer) {
+      setShipPlacementPlayer(JSON.parse(storedShipPlacementPlayer));
+    }
+    const storedShipsSubmitted = localStorage.getItem("shipsSubmitted");
+    if (storedShipsSubmitted) {
+      setShipsSubmitted(JSON.parse(storedShipsSubmitted));
+    }
+    const storedPlacedShips = localStorage.getItem("placedShips");
+    if (storedPlacedShips) {
+      setPlacedShips(JSON.parse(storedPlacedShips));
+    }
+    const storedBothPlayersPlacedShips = localStorage.getItem("bothPlayersPlacedShips");
+    if (storedBothPlayersPlacedShips) {
+      setBothPlayersPlacedShips(JSON.parse(storedBothPlayersPlacedShips));
+    }
+    const savedTurnMessage = localStorage.getItem("turnMessage");
+    if (savedTurnMessage) {
+      setTurnMessage(JSON.parse(savedTurnMessage));
+    }
+  }, []);
+
+  const handleOrientationChange = (id: number) => {
     const oldShipOrientation = shipOrientations;
     oldShipOrientation[id] = !oldShipOrientation[id];
     setShipsOrientations([...oldShipOrientation]);
   };
 
-  const handleDragStart = (event: DragStartEvent) => {
+  const handleDragStart = () => {
     setIsDragging(true);
   };
 
@@ -182,39 +245,6 @@ const ShipPlacementBoard = () => {
     );
     setTempGrid(updatedTempGrid);
   };
-  
-  
-
-  // On component mount, load saved grid state:
-useEffect(() => {
-  const savedGrid = localStorage.getItem("shipGrid");
-  if (savedGrid) {
-    setGrid(JSON.parse(savedGrid));
-  }
-  const savedTempGrid = localStorage.getItem("shipTempGrid");
-  if (savedTempGrid) {
-    setTempGrid(JSON.parse(savedTempGrid));
-  }
-  const savedShipPositions = localStorage.getItem("shipPositions");
-  if (savedShipPositions) {
-    setShipPositions(JSON.parse(savedShipPositions));
-  }
-}, []);
-
-// Whenever grid state updates, persist it:
-useEffect(() => {
-  localStorage.setItem("shipGrid", JSON.stringify(grid));
-}, [grid]);
-
-useEffect(() => {
-  localStorage.setItem("shipTempGrid", JSON.stringify(tempGrid));
-}, [tempGrid]);
-
-useEffect(() => {
-  console.log("Ship positions: ", shipPositions);
-  localStorage.setItem("shipPositions", JSON.stringify(shipPositions));
-}, [shipPositions]);
-
 
   const lengthByID = (id: number) => {
     if (id === 1) return 5;
@@ -233,7 +263,6 @@ useEffect(() => {
     if (id === 4) return 2;
     return 0;
   };
-
 
   return (
     <div>
@@ -299,7 +328,6 @@ useEffect(() => {
             size="md"
             radius="md"
             onClick={() => {
-              setShipsSubmitted(true);
               writeContract({
                 abi,
                 address: contractAddress,
