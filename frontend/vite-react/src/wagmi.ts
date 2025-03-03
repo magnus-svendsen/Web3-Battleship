@@ -1,8 +1,8 @@
-import { http, createConfig } from 'wagmi'
+import { http, createConfig, webSocket } from 'wagmi'
 import { mainnet, sepolia } from 'wagmi/chains'
 import { injected } from 'wagmi/connectors'
 import { PrivateKeyConnector } from "./utils/privateKeyConnector"
-import { sepoliaRPC, mainnetRPC} from "./utils/rpcURL"
+import { sepoliaRPC, mainnetRPC, sepoliaWsRPC} from "./utils/rpcURL"
 
 export const config = createConfig({
   chains: [mainnet, sepolia],
@@ -16,7 +16,7 @@ export const config = createConfig({
   ssr: true,
   transports: {
     [mainnet.id]: http(mainnetRPC),
-    [sepolia.id]: http(sepoliaRPC),
+    [sepolia.id]: webSocket(sepoliaWsRPC),
   },
 })
 
