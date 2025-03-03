@@ -3,7 +3,7 @@ import { contractAddress } from "../utils/contractAddress";
 import { abi } from "../utils/abi";
 
 interface WatchEventParams {
-  eventName: "BothPlayersPlacedShips" | "GameOver" | "GameReset" | "GameStarted" | "MoveResult" | "FirstPlayerJoined" | "SecondPlayerJoined" | "ShipPlacement";
+  eventName: "FirstPlayerJoined" | "SecondPlayerJoined" | "ShipPlacement" | "BothPlayersPlacedShips" | "MoveResult" | "GameReset";
   onEvent: (logs: any[]) => void;
 }
 
