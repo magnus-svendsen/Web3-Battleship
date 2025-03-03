@@ -2,23 +2,20 @@ import { Button } from "@mantine/core";
 import { useAccount, useDisconnect, useWriteContract } from "wagmi";
 import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
-import { useGameContext } from "../contexts/GameContext";
 
 const Navbar = () => {
   const account = useAccount();
 
-  const { gameReset, setGameReset } = useGameContext();
-
   const { disconnect } = useDisconnect();
   const { writeContract } = useWriteContract();
 
+  const [gameReset, setGameReset] = useState<boolean>(false);
+
   useWatchContractEventListener({
     eventName: "GameReset",
-    onEvent: (logs: any) => {
-      console.log("GameReset event detected:", logs[0].args);
-      // When the event is detected, set gameReset to true.
+    onEvent: () => {
       setGameReset(true);
     },
   });
