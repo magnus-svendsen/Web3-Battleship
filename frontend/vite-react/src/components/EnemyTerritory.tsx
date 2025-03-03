@@ -77,7 +77,8 @@ const EnemyTerritory = () => {
         setGrid(grid);
         localStorage.setItem("grid", JSON.stringify(grid));
       }
-
+      
+      if (timeoutRef.current) { clearTimeout(timeoutRef.current) }
       setMoveMessage(updatedMoveMessage);
       setTurnMessage(updatedTurnMessage);
 
