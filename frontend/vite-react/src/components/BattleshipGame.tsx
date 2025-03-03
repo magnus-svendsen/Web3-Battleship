@@ -114,7 +114,7 @@ const BattleshipGame = () => {
                   {shipPlacementPlayer === account.address ? (
                     <h2>Waiting for opponent to place their ships...</h2>
                   ) : (
-                    <h2>Opponent is waiting for you to place your ships...</h2>
+                    <h2>Your opponent has placed their ships...</h2>
                   )}
                 </div>
               )}

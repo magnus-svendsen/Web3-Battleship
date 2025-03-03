@@ -47,7 +47,7 @@ const Navbar = () => {
 
   return (
     <div className="pt-4 pb-12 flex justify-between w-full">
-      <h2 className="font-bold text-2xl ml-1">Web3 Battleship</h2>
+      <h2 className="font-bold text-2xl ml-3">Web3 Battleship</h2>
       {account.status === "connected" && (
         <div className="flex">
           <Button
