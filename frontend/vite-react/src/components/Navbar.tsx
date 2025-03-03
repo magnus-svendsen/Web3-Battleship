@@ -34,7 +34,7 @@ const Navbar = () => {
       setIsLoading(false)
       timeoutRef.current = null;
       setErrorMessage("Failed to reset game. Please try again")
-    }, 20000); // 20sec timeout if no transaction is validated
+    }, 30000); // 20sec timeout if no transaction is validated
 
     writeContract({
       abi,

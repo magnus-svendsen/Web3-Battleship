@@ -43,6 +43,7 @@ const EnemyTerritory = () => {
   useWatchContractEventListener({
     eventName: "MoveResult",
     onEvent: (logs: MoveResultEvent[]) => {
+      console.log("Move made!")
       const data = logs[0].args;
       if (typeof data.pos !== "number") {
         throw new Error("data.pos is undefined");
