@@ -4,14 +4,9 @@ import Login from "./components/Login";
 import Navbar from "./components/Navbar";
 import { GameProvider } from "./contexts/GameContext";
 import ErrorDialog from "./components/ErrorDialog";
-import { useEffect } from "react";
 
 function App() {
   const account = useAccount();
-
-  useEffect(() => {
-    console.log(account)
-  },[account])
 
   return (
     <GameProvider>

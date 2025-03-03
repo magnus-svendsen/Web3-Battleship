@@ -77,7 +77,7 @@ const EnemyTerritory = () => {
         setGrid(grid);
         localStorage.setItem("grid", JSON.stringify(grid));
       }
-      
+
       if (timeoutRef.current) { clearTimeout(timeoutRef.current) }
       setMoveMessage(updatedMoveMessage);
       setTurnMessage(updatedTurnMessage);
@@ -121,7 +121,7 @@ const EnemyTerritory = () => {
     timeoutRef.current = window.setTimeout(() => {
       setLoadingCell(null);
       setErrorMessage("Transaction timed out. Please try again.")
-    }, 30000)
+    }, 60000)
 
     try {
       writeContract({
