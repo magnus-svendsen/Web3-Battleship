@@ -24,5 +24,6 @@ export interface MoveResultEvent {
     pos: number;
     player: string;
     hit: boolean;
+    gameOver: boolean;
   };
 }
