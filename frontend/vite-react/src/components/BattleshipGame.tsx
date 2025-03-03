@@ -1,5 +1,5 @@
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
-import type { GameStartedEvent, PlayerJoinedEvent } from "../types/eventTypes";
+import type { PlayerJoinedEvent } from "../types/eventTypes";
 import GameLobby from "./GameLobby";
 import ShipPlacementBoard from "./ShipPlacementBoard";
 import EnemyTerritory from "./EnemyTerritory";

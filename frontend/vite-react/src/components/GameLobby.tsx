@@ -1,5 +1,5 @@
 import { Button } from "@mantine/core";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
 import { useGameContext } from "../contexts/GameContext";
