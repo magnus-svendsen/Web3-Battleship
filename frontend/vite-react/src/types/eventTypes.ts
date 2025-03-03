@@ -1,9 +1,3 @@
-export interface GameStartedEvent {
-  args: {
-    started: boolean;
-  };
-}
-
 export interface BothPlayersPlacedShipsEvent {
   args: {
     placed: boolean;
