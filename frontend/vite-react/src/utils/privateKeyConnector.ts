@@ -53,7 +53,6 @@ export function PrivateKeyConnector({
       }
       if (!rawPrivateKey) {
         localStorage.removeItem("accesstoken");
-        //setErrorMessage("Private key is required");
         throw new Error("Private key is required");
       }
 
@@ -118,7 +117,6 @@ export function PrivateKeyConnector({
             //Sign the transaction
             const signedTx = await walletClient?.signTransaction(transaction);
             if (!signedTx) {
-              //setErrorMessage("Signed transaction is null")
               throw new Error("Signed transaction is null");
             }
 
@@ -134,9 +132,7 @@ export function PrivateKeyConnector({
             console.log(txHash)
             return txHash;
           } catch (error) {
-            //setErrorMessage("Error while intercepting transaction")
             console.log("Error while intercepting transaction: ", error);
-            throw error;
           }
         }
         return originalRequest(args as any);
