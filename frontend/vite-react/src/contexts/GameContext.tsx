@@ -9,6 +9,8 @@ interface GameContextType {
   setGrid: React.Dispatch<React.SetStateAction<GridData>>;
   firstPlayerJoined: string;
   setFirstPlayerJoined: React.Dispatch<React.SetStateAction<string>>;
+  secondPlayerJoined: string;
+  setSecondPlayerJoined: React.Dispatch<React.SetStateAction<string>>;
   shipPlacementPlayer: string;
   setShipPlacementPlayer: React.Dispatch<React.SetStateAction<string>>;
   bothPlayersPlacedShips: boolean;
@@ -42,6 +44,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
   const [firstPlayerJoined, setFirstPlayerJoined] = useState<string>("");
+  const [secondPlayerJoined, setSecondPlayerJoined] = useState<string>("");
   const [shipPlacementPlayer, setShipPlacementPlayer] = useState<string>("");
   const [bothPlayersPlacedShips, setBothPlayersPlacedShips] = useState<boolean>(false);
   const [moveMessage, setMoveMessage] = useState<string>("");
@@ -57,6 +60,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setGrid,
         firstPlayerJoined,
         setFirstPlayerJoined,
+        secondPlayerJoined,
+        setSecondPlayerJoined,
         shipPlacementPlayer,
         setShipPlacementPlayer,
         bothPlayersPlacedShips,

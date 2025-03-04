@@ -4,12 +4,12 @@ import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
 import { useGameContext } from "../contexts/GameContext";
 import PersonIcon from '@mui/icons-material/Person';
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import { PlayerJoinedEvent } from "../types/eventTypes";
 
 const GameLobby = () => {
-  const { firstPlayerJoined, setErrorMessage } = useGameContext();
+  const { firstPlayerJoined, setErrorMessage, setFirstPlayerJoined, setSecondPlayerJoined } = useGameContext();
   const { writeContract } = useWriteContract();
   const account = useAccount();
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -32,10 +32,13 @@ const GameLobby = () => {
 
   useWatchContractEventListener({
     eventName: "FirstPlayerJoined",
-    onEvent: (_logs: PlayerJoinedEvent[]) => {
-      console.log(account.address)
-      console.log(_logs[0].args.player)
-      if (_logs[0].args.player === account.address) {
+    onEvent: (logs: PlayerJoinedEvent[]) => {
+      const player = logs[0].args.player ?? "";
+
+      setFirstPlayerJoined(player);
+      localStorage.setItem("firstPlayerJoined", JSON.stringify(player));
+
+      if (player === account.address) {
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
           timeoutRef.current = null
@@ -49,10 +52,13 @@ const GameLobby = () => {
 
   useWatchContractEventListener({
     eventName: "SecondPlayerJoined",
-    onEvent: (_logs: PlayerJoinedEvent[]) => {
-      console.log(account.address)
-      console.log(_logs[0].args.player)
-      if (_logs[0].args.player === account.address) {
+    onEvent: (logs: PlayerJoinedEvent[]) => {
+      const player = logs[0].args.player ?? "";
+
+      setSecondPlayerJoined(player);
+      localStorage.setItem("secondPlayerJoined", JSON.stringify(player));
+
+      if (player === account.address) {
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
           timeoutRef.current = null

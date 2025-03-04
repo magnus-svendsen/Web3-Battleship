@@ -1,5 +1,3 @@
-import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
-import type { PlayerJoinedEvent } from "../types/eventTypes";
 import GameLobby from "./GameLobby";
 import ShipPlacementBoard from "./ShipPlacementBoard";
 import EnemyTerritory from "./EnemyTerritory";
@@ -13,33 +11,17 @@ const BattleshipGame = () => {
   const {
     firstPlayerJoined,
     setFirstPlayerJoined,
+    secondPlayerJoined,
+    setSecondPlayerJoined,
     shipPlacementPlayer,
     bothPlayersPlacedShips,
     moveMessage,
     turnMessage,
   } = useGameContext();
 
-  const [secondPlayerJoined, setSecondPlayerJoined] = useState<string>("");
   const [gameStarted, setGameStarted] = useState(false);
   const [showGameUnderway, setShowGameUnderway] = useState(false);
 
-  useWatchContractEventListener({
-    eventName: "FirstPlayerJoined",
-    onEvent: (logs: PlayerJoinedEvent[]) => {
-      const player = logs[0].args.player ?? "";
-      setFirstPlayerJoined(player);
-      localStorage.setItem("firstPlayerJoined", JSON.stringify(player));
-    },
-  });
-
-  useWatchContractEventListener({
-    eventName: "SecondPlayerJoined",
-    onEvent: (logs: PlayerJoinedEvent[]) => {
-      const player = logs[0].args.player ?? "";
-      setSecondPlayerJoined(player);
-      localStorage.setItem("secondPlayerJoined", JSON.stringify(player));
-    },
-  });
 
   const checkGameUnderway = () => {
     if (
