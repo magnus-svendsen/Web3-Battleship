@@ -293,6 +293,7 @@ const ShipPlacementBoard = () => {
                   row={rowIndex}
                   col={colIndex}
                   state={cell}
+                  isPreview={isDragging}
                 />
               ))
             )}

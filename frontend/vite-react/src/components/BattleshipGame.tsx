@@ -85,7 +85,7 @@ const BattleshipGame = () => {
     <>
       {showGameUnderway ? (
         <h2 className="flex justify-center font-bold text-2xl py-20">
-          Game already underway, please wait for the next game.
+          Game already underway, please wait for the next game...
         </h2>
       ) : (
         <div

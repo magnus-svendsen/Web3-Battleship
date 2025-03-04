@@ -159,14 +159,7 @@ const EnemyTerritory = () => {
               }
             >
               {cell === 2 || cell === 3 ? (
-                <span
-                  style={{
-                    color: "#000000",
-                    fontSize: "30px",
-                    fontWeight: "bold",
-                    lineHeight: 1,
-                  }}
-                >
+                <span className="text-black font-bold text-3xl h-full">
                   x
                 </span>
               ) : (
