@@ -2,7 +2,6 @@ import {
   DndContext,
   type DragEndEvent,
   type DragOverEvent,
-  type DragStartEvent,
 } from "@dnd-kit/core";
 import Ship from "./ship";
 import DroppableGridCell from "./DroppableGridCell";
@@ -20,7 +19,7 @@ import type { BothPlayersPlacedShipsEvent, ShipPlacementEvent } from "../types/e
 const ShipPlacementBoard = () => {
   const account = useAccount();
 
-  const { firstPlayerJoined, grid, setGrid, shipPlacementPlayer, setShipPlacementPlayer, bothPlayersPlacedShips, setBothPlayersPlacedShips, setMoveMessage, turnMessage, setTurnMessage } = useGameContext();
+  const { firstPlayerJoined, grid, setGrid, setShipPlacementPlayer, setBothPlayersPlacedShips, setTurnMessage } = useGameContext();
 
   const { writeContract } = useWriteContract();
 
@@ -62,16 +61,16 @@ const ShipPlacementBoard = () => {
     eventName: "ShipPlacement",
     onEvent: (logs: ShipPlacementEvent[]) => {
       const shipPlayer = logs[0].args.player ?? "";
+      setShipPlacementPlayer(shipPlayer);
+      localStorage.setItem("shipPlacementPlayer", JSON.stringify(shipPlayer));
+      
       // Only update local storage for the correct account.
       if (shipPlayer === account.address) {
-        setShipPlacementPlayer(shipPlayer);
-        localStorage.setItem("shipPlacementPlayer", JSON.stringify(shipPlayer));
         localStorage.setItem("grid", JSON.stringify(grid));
+        setShipsSubmitted(true);
         localStorage.setItem("shipsSubmitted", JSON.stringify(true));
         localStorage.setItem("placedShips", JSON.stringify([true, true, true, true, true]));
         localStorage.setItem("shipPositions", JSON.stringify(shipPositions));
-        setShipsSubmitted(true);
-
       }
     },
   });
@@ -294,6 +293,7 @@ const ShipPlacementBoard = () => {
                   row={rowIndex}
                   col={colIndex}
                   state={cell}
+                  isPreview={isDragging}
                 />
               ))
             )}
@@ -323,10 +323,10 @@ const ShipPlacementBoard = () => {
         </div>
       </DndContext>
       {placedShips.every(Boolean) && !shipsSubmitted && (
-        <div className="flex justify-center mt-2">
+        <div className="flex justify-center mt-5">
           <Button
-            size="md"
-            radius="md"
+            size="lg"
+            radius="lg"
             onClick={() => {
               writeContract({
                 abi,

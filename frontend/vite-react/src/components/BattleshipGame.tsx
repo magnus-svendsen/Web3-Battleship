@@ -1,5 +1,5 @@
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
-import type { GameStartedEvent, PlayerJoinedEvent } from "../types/eventTypes";
+import type { PlayerJoinedEvent } from "../types/eventTypes";
 import GameLobby from "./GameLobby";
 import ShipPlacementBoard from "./ShipPlacementBoard";
 import EnemyTerritory from "./EnemyTerritory";
@@ -10,20 +10,18 @@ import { useAccount } from "wagmi";
 const BattleshipGame = () => {
   const account = useAccount();
 
-  const { firstPlayerJoined, setFirstPlayerJoined, moveMessage, turnMessage } = useGameContext();
+  const {
+    firstPlayerJoined,
+    setFirstPlayerJoined,
+    shipPlacementPlayer,
+    bothPlayersPlacedShips,
+    moveMessage,
+    turnMessage,
+  } = useGameContext();
 
   const [secondPlayerJoined, setSecondPlayerJoined] = useState<string>("");
   const [gameStarted, setGameStarted] = useState(false);
   const [showGameUnderway, setShowGameUnderway] = useState(false);
-
-  useWatchContractEventListener({
-    eventName: "GameStarted",
-    onEvent: (logs: GameStartedEvent[]) => {
-      const started = logs[0].args.started ?? false;
-      setGameStarted(started);
-      localStorage.setItem("gameStarted", JSON.stringify(started));
-    },
-  });
 
   useWatchContractEventListener({
     eventName: "FirstPlayerJoined",
@@ -59,6 +57,8 @@ const BattleshipGame = () => {
   useEffect(() => {
     if (secondPlayerJoined) {
       checkGameUnderway();
+      setGameStarted(true);
+      localStorage.setItem("gameStarted", JSON.stringify(true));
     }
   }, [secondPlayerJoined]);
 
@@ -85,7 +85,7 @@ const BattleshipGame = () => {
     <>
       {showGameUnderway ? (
         <h2 className="flex justify-center font-bold text-2xl py-20">
-          Game already underway, please wait for the next game.
+          Game already underway, please wait for the next game...
         </h2>
       ) : (
         <div
@@ -99,14 +99,27 @@ const BattleshipGame = () => {
         >
           {!gameStarted && <GameLobby />}
           <h2
-            className={`font-bold text-2xl flex justify-center mt-40 mb-10 ${moveMessage === "Opponent shot and hit!" ? "text-red-600" : ""} ${moveMessage === "You shot and hit!" ? "text-green-400" : ""}`}
+            className={`font-bold text-2xl flex justify-center mt-40 mb-10 ${moveMessage === "Opponent shot and hit!" || moveMessage === "You lost the game!" ? "text-red-600" : ""} ${moveMessage === "You shot and hit!" || moveMessage === "You won the game!" ? "text-green-400" : ""}`}
           >
             {moveMessage}
           </h2>
-          <div className="flex ">
+          <div className="flex">
             {gameStarted && <ShipPlacementBoard />}
-            <EnemyTerritory />
+            {bothPlayersPlacedShips && <EnemyTerritory />}
           </div>
+          {!bothPlayersPlacedShips && (
+            <div className="flex justify-center font-bold text-2xl py-6">
+              {shipPlacementPlayer && (
+                <div>
+                  {shipPlacementPlayer === account.address ? (
+                    <h2>Waiting for opponent to place their ships...</h2>
+                  ) : (
+                    <h2>Your opponent has placed their ships...</h2>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           <div className="font-bold text-2xl py-8 flex justify-center">
             <h2
               className={`${turnMessage === "Your turn" ? "text-green-400" : ""}`}

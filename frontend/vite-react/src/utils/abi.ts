@@ -48,49 +48,11 @@ export const abi = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "winner",
-        "type": "address"
-      }
-    ],
-    "name": "GameOver",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
         "name": "newGameId",
         "type": "uint256"
       }
     ],
     "name": "GameReset",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "started",
-        "type": "bool"
-      }
-    ],
-    "name": "GameStarted",
     "type": "event"
   },
   {
@@ -119,6 +81,12 @@ export const abi = [
         "internalType": "uint8",
         "name": "pos",
         "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "gameOver",
+        "type": "bool"
       }
     ],
     "name": "MoveResult",
@@ -257,19 +225,6 @@ export const abi = [
     "name": "resetGame",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "whoseTurn",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   }
 ] as const

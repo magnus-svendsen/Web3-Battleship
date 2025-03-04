@@ -53,27 +53,28 @@ const EnemyTerritory = () => {
       let updatedTurnMessage = "";
 
       if (data.player === account.address) {
-        // Your move was made, so update enemy grid.
+        // Our move: update enemy grid.
         if (data.hit) {
           enemyGrid[coordinate.x][coordinate.y] = 3;
-          updatedMoveMessage = "You shot and hit!";
+          updatedMoveMessage = data.gameOver ? "You won the game!" : "You shot and hit!";
         } else {
           enemyGrid[coordinate.x][coordinate.y] = 2;
           updatedMoveMessage = "You shot and missed!";
         }
-        updatedTurnMessage = "Opponent's turn";
+        // If the game is over, no next turn.
+        updatedTurnMessage = data.gameOver ? "" : "Opponent's turn";
         setEnemyGrid(enemyGrid);
         localStorage.setItem("enemyGrid", JSON.stringify(enemyGrid));
       } else {
-        // Opponent's move; update your grid.
+        // Opponent's move: update our grid.
         if (data.hit) {
           grid[coordinate.x][coordinate.y] = 3;
-          updatedMoveMessage = "Opponent shot and hit!";
+          updatedMoveMessage = data.gameOver ? "You lost the game!" : "Opponent shot and hit!";
         } else {
           grid[coordinate.x][coordinate.y] = 2;
           updatedMoveMessage = "Opponent shot and missed!";
         }
-        updatedTurnMessage = "Your turn";
+        updatedTurnMessage = data.gameOver ? "" : "Your turn";
         setGrid(grid);
         localStorage.setItem("grid", JSON.stringify(grid));
       }
@@ -84,6 +85,18 @@ const EnemyTerritory = () => {
 
       localStorage.setItem("moveMessage", JSON.stringify(updatedMoveMessage));
       localStorage.setItem("turnMessage", JSON.stringify(updatedTurnMessage));
+
+      // If the game is over, reset the game after 5 seconds
+      if (data.gameOver) {
+        setTimeout(() => {
+          writeContract({
+            abi,
+            address: contractAddress,
+            functionName: "resetGame",
+            args: [],
+          });
+        }, 5000);
+      }
     },
   });
 
@@ -194,19 +207,6 @@ const EnemyTerritory = () => {
             <div className="grid grid-cols-10 gap-0.5 bg-[#1212ab] p-0.5">
               {enemyGrid.map((row, rowIndex) =>
                 row.map((cell, colIndex) => (
-                  <div
-                    key={`${row}-${colIndex}`}
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: "1px solid black",
-                      cursor: "pointer",
-                      backgroundColor: colorByState(cell),
-                    }}
-                  >
                     <button
                       key={`${row}-${colIndex}`}
                       disabled={cell === 2 || cell === 3 || loadingCell !== null}
@@ -222,14 +222,7 @@ const EnemyTerritory = () => {
                         <Loader size="md" />
                       ) : (
                         cell === 2 || cell === 3 ? (
-                          <span
-                            style={{
-                              color: "#000000",
-                              fontSize: "30px",
-                              fontWeight: "bold",
-                              lineHeight: 1,
-                            }}
-                          >
+                          <span className="text-black font-bold text-3xl h-full">
                             x
                           </span>
                         ) : (
@@ -237,7 +230,6 @@ const EnemyTerritory = () => {
                         )
                       )}
                     </button>
-                  </div>
                 ))
               )}
             </div>

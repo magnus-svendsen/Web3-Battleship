@@ -1,9 +1,3 @@
-export interface GameStartedEvent {
-  args: {
-    started: boolean;
-  };
-}
-
 export interface BothPlayersPlacedShipsEvent {
   args: {
     placed: boolean;
@@ -24,6 +18,7 @@ export interface MoveResultEvent {
     pos: number;
     player: string;
     hit: boolean;
+    gameOver: boolean;
   };
 }
 
