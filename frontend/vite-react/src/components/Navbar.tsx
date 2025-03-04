@@ -44,9 +44,6 @@ const Navbar = () => {
     })
   }
 
-
-  const [gameReset, setGameReset] = useState<boolean>(false);
-
   useWatchContractEventListener({
     eventName: "GameReset",
     onEvent: () => {

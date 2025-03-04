@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAccount, useWriteContract } from "wagmi";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import { useGameContext } from "../contexts/GameContext";
-import type { BothPlayersPlacedShipsEvent, MoveResultEvent, ShipPlacementEvent } from "../types/eventTypes";
+import type { MoveResultEvent} from "../types/eventTypes";
 import type { Coordinate } from "../types/coordinate";
 import { Loader } from "@mantine/core";
 
@@ -17,10 +17,7 @@ const EnemyTerritory = () => {
     turnMessage,
     setTurnMessage,
     shipPlacementPlayer,
-    setShipPlacementPlayer,
     bothPlayersPlacedShips,
-    setBothPlayersPlacedShips,
-    setGameReset,
     setErrorMessage,
   } = useGameContext();
   const account = useAccount();
@@ -43,7 +40,6 @@ const EnemyTerritory = () => {
   useWatchContractEventListener({
     eventName: "MoveResult",
     onEvent: (logs: MoveResultEvent[]) => {
-      console.log("Move made!")
       const data = logs[0].args;
       if (typeof data.pos !== "number") {
         throw new Error("data.pos is undefined");
@@ -51,6 +47,12 @@ const EnemyTerritory = () => {
       const coordinate = intToCoordinate(data.pos);
       let updatedMoveMessage = "";
       let updatedTurnMessage = "";
+
+      // Clear loading cell and timer
+      if (timeoutRef.current != null) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null;
+      }
 
       if (data.player === account.address) {
         // Our move: update enemy grid.
@@ -147,24 +149,6 @@ const EnemyTerritory = () => {
       console.error('Transaction failed:', error);
     }
   };
-
-
-  useWatchContractEventListener({
-    eventName: "GameOver",
-    onEvent: (logs) => {
-      const winner = logs[0].args.winner;
-      // Check if the winner is the current account.
-      setTurnMessage("");
-      if (winner === account.address) {
-        setMoveMessage("You won the game!");
-      } else {
-        setMoveMessage("You lost the game!");
-      }
-      setTimeout(() => {
-        setGameReset(true);
-      }, 5000);
-    }
-  })
 
   useEffect(() => {
     if (loadingCell) {

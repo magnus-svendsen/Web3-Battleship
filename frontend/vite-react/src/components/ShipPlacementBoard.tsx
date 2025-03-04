@@ -5,8 +5,8 @@ import {
 } from "@dnd-kit/core";
 import Ship from "./ship";
 import DroppableGridCell from "./DroppableGridCell";
-import { useEffect, useState } from "react";
-import { Button } from "@mantine/core";
+import { useEffect, useRef, useState } from "react";
+import { Button, Loader } from "@mantine/core";
 import { contractAddress } from "../utils/contractAddress";
 import { useAccount, useWriteContract } from "wagmi";
 import type { GridData } from "../types/gridTypes";
@@ -18,11 +18,8 @@ import type { BothPlayersPlacedShipsEvent, ShipPlacementEvent } from "../types/e
 
 const ShipPlacementBoard = () => {
   const account = useAccount();
-
-  const { firstPlayerJoined, grid, setGrid, setShipPlacementPlayer, setBothPlayersPlacedShips, setTurnMessage } = useGameContext();
-
+  const { firstPlayerJoined, grid, setGrid, setShipPlacementPlayer, setBothPlayersPlacedShips, setTurnMessage, setErrorMessage } = useGameContext();
   const { writeContract } = useWriteContract();
-
   const [shipsSubmitted, setShipsSubmitted] = useState(false);
   const [placeShip, setPlaceShips] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
@@ -57,13 +54,25 @@ const ShipPlacementBoard = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const timeoutRef = useRef<number | null>(null);
+  
+
   useWatchContractEventListener({
     eventName: "ShipPlacement",
     onEvent: (logs: ShipPlacementEvent[]) => {
       const shipPlayer = logs[0].args.player ?? "";
       setShipPlacementPlayer(shipPlayer);
       localStorage.setItem("shipPlacementPlayer", JSON.stringify(shipPlayer));
-      
+      // If player is equal to the current account, reset timer
+      if (logs[0].args.player === account.address) {
+        setIsLoading(false);
+        if (timeoutRef.current != null) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null;
+        }
+      }
+
       // Only update local storage for the correct account.
       if (shipPlayer === account.address) {
         localStorage.setItem("grid", JSON.stringify(grid));
@@ -132,7 +141,7 @@ const ShipPlacementBoard = () => {
     const tempHover = String(event.over?.id).split("-") || [0, 0, 0];
     const row = Number(tempHover[1]);
     const col = Number(tempHover[2]);
-    
+
     // Determine intended coordinates based on orientation:
     const intendedCoordinates: [number, number][] = [];
     if (!shipOrientations[shipID]) {
@@ -154,7 +163,7 @@ const ShipPlacementBoard = () => {
         intendedCoordinates.push([r, col]);
       }
     }
-  
+
     // Check if any of the intended coordinates already have a ship (non-zero value)
     const conflict = intendedCoordinates.some(
       ([r, c]) => grid[r][c] !== 0
@@ -162,7 +171,7 @@ const ShipPlacementBoard = () => {
     if (conflict) {
       return;
     }
-  
+
     // If no conflict, update placedShips and grid:
     const updatedPlacedShips = [...placedShips];
     const updatedGrid = grid.map((rowArr, rowIndex) =>
@@ -175,7 +184,7 @@ const ShipPlacementBoard = () => {
         return cell;
       })
     );
-  
+
     // Build a ship data object for UI purposes (if needed)
     const ship: ShipDataContract = {
       length: lengthOfShip,
@@ -184,18 +193,18 @@ const ShipPlacementBoard = () => {
       coordinates: intendedCoordinates,
     };
     setShipData((prevShips) => [...prevShips, ship]);
-  
+
     // Update grid, placedShips states, and tempGrid
     setGrid(updatedGrid);
     setPlacedShips(updatedPlacedShips);
     setTempGrid(updatedGrid);
     setIsDragging(false);
-  
+
     // Convert the coordinate pairs to encoded values and update shipPositions.
     const encodedPositions = intendedCoordinates.map(([r, c]) => r * 10 + c);
     setShipPositions((prevPositions) => [...prevPositions, ...encodedPositions]);
   };
-  
+
 
   const handleDragOver = (event: DragOverEvent) => {
     const shipID = Number(event.active.id) - 1;
@@ -203,7 +212,7 @@ const ShipPlacementBoard = () => {
     const tempHover = String(event.over?.id).split("-") || [0, 0, 0];
     const row = Number(tempHover[1]);
     const col = Number(tempHover[2]);
-  
+
     // Compute intended coordinates based on orientation.
     const intendedCoordinates: [number, number][] = [];
     if (!shipOrientations[shipID]) {
@@ -221,18 +230,18 @@ const ShipPlacementBoard = () => {
         }
       }
     }
-  
+
     // Check if any of the intended coordinates already have a ship.
     const conflict = intendedCoordinates.some(
       ([r, c]) => grid[r][c] !== 0
     );
-  
+
     // If conflict exists, do not show any preview.
     if (conflict) {
       setTempGrid(grid);
       return;
     }
-  
+
     // Otherwise, update the temp grid to show the preview (value 3) for intended cells.
     const updatedTempGrid = grid.map((rowArr, rowIndex) =>
       rowArr.map((cell, colIndex) => {
@@ -262,6 +271,22 @@ const ShipPlacementBoard = () => {
     if (id === 4) return 2;
     return 0;
   };
+
+  const handleSubmitShips = () => {
+    setIsLoading(true)
+    timeoutRef.current = window.setTimeout(() => {
+      setIsLoading(false)
+      timeoutRef.current = null;
+      setErrorMessage("Failed to submit ships. Please try again")
+    }, 60000); // 60sec timeout if no transaction is validated
+
+    writeContract({
+      abi,
+      address: contractAddress,
+      functionName: "placeShips",
+      args: [shipPositions],
+    });
+  }
 
   return (
     <div>
@@ -324,24 +349,33 @@ const ShipPlacementBoard = () => {
       </DndContext>
       {placedShips.every(Boolean) && !shipsSubmitted && (
         <div className="flex justify-center mt-5">
-          <Button
-            size="lg"
-            radius="lg"
-            onClick={() => {
-              writeContract({
-                abi,
-                address: contractAddress,
-                functionName: "placeShips",
-                args: [shipPositions],
-              });
-            }}
-          >
-            Submit Ships
-          </Button>
+          {isLoading ? (
+            <Button
+              variant="red"
+              color="teal"
+              size="lg"
+              radius="lg"
+              className="mr-2"
+              type="button"
+              disabled={true}
+            >
+              <Loader />
+            </Button>
+          ) : (
+            <Button
+              size="lg"
+              radius="lg"
+              onClick={() => {
+                handleSubmitShips();
+              }}
+            >
+              Submit Ships
+            </Button>
+          )}
         </div>
-      )}
-    </div>
-  );
+    )}
+  </div>
+  )
 };
 
 export default ShipPlacementBoard;
