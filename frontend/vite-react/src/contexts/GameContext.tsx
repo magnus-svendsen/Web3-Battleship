@@ -11,6 +11,10 @@ interface GameContextType {
   setFirstPlayerJoined: React.Dispatch<React.SetStateAction<string>>;
   secondPlayerJoined: string;
   setSecondPlayerJoined: React.Dispatch<React.SetStateAction<string>>;
+  gameStarted: boolean;
+  setGameStarted: React.Dispatch<React.SetStateAction<boolean>>;
+  showGameUnderway: boolean;
+  setShowGameUnderway: React.Dispatch<React.SetStateAction<boolean>>;
   shipPlacementPlayer: string;
   setShipPlacementPlayer: React.Dispatch<React.SetStateAction<string>>;
   bothPlayersPlacedShips: boolean;
@@ -45,6 +49,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   ]);
   const [firstPlayerJoined, setFirstPlayerJoined] = useState<string>("");
   const [secondPlayerJoined, setSecondPlayerJoined] = useState<string>("");
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [showGameUnderway, setShowGameUnderway] = useState(false);
   const [shipPlacementPlayer, setShipPlacementPlayer] = useState<string>("");
   const [bothPlayersPlacedShips, setBothPlayersPlacedShips] = useState<boolean>(false);
   const [moveMessage, setMoveMessage] = useState<string>("");
@@ -62,6 +68,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setFirstPlayerJoined,
         secondPlayerJoined,
         setSecondPlayerJoined,
+        gameStarted,
+        setGameStarted,
+        showGameUnderway,
+        setShowGameUnderway,
         shipPlacementPlayer,
         setShipPlacementPlayer,
         bothPlayersPlacedShips,

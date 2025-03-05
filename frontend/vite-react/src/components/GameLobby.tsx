@@ -4,12 +4,12 @@ import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
 import { useGameContext } from "../contexts/GameContext";
 import PersonIcon from '@mui/icons-material/Person';
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
-import { PlayerJoinedEvent } from "../types/eventTypes";
+import type { PlayerJoinedEvent } from "../types/eventTypes";
 
 const GameLobby = () => {
-  const { firstPlayerJoined, setErrorMessage, setFirstPlayerJoined, setSecondPlayerJoined } = useGameContext();
+  const { setErrorMessage, firstPlayerJoined, setFirstPlayerJoined, secondPlayerJoined, setSecondPlayerJoined, setGameStarted, setShowGameUnderway } = useGameContext();
   const { writeContract } = useWriteContract();
   const account = useAccount();
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -68,6 +68,45 @@ const GameLobby = () => {
     }
   });
 
+  const checkGameUnderway = () => {
+    if (
+      account.address !== firstPlayerJoined &&
+      account.address !== secondPlayerJoined
+    ) {
+      setShowGameUnderway(true);
+      localStorage.setItem("showGameUnderway", JSON.stringify(true));
+    } else {
+      setShowGameUnderway(false);
+      localStorage.setItem("showGameUnderway", JSON.stringify(false));
+    }
+  };
+
+  useEffect(() => {
+    if (secondPlayerJoined) {
+      checkGameUnderway();
+      setGameStarted(true);
+      localStorage.setItem("gameStarted", JSON.stringify(true));
+    }
+  }, [secondPlayerJoined]);
+
+  useEffect(() => {
+    const storedGameStarted = localStorage.getItem("gameStarted");
+    if (storedGameStarted) {
+      setGameStarted(JSON.parse(storedGameStarted));
+    }
+    const storedFirstPlayerJoined = localStorage.getItem("firstPlayerJoined");
+    if (storedFirstPlayerJoined) {
+      setFirstPlayerJoined(JSON.parse(storedFirstPlayerJoined));
+    }
+    const storedSecondPlayerJoined = localStorage.getItem("secondPlayerJoined");
+    if (storedSecondPlayerJoined) {
+      setSecondPlayerJoined(JSON.parse(storedSecondPlayerJoined));
+    }
+    const storedShowGameUnderway = localStorage.getItem("showGameUnderway");
+    if (storedShowGameUnderway) {
+      setShowGameUnderway(JSON.parse(storedShowGameUnderway));
+    }
+  }, []);
 
   return (
     <div>
