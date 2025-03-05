@@ -11,6 +11,7 @@ import './index.css'
 
 import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
+import { GameProvider } from "./contexts/GameContext";
 
 globalThis.Buffer = Buffer
 
@@ -21,9 +22,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <App />
+          <GameProvider>
+            <App />
+          </GameProvider>
         </MantineProvider>
       </QueryClientProvider>
     </WagmiProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 )
