@@ -10,6 +10,8 @@ import type { Coordinate } from "../types/coordinate";
 import { Loader } from "@mantine/core";
 
 const EnemyTerritory = () => {
+  const account = useAccount();
+
   const {
     grid,
     setGrid,
@@ -20,9 +22,11 @@ const EnemyTerritory = () => {
     bothPlayersPlacedShips,
     setErrorMessage,
   } = useGameContext();
-  const account = useAccount();
+
   const { writeContract } = useWriteContract();
+
   const timeoutRef = useRef<number | null>(null);
+  
   const [loadingCell, setLoadingCell] = useState<{ row: number; col: number } | null>(null);
   const [enemyGrid, setEnemyGrid] = useState<GridData>([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

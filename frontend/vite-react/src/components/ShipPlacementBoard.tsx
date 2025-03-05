@@ -18,8 +18,13 @@ import type { BothPlayersPlacedShipsEvent, ShipPlacementEvent } from "../types/e
 
 const ShipPlacementBoard = () => {
   const account = useAccount();
+
   const { firstPlayerJoined, grid, setGrid, setShipPlacementPlayer, setBothPlayersPlacedShips, setTurnMessage, setErrorMessage } = useGameContext();
+  
   const { writeContract } = useWriteContract();
+
+  const timeoutRef = useRef<number | null>(null);
+
   const [shipsSubmitted, setShipsSubmitted] = useState(false);
   const [placeShip, setPlaceShips] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
@@ -55,8 +60,22 @@ const ShipPlacementBoard = () => {
   ]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const timeoutRef = useRef<number | null>(null);
   
+  const handleSubmitShips = () => {
+    setIsLoading(true)
+    timeoutRef.current = window.setTimeout(() => {
+      setIsLoading(false)
+      timeoutRef.current = null;
+      setErrorMessage("Failed to submit ships. Please try again")
+    }, 60000); // 60sec timeout if no transaction is validated
+
+    writeContract({
+      abi,
+      address: contractAddress,
+      functionName: "placeShips",
+      args: [shipPositions],
+    });
+  }
 
   useWatchContractEventListener({
     eventName: "ShipPlacement",
@@ -272,22 +291,6 @@ const ShipPlacementBoard = () => {
     return 0;
   };
 
-  const handleSubmitShips = () => {
-    setIsLoading(true)
-    timeoutRef.current = window.setTimeout(() => {
-      setIsLoading(false)
-      timeoutRef.current = null;
-      setErrorMessage("Failed to submit ships. Please try again")
-    }, 60000); // 60sec timeout if no transaction is validated
-
-    writeContract({
-      abi,
-      address: contractAddress,
-      functionName: "placeShips",
-      args: [shipPositions],
-    });
-  }
-
   return (
     <div>
       <DndContext
@@ -365,9 +368,7 @@ const ShipPlacementBoard = () => {
             <Button
               size="lg"
               radius="lg"
-              onClick={() => {
-                handleSubmitShips();
-              }}
+              onClick={handleSubmitShips}
             >
               Submit Ships
             </Button>

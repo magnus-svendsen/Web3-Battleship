@@ -9,9 +9,12 @@ import useWatchContractEventListener from "../hooks/useWatchContractEventListene
 import type { PlayerJoinedEvent } from "../types/eventTypes";
 
 const GameLobby = () => {
-  const { setErrorMessage, firstPlayerJoined, setFirstPlayerJoined, secondPlayerJoined, setSecondPlayerJoined, setGameStarted, setShowGameUnderway } = useGameContext();
-  const { writeContract } = useWriteContract();
   const account = useAccount();
+
+  const { setErrorMessage, firstPlayerJoined, setFirstPlayerJoined, secondPlayerJoined, setSecondPlayerJoined, setGameStarted, setShowGameUnderway } = useGameContext();
+  
+  const { writeContract } = useWriteContract();
+
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const timeoutRef = useRef<number | null>(null);
 

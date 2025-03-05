@@ -9,13 +9,13 @@ import { useGameContext } from "../contexts/GameContext";
 
 const Navbar = () => {
   const account = useAccount();
-  const { gameReset, setGameReset } = useGameContext();
   const { disconnect } = useDisconnect();
   const { writeContract } = useWriteContract();
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const timeoutRef = useRef<number | null>(null);
-  const { setErrorMessage } = useGameContext()
 
+  const { gameReset, setGameReset, setErrorMessage } = useGameContext();
+
+  const timeoutRef = useRef<number | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useWatchContractEventListener({
     eventName: "GameReset",

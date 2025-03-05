@@ -24,7 +24,7 @@ const ErrorDialog = () => {
 
   return (
     <Dialog opened={displayDialog} onClose={close} size="lg" radius="md" withBorder>
-      <ErrorIcon></ErrorIcon>
+      <ErrorIcon />
       <Text size="sm" mb="xs" fw={500}>
         {errorMessage}
       </Text>
