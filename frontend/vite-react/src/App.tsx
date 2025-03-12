@@ -3,7 +3,7 @@ import Login from "./components/Login";
 import Navbar from "./components/Navbar";
 import ErrorDialog from "./components/ErrorDialog";
 import GameLobby from "./components/GameLobby";
-import ShipPlacementBoard from "./components/ShipPlacementBoard";
+import ShipPlacement from "./components/ShipPlacement";
 import EnemyTerritory from "./components/EnemyTerritory";
 import { useGameContext } from "./contexts/GameContext";
 
@@ -39,7 +39,7 @@ function App() {
               {moveMessage}
             </h2>
             <div className="flex">
-              {gameStarted && <ShipPlacementBoard />}
+              {gameStarted && <ShipPlacement />}
               {bothPlayersPlacedShips && <EnemyTerritory />}
             </div>
             {!bothPlayersPlacedShips && (

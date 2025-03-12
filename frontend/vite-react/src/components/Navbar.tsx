@@ -1,18 +1,17 @@
 import { Button, Loader } from "@mantine/core";
-import { useAccount, useDisconnect, useWriteContract } from "wagmi";
-import { abi } from "../utils/abi";
-import { contractAddress } from "../utils/contractAddress";
+import { useAccount, useDisconnect } from "wagmi";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
-import { GameResetEvent } from "../types/eventTypes";
+import type { GameResetEvent } from "../types/eventTypes";
 import { useEffect, useRef, useState } from "react";
 import { useGameContext } from "../contexts/GameContext";
+import useGameWriteContract from "../hooks/useGameWriteContract";
 
 const Navbar = () => {
   const account = useAccount();
   const { disconnect } = useDisconnect();
-  const { writeContract } = useWriteContract();
 
   const { gameReset, setGameReset, setErrorMessage } = useGameContext();
+  const executeWriteContract = useGameWriteContract();
 
   const timeoutRef = useRef<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -35,13 +34,7 @@ const Navbar = () => {
       timeoutRef.current = null;
       setErrorMessage("Failed to reset game. Please try again")
     }, 60000); // 60sec timeout if no transaction is validated
-
-    writeContract({
-      abi,
-      address: contractAddress,
-      functionName: "resetGame",
-      args: [],
-    })
+    executeWriteContract({ functionName: "resetGame" });
   }
 
   useWatchContractEventListener({
@@ -101,7 +94,7 @@ const Navbar = () => {
               className="mr-2"
               type="button"
               disabled={true}
-            > <Loader></Loader>
+            > <Loader />
             </Button>
             :
             <Button

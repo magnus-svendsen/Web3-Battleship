@@ -1,13 +1,12 @@
 import type { GridData } from "../types/gridTypes";
-import { abi } from "../utils/abi";
-import { contractAddress } from "../utils/contractAddress";
 import { useEffect, useRef, useState } from "react";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount } from "wagmi";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import { useGameContext } from "../contexts/GameContext";
 import type { MoveResultEvent} from "../types/eventTypes";
 import type { Coordinate } from "../types/coordinate";
 import { Loader } from "@mantine/core";
+import useGameWriteContract from "../hooks/useGameWriteContract";
 
 const EnemyTerritory = () => {
   const account = useAccount();
@@ -23,7 +22,7 @@ const EnemyTerritory = () => {
     setErrorMessage,
   } = useGameContext();
 
-  const { writeContract } = useWriteContract();
+  const executeWriteContract = useGameWriteContract();
 
   const timeoutRef = useRef<number | null>(null);
   
@@ -95,12 +94,7 @@ const EnemyTerritory = () => {
       // If the game is over, reset the game after 5 seconds
       if (data.gameOver) {
         setTimeout(() => {
-          writeContract({
-            abi,
-            address: contractAddress,
-            functionName: "resetGame",
-            args: [],
-          });
+          executeWriteContract({ functionName: "resetGame" });
         }, 5000);
       }
     },
@@ -143,12 +137,7 @@ const EnemyTerritory = () => {
     }, 60000)
 
     try {
-      writeContract({
-        address: contractAddress,
-        abi,
-        functionName: 'move',
-        args: [rowIndex, colIndex],
-      })
+      executeWriteContract({ functionName: "move", args: [rowIndex, colIndex] });
     } catch (error) {
       console.error('Transaction failed:', error);
     }

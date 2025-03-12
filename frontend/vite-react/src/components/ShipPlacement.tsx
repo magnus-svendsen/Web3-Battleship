@@ -7,21 +7,20 @@ import Ship from "./ship";
 import DroppableGridCell from "./DroppableGridCell";
 import { useEffect, useRef, useState } from "react";
 import { Button, Loader } from "@mantine/core";
-import { contractAddress } from "../utils/contractAddress";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount } from "wagmi";
 import type { GridData } from "../types/gridTypes";
 import type { ShipDataContract } from "../types/shipTypes";
-import { abi } from "../utils/abi";
 import { useGameContext } from "../contexts/GameContext";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import type { BothPlayersPlacedShipsEvent, ShipPlacementEvent } from "../types/eventTypes";
+import useGameWriteContract from "../hooks/useGameWriteContract";
 
-const ShipPlacementBoard = () => {
+const ShipPlacement = () => {
   const account = useAccount();
 
   const { firstPlayerJoined, grid, setGrid, setShipPlacementPlayer, setBothPlayersPlacedShips, setTurnMessage, setErrorMessage } = useGameContext();
   
-  const { writeContract } = useWriteContract();
+  const executeWriteContract = useGameWriteContract();
 
   const timeoutRef = useRef<number | null>(null);
 
@@ -68,13 +67,7 @@ const ShipPlacementBoard = () => {
       timeoutRef.current = null;
       setErrorMessage("Failed to submit ships. Please try again")
     }, 60000); // 60sec timeout if no transaction is validated
-
-    writeContract({
-      abi,
-      address: contractAddress,
-      functionName: "placeShips",
-      args: [shipPositions],
-    });
+    executeWriteContract({ functionName: "placeShips", args: [shipPositions] });
   }
 
   useWatchContractEventListener({
@@ -379,4 +372,4 @@ const ShipPlacementBoard = () => {
   )
 };
 
-export default ShipPlacementBoard;
+export default ShipPlacement;

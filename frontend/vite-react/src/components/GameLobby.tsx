@@ -1,19 +1,18 @@
 import { Button, Loader } from "@mantine/core";
-import { useAccount, useWriteContract } from "wagmi";
-import { abi } from "../utils/abi";
-import { contractAddress } from "../utils/contractAddress";
+import { useAccount } from "wagmi";
 import { useGameContext } from "../contexts/GameContext";
 import PersonIcon from '@mui/icons-material/Person';
 import { useEffect, useRef, useState } from "react";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import type { PlayerJoinedEvent } from "../types/eventTypes";
+import useGameWriteContract from "../hooks/useGameWriteContract";
 
 const GameLobby = () => {
   const account = useAccount();
 
   const { setErrorMessage, firstPlayerJoined, setFirstPlayerJoined, secondPlayerJoined, setSecondPlayerJoined, setGameStarted, setShowGameUnderway } = useGameContext();
   
-  const { writeContract } = useWriteContract();
+  const executeWriteContract = useGameWriteContract();
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const timeoutRef = useRef<number | null>(null);
@@ -25,12 +24,7 @@ const GameLobby = () => {
       timeoutRef.current = null;
       setErrorMessage("Failed to join game. Please try again")
     }, 60000); // 60sec timeout if no transaction is validated
-    writeContract({
-      abi,
-      address: contractAddress,
-      functionName: "join",
-      args: [],
-    })
+    executeWriteContract({ functionName: "join" });
   }
 
   useWatchContractEventListener({
@@ -138,7 +132,7 @@ const GameLobby = () => {
               <div className="mt-0.5">Join a game!</div>
             </div>
           ) : (
-            <>Join a game!</>
+            <>Create a game!</>
           )}
         </Button>
       )}
