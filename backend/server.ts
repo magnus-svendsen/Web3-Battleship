@@ -9,10 +9,8 @@ import { handleVippsCallback } from "./controllers/authController";
 const app = express();
 const PORT = process.env.PORT || 5173;
 
-// Connect to Database
 connectDB();
 
-// Middleware
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -21,7 +19,7 @@ app.use("/auth", authRoutes);
 app.use("/account", accountRoutes);
 app.get("/", handleVippsCallback); // Fallback URL that Vipps uses is localhost:5173/
 
-// Start Server
+
 app.listen(PORT, () => {
     console.log(`Server running on port : ${PORT}`);
 });
