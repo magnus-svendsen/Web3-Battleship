@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 const accountSchema = new mongoose.Schema({
-    clientID : {
-        type: Number,
+    sub : {
+        type: String,
         required: true
     },
     privateKey : {
