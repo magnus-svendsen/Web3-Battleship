@@ -1,5 +1,5 @@
 import express from "express";
-import { authWithVipps, handleVippsCallback } from "../controllers/authController";
+import { authWithVipps } from "../controllers/authController";
 
 const router = express.Router();
 

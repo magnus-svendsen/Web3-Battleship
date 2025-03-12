@@ -6,28 +6,28 @@ import { VIPPS_USERINFO_URL } from "../config/env";
 
 // Fetches or generates a new private key for user
 export const getOrGeneratePrivateKey = async (req: Request, res: Response) => {
-    try {
-        const access_token = req.body["accesstoken"];
+  try {
+    const access_token = req.body["accesstoken"];
 
-        const userInfoResponse = await axios.get(VIPPS_USERINFO_URL as string, {
-            headers: {
-                Authorization: `Bearer ${access_token}`,
-            },
-        });
-        console.log(userInfoResponse.data)
-        const pub = userInfoResponse.data.pub;
-        let account = await Account.findOne({ pub });
+    const userInfoResponse = await axios.get(VIPPS_USERINFO_URL as string, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+    console.log(userInfoResponse.data)
+    const pub = userInfoResponse.data.pub;
+    let account = await Account.findOne({ pub });
 
-        if (account) {
-            res.status(200).json(account.privateKey);
-            console.log(account.privateKey);
-        } else {
-            const newPrivateKey = generatePrivateKey();
-            account = await Account.create({ pub, privateKey: newPrivateKey });
-            res.json(newPrivateKey);
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to retrieve or create private key" });
+    if (account) {
+      res.status(200).json(account.privateKey);
+      console.log(account.privateKey);
+    } else {
+      const newPrivateKey = generatePrivateKey();
+      account = await Account.create({ pub, privateKey: newPrivateKey });
+      res.json(newPrivateKey);
     }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to retrieve or create private key" });
+  }
 };

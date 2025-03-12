@@ -15,7 +15,7 @@ export const authWithVipps = async (req: Request, res: Response) => {
   try {
     const nonce = "123hemmelig";
     const state = "321hemmelig";
-    const scope = "phoneNumber nin";
+    const scope = "phoneNumber pub";
 
     const authParams = qs.stringify({
       client_id: VIPPS_CLIENT_ID,
@@ -67,7 +67,6 @@ export const handleVippsCallback = async (req: Request, res: Response): Promise<
 
     const { access_token } = tokenResponse.data;
     res.redirect(FRONTEND_URL + `?accesstoken=${access_token}`);
-    console.log("Redirecting to: ",FRONTEND_URL, "with token")
   } catch (error) {
     console.error(error);
     res.redirect(FRONTEND_URL!);
