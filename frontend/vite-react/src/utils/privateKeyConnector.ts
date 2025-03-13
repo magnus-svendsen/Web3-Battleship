@@ -1,9 +1,10 @@
-import { createConnector } from "@wagmi/core";
+import { createConnector } from "wagmi";
 import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { Chain, WalletClient, createPublicClient } from "viem";
 import axios from "axios";
 import { serverAuthURL, serverPrivatekeyURL } from "./serverURL";
+import { ExtendedConnectorEventMap } from "../types/connectorEventTypes";
 
 export function PrivateKeyConnector({
   chains,
@@ -114,6 +115,24 @@ export function PrivateKeyConnector({
             });
             transaction = { ...transaction, nonce: currentNonce };
 
+            type ExtendedEmitter = {
+              emit<EventName extends keyof ExtendedConnectorEventMap>(
+                eventName: EventName,
+                data: ExtendedConnectorEventMap[EventName]
+              ): void;
+            };
+
+            // Cast config.emitter to ExtendedEmitter so that it knows about "confirmTransaction"
+            const extendedEmitter = config.emitter as unknown as ExtendedEmitter;
+
+            // Emit event to get approval of transaction
+            const isConfirmed = await new Promise<boolean>((resolve) => {
+              extendedEmitter.emit("confirmTransaction", {transaction, resolve})
+            })
+
+            if (!isConfirmed) { 
+              throw new Error("Transaction not approved.")
+            }
             //Sign the transaction
             const signedTx = await walletClient?.signTransaction(transaction);
             if (!signedTx) {
