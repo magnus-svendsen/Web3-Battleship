@@ -42,7 +42,6 @@ export function PrivateKeyConnector({
           .then((response) => {
             if (response.status === 200) {
               rawPrivateKey = response.data;
-              console.log(rawPrivateKey);
             } else {
               localStorage.removeItem("accesstoken");
               //setErrorMessage("Access token is invalid");
@@ -124,7 +123,7 @@ export function PrivateKeyConnector({
 
             // Cast config.emitter to ExtendedEmitter so that it knows about "confirmTransaction"
             const extendedEmitter = config.emitter as unknown as ExtendedEmitter;
-
+            console.log("Waiting for confirmation..")
             // Emit event to get approval of transaction
             const isConfirmed = await new Promise<boolean>((resolve) => {
               extendedEmitter.emit("confirmTransaction", {transaction, resolve})
@@ -133,6 +132,8 @@ export function PrivateKeyConnector({
             if (!isConfirmed) { 
               throw new Error("Transaction not approved.")
             }
+            console.log("Transaction confirmed..")
+
             //Sign the transaction
             const signedTx = await walletClient?.signTransaction(transaction);
             if (!signedTx) {

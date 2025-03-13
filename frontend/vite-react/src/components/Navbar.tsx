@@ -1,4 +1,4 @@
-import { Button, Loader } from "@mantine/core";
+import { Button, Loader, Switch } from "@mantine/core";
 import { useAccount, useDisconnect, useWriteContract } from "wagmi";
 import { abi } from "../utils/abi";
 import { contractAddress } from "../utils/contractAddress";
@@ -12,7 +12,7 @@ const Navbar = () => {
   const { disconnect } = useDisconnect();
   const { writeContract } = useWriteContract();
 
-  const { gameReset, setGameReset, setErrorMessage } = useGameContext();
+  const { autoConfirmTransactions, gameReset, setGameReset, setErrorMessage, setAutoConfirmTransactions } = useGameContext();
 
   const timeoutRef = useRef<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -81,6 +81,11 @@ const Navbar = () => {
       <h2 className="font-bold text-2xl ml-3">Web3 Battleship</h2>
       {account.status === "connected" && (
         <div className="flex">
+          <Switch
+            checked={autoConfirmTransactions}
+            onChange={(event) => setAutoConfirmTransactions(event.currentTarget.checked)}
+            label="Autoconfirm transactions"
+          />
           <Button
             variant="white"
             color="teal"
@@ -116,6 +121,7 @@ const Navbar = () => {
               Reset game
             </Button>
           }
+
         </div>
       )}
     </div>

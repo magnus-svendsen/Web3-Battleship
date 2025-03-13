@@ -27,6 +27,8 @@ interface GameContextType {
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   gameReset: boolean;
   setGameReset: React.Dispatch<React.SetStateAction<boolean>>;
+  autoConfirmTransactions: boolean;
+  setAutoConfirmTransactions: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // Create the context with a default value (which will be overridden by the provider).
@@ -57,7 +59,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [turnMessage, setTurnMessage] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [gameReset, setGameReset] = useState<boolean>(false);
-
+  const [autoConfirmTransactions, setAutoConfirmTransactions] = useState<boolean>(false);
   // Provide all state values and setters.
   return (
     <GameContext.Provider
@@ -84,6 +86,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setErrorMessage,
         gameReset,
         setGameReset,
+        autoConfirmTransactions,
+        setAutoConfirmTransactions,
       }}
     >
       {children}

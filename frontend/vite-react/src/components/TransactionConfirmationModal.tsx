@@ -2,47 +2,56 @@ import { useEffect, useState } from "react"
 import { Button, Group, Modal, Text } from "@mantine/core"
 import { useAccount } from "wagmi";
 import { ExtendedEmitter, ExtendedConnectorEventMap } from "../types/connectorEventTypes";
+import { useGameContext } from "../contexts/GameContext";
 
 const TransactionConfirmationModal = () => {
   const [opened, setOpened] = useState<boolean>(false)
-  const [transactionData, setTransactionData] = useState<any>(null);
+  const [transactionData, setTransactionData] = useState<any>(null)
   const [resolveFn, setResolveFn] = useState<((confirmed: boolean) => void) | null>(null)
+  const { autoConfirmTransactions} = useGameContext();
 
-  const {connector} = useAccount();
+  const { connector } = useAccount();
 
   useEffect(() => {
-    console.log("Connector changed!")
-    if (!connector){
-      console.log("NO CONNECTOR");
+    // If no connector available, return
+    if (!connector) {
       return;
     }
 
+    // If connector is not using the custom connector, for example injected. Return.
     if (connector.id !== "privateKey") {
-      console.log("PrivateKey connector not in use. Skipping approval");
       return;
     }
 
+    // If no emitter available to connector, return.
     if (!connector.emitter) {
       console.warn("Connector emitter not available.");
       return;
     }
+
+    // Cast emitter to extended emitter, to be able to listen to our custom event.
     const emitter = connector.emitter as unknown as ExtendedEmitter;
 
     const handleConfirmTransaction = (
       data: ExtendedConnectorEventMap["confirmTransaction"]
     ) => {
-      setTransactionData(data.transaction);
-      setResolveFn(() => data.resolve);
-      setOpened(true);
+      if (autoConfirmTransactions) {
+        data.resolve(true);
+        console.log("Auto-confirming transaction..")
+      } else {
+        setTransactionData(data.transaction);
+        setResolveFn(() => data.resolve);
+        setOpened(true);
+      }
     };
 
-    emitter.on("confirmTransaction", handleConfirmTransaction);
+    emitter.on("confirmTransaction", handleConfirmTransaction); // Add listener
     return () => {
-      emitter.off("confirmTransaction", handleConfirmTransaction);
+      emitter.off("confirmTransaction", handleConfirmTransaction); // Remove listener
     };
-  }, [connector])
+  }, [connector, autoConfirmTransactions])
 
-
+  // On transaction confirmed
   const handleConfirm = () => {
     if (resolveFn) {
       resolveFn(true);
@@ -52,6 +61,7 @@ const TransactionConfirmationModal = () => {
     setResolveFn(null);
   };
 
+  // On transaction cancelled
   const handleCancel = () => {
     if (resolveFn) {
       resolveFn(false);
@@ -62,9 +72,9 @@ const TransactionConfirmationModal = () => {
   };
 
   const safeStringify = (value: any) =>
-  JSON.stringify(value, (_key, val) =>
-    typeof val === "bigint" ? val.toString() : val,
-  2);
+    JSON.stringify(value, (_key, val) =>
+      typeof val === "bigint" ? val.toString() : val,
+      2);
 
   return (
     <Modal opened={opened} onClose={handleCancel} title="Confirm Transaction" centered>
