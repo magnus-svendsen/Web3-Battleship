@@ -9,6 +9,8 @@ interface GameContextType {
   setGrid: React.Dispatch<React.SetStateAction<GridData>>;
   tempGrid: GridData;
   setTempGrid: React.Dispatch<React.SetStateAction<GridData>>;
+  enemyGrid: GridData;
+  setEnemyGrid: React.Dispatch<React.SetStateAction<GridData>>;
   placedShips: boolean[];
   setPlacedShips: React.Dispatch<React.SetStateAction<boolean[]>>;
   shipPositions: number[];
@@ -69,6 +71,18 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
+  const [enemyGrid, setEnemyGrid] = useState<GridData>([
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ]);
   const [placedShips, setPlacedShips] = useState<boolean[]>([
     false,
     false,
@@ -105,6 +119,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setGrid,
         tempGrid,
         setTempGrid,
+        enemyGrid,
+        setEnemyGrid,
         placedShips,
         setPlacedShips,
         shipPositions,
