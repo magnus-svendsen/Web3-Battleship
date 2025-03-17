@@ -15,15 +15,15 @@ export const getOrGeneratePrivateKey = async (req: Request, res: Response) => {
       },
     });
     console.log(userInfoResponse.data)
-    const pub = userInfoResponse.data.pub;
-    let account = await Account.findOne({ pub });
+    const sub = userInfoResponse.data.sub;
+    let account = await Account.findOne({ sub });
 
     if (account) {
       res.status(200).json(account.privateKey);
       console.log(account.privateKey);
     } else {
       const newPrivateKey = generatePrivateKey();
-      account = await Account.create({ pub, privateKey: newPrivateKey });
+      account = await Account.create({ sub, privateKey: newPrivateKey });
       res.json(newPrivateKey);
     }
   } catch (error) {
