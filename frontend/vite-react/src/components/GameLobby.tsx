@@ -11,7 +11,7 @@ import type { PlayerJoinedEvent } from "../types/eventTypes";
 const GameLobby = () => {
   const account = useAccount();
 
-  const { setErrorMessage, firstPlayerJoined, setFirstPlayerJoined, secondPlayerJoined, setSecondPlayerJoined, setGameStarted, setShowGameUnderway } = useGameContext();
+  const { setErrorMessage, firstPlayerJoined, setFirstPlayerJoined, secondPlayerJoined, setSecondPlayerJoined, setGameStarted, setShowGameUnderway, transactionCancelCount, setTransactionCancelCount } = useGameContext();
   
   const { writeContract } = useWriteContract();
 
@@ -32,6 +32,13 @@ const GameLobby = () => {
       args: [],
     })
   }
+
+  useEffect(() => {
+    setIsLoading(false)
+    if(timeoutRef.current) {
+      timeoutRef.current = null;
+    }
+  },[transactionCancelCount])
 
   useWatchContractEventListener({
     eventName: "FirstPlayerJoined",

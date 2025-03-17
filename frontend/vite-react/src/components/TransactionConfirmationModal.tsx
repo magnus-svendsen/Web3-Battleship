@@ -8,7 +8,7 @@ const TransactionConfirmationModal = () => {
   const [opened, setOpened] = useState<boolean>(false)
   const [transactionData, setTransactionData] = useState<any>(null)
   const [resolveFn, setResolveFn] = useState<((confirmed: boolean) => void) | null>(null)
-  const { autoConfirmTransactions} = useGameContext();
+  const { autoConfirmTransactions, transactionCancelCount, setTransactionCancelCount} = useGameContext();
 
   const { connector } = useAccount();
 
@@ -69,6 +69,7 @@ const TransactionConfirmationModal = () => {
     setOpened(false);
     setTransactionData(null);
     setResolveFn(null);
+    setTransactionCancelCount(transactionCancelCount+1)
   };
 
   const safeStringify = (value: any) =>

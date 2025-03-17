@@ -19,7 +19,7 @@ import type { BothPlayersPlacedShipsEvent, ShipPlacementEvent } from "../types/e
 const ShipPlacementBoard = () => {
   const account = useAccount();
 
-  const { firstPlayerJoined, grid, setGrid, setShipPlacementPlayer, setBothPlayersPlacedShips, setTurnMessage, setErrorMessage } = useGameContext();
+  const { firstPlayerJoined, grid, setGrid, setShipPlacementPlayer, setBothPlayersPlacedShips, setTurnMessage, setErrorMessage, transactionCancelCount } = useGameContext();
   
   const { writeContract } = useWriteContract();
 
@@ -76,6 +76,14 @@ const ShipPlacementBoard = () => {
       args: [shipPositions],
     });
   }
+
+  useEffect(() => {
+    setIsLoading(false);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null
+    }
+  },[transactionCancelCount])
 
   useWatchContractEventListener({
     eventName: "ShipPlacement",

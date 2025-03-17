@@ -21,6 +21,7 @@ const EnemyTerritory = () => {
     shipPlacementPlayer,
     bothPlayersPlacedShips,
     setErrorMessage,
+    transactionCancelCount
   } = useGameContext();
 
   const { writeContract } = useWriteContract();
@@ -125,6 +126,14 @@ const EnemyTerritory = () => {
       setGrid(JSON.parse(savedGrid));
     }
   }, []);
+
+  useEffect(() => {
+    setLoadingCell(null);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null
+    }
+  },[transactionCancelCount])
 
   const intToCoordinate = (value: number): Coordinate => {
     const x = Math.floor(value / 10);

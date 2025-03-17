@@ -12,7 +12,7 @@ const Navbar = () => {
   const { disconnect } = useDisconnect();
   const { writeContract } = useWriteContract();
 
-  const { autoConfirmTransactions, gameReset, setGameReset, setErrorMessage, setAutoConfirmTransactions } = useGameContext();
+  const { autoConfirmTransactions, gameReset, setGameReset, setErrorMessage, setAutoConfirmTransactions, transactionCancelCount } = useGameContext();
 
   const timeoutRef = useRef<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -75,6 +75,14 @@ const Navbar = () => {
       window.location.reload();
     }
   }, [gameReset]);
+
+  useEffect(() => {
+    setIsLoading(false);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null
+    }
+  },[transactionCancelCount])
 
   return (
     <div className="pt-4 pb-12 flex justify-between w-full">
