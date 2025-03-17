@@ -1,4 +1,3 @@
-// src/hooks/useShipDragOver.ts
 import { useCallback } from "react";
 import type { DragOverEvent } from "@dnd-kit/core";
 import { getIntendedCoordinates } from "../utils/shipDragHelpers";

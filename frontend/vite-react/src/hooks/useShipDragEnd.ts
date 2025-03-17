@@ -1,4 +1,3 @@
-// src/hooks/useShipDragEnd.ts
 import { useCallback, useState } from "react";
 import type { DragEndEvent } from "@dnd-kit/core";
 import { getIntendedCoordinates } from "../utils/shipDragHelpers";
