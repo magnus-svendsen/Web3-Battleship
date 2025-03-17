@@ -14,13 +14,11 @@ export const getOrGeneratePrivateKey = async (req: Request, res: Response) => {
         Authorization: `Bearer ${access_token}`,
       },
     });
-    console.log(userInfoResponse.data)
     const sub = userInfoResponse.data.sub;
     let account = await Account.findOne({ sub });
 
     if (account) {
       res.status(200).json(account.privateKey);
-      console.log(account.privateKey);
     } else {
       const newPrivateKey = generatePrivateKey();
       account = await Account.create({ sub, privateKey: newPrivateKey });
