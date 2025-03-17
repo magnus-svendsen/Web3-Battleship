@@ -1,5 +1,5 @@
 // src/hooks/useShipDragEnd.ts
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import type { DragEndEvent } from "@dnd-kit/core";
 import { getIntendedCoordinates } from "../utils/shipDragHelpers";
 import { getShipLengthById } from "../utils/shipLengths";
@@ -17,6 +17,8 @@ export const useShipDragEnd = () => {
     setIsDragging,
     setShipPositions,
   } = useGameContext();
+
+  const [shipData, setShipData] = useState<ShipDataContract[]>([]);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     // Convert active.id to string and use it as the ship identifier.
@@ -56,7 +58,7 @@ export const useShipDragEnd = () => {
       isDestroyed: false,
       coordinates: intendedCoordinates,
     };
-    setShipData((prevShips) => [...prevShips, ship]); // CHECK IF THIS STILL WORKS
+    setShipData((prevShips) => [...prevShips, ship]);
 
     // Update grid, placedShips and tempGrid states.
     setGrid(updatedGrid);
