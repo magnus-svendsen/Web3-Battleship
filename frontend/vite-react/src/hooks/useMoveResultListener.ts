@@ -1,0 +1,85 @@
+import { useAccount } from "wagmi";
+import { intToCoordinate } from "../utils/coordinateUtils";
+import { useRef } from "react";
+import { useGameContext } from "../contexts/GameContext";
+import useWatchContractEventListener from "./useWatchContractEventListener";
+import useGameWriteContract from "./useGameWriteContract";
+import type { MoveResultEvent } from "../types/eventTypes";
+
+export const useMoveResultListener = () => {
+  const account = useAccount();
+  
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const {
+    grid,
+    setGrid,
+    enemyGrid,
+    setEnemyGrid,
+    setMoveMessage,
+    setTurnMessage,
+  } = useGameContext();
+
+  const executeWriteContract = useGameWriteContract();
+
+  useWatchContractEventListener({
+      eventName: "MoveResult",
+      onEvent: (logs: MoveResultEvent[]) => {
+        const data = logs[0].args;
+        if (typeof data.pos !== "number") {
+          throw new Error("data.pos is undefined");
+        }
+        const coordinate = intToCoordinate(data.pos);
+        let updatedMoveMessage = "";
+        let updatedTurnMessage = "";
+  
+        // Clear loading cell and timer
+        if (timeoutRef.current != null) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null;
+        }
+  
+        if (data.player === account.address) {
+          // Our move: update enemy grid.
+          if (data.hit) {
+            enemyGrid[coordinate.x][coordinate.y] = 3;
+            updatedMoveMessage = data.gameOver ? "You won the game!" : "You shot and hit!";
+          } else {
+            enemyGrid[coordinate.x][coordinate.y] = 2;
+            updatedMoveMessage = "You shot and missed!";
+          }
+          // If the game is over, no next turn.
+          updatedTurnMessage = data.gameOver ? "" : "Opponent's turn";
+          setEnemyGrid(enemyGrid);
+          localStorage.setItem("enemyGrid", JSON.stringify(enemyGrid));
+        } else {
+          // Opponent's move: update our grid.
+          if (data.hit) {
+            grid[coordinate.x][coordinate.y] = 3;
+            updatedMoveMessage = data.gameOver ? "You lost the game!" : "Opponent shot and hit!";
+          } else {
+            grid[coordinate.x][coordinate.y] = 2;
+            updatedMoveMessage = "Opponent shot and missed!";
+          }
+          updatedTurnMessage = data.gameOver ? "" : "Your turn";
+          setGrid(grid);
+          localStorage.setItem("grid", JSON.stringify(grid));
+        }
+  
+        if (timeoutRef.current) { clearTimeout(timeoutRef.current) }
+        setMoveMessage(updatedMoveMessage);
+        setTurnMessage(updatedTurnMessage);
+  
+        localStorage.setItem("moveMessage", JSON.stringify(updatedMoveMessage));
+        localStorage.setItem("turnMessage", JSON.stringify(updatedTurnMessage));
+  
+        // If the game is over, reset the game after 5 seconds
+        if (data.gameOver) {
+          setTimeout(() => {
+            executeWriteContract({ functionName: "resetGame" });
+          }, 5000);
+        }
+      },
+    });
+
+}
