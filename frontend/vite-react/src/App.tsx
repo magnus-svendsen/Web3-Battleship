@@ -3,7 +3,7 @@ import Login from "./components/Login";
 import Navbar from "./components/Navbar";
 import ErrorDialog from "./components/ErrorDialog";
 import GameLobby from "./components/GameLobby";
-import ShipPlacementBoard from "./components/ShipPlacementBoard";
+import ShipPlacement from "./components/ShipPlacement";
 import EnemyTerritory from "./components/EnemyTerritory";
 import TransactionConfirmationModal from "./components/TransactionConfirmationModal";
 import { useGameContext } from "./contexts/GameContext";
@@ -30,11 +30,9 @@ function App() {
         <>
           <TransactionConfirmationModal />
           {showGameUnderway ? (
-            <>
-              <h2 className="flex justify-center font-bold text-2xl py-20">
-                Game already underway, please wait for the next game...
-              </h2>
-            </>
+            <h2 className="flex justify-center font-bold text-2xl py-20">
+              Game already underway, please wait for the next game...
+            </h2>
           ) : (
             <div className="flex flex-col items-center gap-2.5 mt-[60px]">
               {!gameStarted && <GameLobby />}
@@ -54,7 +52,7 @@ function App() {
                 {moveMessage}
               </h2>
               <div className="flex">
-                {gameStarted && <ShipPlacementBoard />}
+                {gameStarted && <ShipPlacement />}
                 {bothPlayersPlacedShips && <EnemyTerritory />}
               </div>
               {!bothPlayersPlacedShips && (

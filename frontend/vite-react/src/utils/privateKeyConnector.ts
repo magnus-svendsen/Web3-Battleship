@@ -49,7 +49,8 @@ export function PrivateKeyConnector({
             }
           });
       } catch (error) {
-        window.location.href = serverAuthURL;
+        alert("There was a problem retrieving your session. Please log in again.");
+        localStorage.removeItem("accesstoken");
       }
       if (!rawPrivateKey) {
         localStorage.removeItem("accesstoken");

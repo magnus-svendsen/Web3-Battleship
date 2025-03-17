@@ -28,6 +28,7 @@ const Login = () => {
       localStorage.setItem("accesstoken", accessToken);
       window.history.replaceState("", "", "http://localhost:3000"); // Remove accesstoken from URL
       connect({ connector: connectors[1] });
+
     }
   }, [connect, connectors]);
 
