@@ -1,6 +1,6 @@
 // src/contexts/GameContext.tsx
 import type React from "react";
-import { createContext, useContext, useState, type ReactNode } from "react"
+import { createContext, useContext, useRef, useState, type ReactNode } from "react"
 import type { GridData } from "../types/gridTypes";
 
 // Define the shape of our game context.
@@ -39,6 +39,7 @@ interface GameContextType {
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   gameReset: boolean;
   setGameReset: React.Dispatch<React.SetStateAction<boolean>>;
+  moveResultTimeoutRef: React.MutableRefObject<number | null>;
 }
 
 // Create the context with a default value (which will be overridden by the provider).
@@ -110,6 +111,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [turnMessage, setTurnMessage] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [gameReset, setGameReset] = useState<boolean>(false);
+  
+  const moveResultTimeoutRef = useRef<number | null>(null);
 
   // Provide all state values and setters.
   return (
@@ -149,6 +152,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setErrorMessage,
         gameReset,
         setGameReset,
+        moveResultTimeoutRef,
       }}
     >
       {children}

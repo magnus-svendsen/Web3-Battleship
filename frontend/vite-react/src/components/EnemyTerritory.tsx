@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { useGameContext } from "../contexts/GameContext";
 import { Loader } from "@mantine/core";
@@ -20,11 +20,10 @@ const EnemyTerritory = () => {
     shipPlacementPlayer,
     bothPlayersPlacedShips,
     setErrorMessage,
+    moveResultTimeoutRef,
   } = useGameContext();
 
   const executeWriteContract = useGameWriteContract();
-
-  const timeoutRef = useRef<number | null>(null);
   
   const [loadingCell, setLoadingCell] = useState<{ row: number; col: number } | null>(null);
 
@@ -51,9 +50,9 @@ const EnemyTerritory = () => {
   const handleMoveTransaction = (rowIndex: number, colIndex: number) => {
     setLoadingCell({ row: rowIndex, col: colIndex });
 
-    if (timeoutRef.current) { clearTimeout(timeoutRef.current) }
+    if (moveResultTimeoutRef.current) { clearTimeout(moveResultTimeoutRef.current) }
 
-    timeoutRef.current = window.setTimeout(() => {
+    moveResultTimeoutRef.current = window.setTimeout(() => {
       setLoadingCell(null);
       setErrorMessage("Transaction timed out. Please try again.")
     }, 60000)

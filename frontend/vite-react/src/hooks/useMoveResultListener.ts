@@ -1,6 +1,5 @@
 import { useAccount } from "wagmi";
 import { intToCoordinate } from "../utils/coordinateUtils";
-import { useRef } from "react";
 import { useGameContext } from "../contexts/GameContext";
 import useWatchContractEventListener from "./useWatchContractEventListener";
 import useGameWriteContract from "./useGameWriteContract";
@@ -8,8 +7,6 @@ import type { MoveResultEvent } from "../types/eventTypes";
 
 export const useMoveResultListener = () => {
   const account = useAccount();
-  
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const {
     grid,
@@ -18,6 +15,7 @@ export const useMoveResultListener = () => {
     setEnemyGrid,
     setMoveMessage,
     setTurnMessage,
+    moveResultTimeoutRef,
   } = useGameContext();
 
   const executeWriteContract = useGameWriteContract();
@@ -34,9 +32,9 @@ export const useMoveResultListener = () => {
         let updatedTurnMessage = "";
   
         // Clear loading cell and timer
-        if (timeoutRef.current != null) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null;
+        if (moveResultTimeoutRef.current != null) {
+          clearTimeout(moveResultTimeoutRef.current)
+          moveResultTimeoutRef.current = null;
         }
   
         if (data.player === account.address) {
@@ -66,7 +64,7 @@ export const useMoveResultListener = () => {
           localStorage.setItem("grid", JSON.stringify(grid));
         }
   
-        if (timeoutRef.current) { clearTimeout(timeoutRef.current) }
+        if (moveResultTimeoutRef.current) { clearTimeout(moveResultTimeoutRef.current) }
         setMoveMessage(updatedMoveMessage);
         setTurnMessage(updatedTurnMessage);
   
