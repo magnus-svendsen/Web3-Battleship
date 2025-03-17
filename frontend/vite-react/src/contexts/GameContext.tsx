@@ -7,6 +7,16 @@ import type { GridData } from "../types/gridTypes";
 interface GameContextType {
   grid: GridData;
   setGrid: React.Dispatch<React.SetStateAction<GridData>>;
+  tempGrid: GridData;
+  setTempGrid: React.Dispatch<React.SetStateAction<GridData>>;
+  placedShips: boolean[];
+  setPlacedShips: React.Dispatch<React.SetStateAction<boolean[]>>;
+  shipPositions: number[];
+  setShipPositions: React.Dispatch<React.SetStateAction<number[]>>;
+  isDragging: boolean;
+  setIsDragging: React.Dispatch<React.SetStateAction<boolean>>;
+  shipOrientations: boolean[];
+  setShipsOrientations: React.Dispatch<React.SetStateAction<boolean[]>>;
   firstPlayerJoined: string;
   setFirstPlayerJoined: React.Dispatch<React.SetStateAction<string>>;
   secondPlayerJoined: string;
@@ -47,6 +57,35 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
+  const [tempGrid, setTempGrid] = useState<GridData>([
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ]);
+  const [placedShips, setPlacedShips] = useState<boolean[]>([
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
+  const [shipPositions, setShipPositions] = useState<number[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const [shipOrientations, setShipsOrientations] = useState<boolean[]>([
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
+
   const [firstPlayerJoined, setFirstPlayerJoined] = useState<string>("");
   const [secondPlayerJoined, setSecondPlayerJoined] = useState<string>("");
   const [gameStarted, setGameStarted] = useState<boolean>(false);
@@ -64,6 +103,16 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       value={{
         grid,
         setGrid,
+        tempGrid,
+        setTempGrid,
+        placedShips,
+        setPlacedShips,
+        shipPositions,
+        setShipPositions,
+        isDragging,
+        setIsDragging,
+        shipOrientations,
+        setShipsOrientations,
         firstPlayerJoined,
         setFirstPlayerJoined,
         secondPlayerJoined,
