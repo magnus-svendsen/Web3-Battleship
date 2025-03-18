@@ -127,9 +127,6 @@ const Navbar = () => {
               Reset game
             </Button>
           }
-          <Button>
-            FAQ
-          </Button>
         </div>
       )}
     </div>
