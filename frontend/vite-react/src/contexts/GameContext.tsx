@@ -40,6 +40,10 @@ interface GameContextType {
   gameReset: boolean;
   setGameReset: React.Dispatch<React.SetStateAction<boolean>>;
   moveResultTimeoutRef: React.MutableRefObject<number | null>;
+  autoConfirmTransactions: boolean;
+  setAutoConfirmTransactions: React.Dispatch<React.SetStateAction<boolean>>;
+  transactionCancelCount: number;
+  setTransactionCancelCount: React.Dispatch<React.SetStateAction<number>>;
 }
 
 // Create the context with a default value (which will be overridden by the provider).
@@ -113,6 +117,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [gameReset, setGameReset] = useState<boolean>(false);
   
   const moveResultTimeoutRef = useRef<number | null>(null);
+  const [autoConfirmTransactions, setAutoConfirmTransactions] = useState<boolean>(false);
+  const [transactionCancelCount, setTransactionCancelCount] = useState<number>(0)
+
 
   // Provide all state values and setters.
   return (
@@ -153,6 +160,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         gameReset,
         setGameReset,
         moveResultTimeoutRef,
+        autoConfirmTransactions,
+        setAutoConfirmTransactions,
+        transactionCancelCount,
+        setTransactionCancelCount
       }}
     >
       {children}

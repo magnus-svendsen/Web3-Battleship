@@ -16,7 +16,7 @@ import { useShipDragOver } from "../hooks/useShipDragOver";
 const ShipPlacement = () => {
   const account = useAccount();
 
-  const { grid, tempGrid, placedShips, setPlacedShips, shipPositions, isDragging, setIsDragging, shipOrientations, setShipsOrientations, firstPlayerJoined, setShipPlacementPlayer, setBothPlayersPlacedShips, setTurnMessage, setErrorMessage } = useGameContext();
+  const { grid, tempGrid, placedShips, setPlacedShips, shipPositions, isDragging, setIsDragging, shipOrientations, setShipsOrientations, firstPlayerJoined, setShipPlacementPlayer, setBothPlayersPlacedShips, setTurnMessage, setErrorMessage, transactionCancelCount } = useGameContext();
   
   const executeWriteContract = useGameWriteContract();
   const { handleDragEnd } = useShipDragEnd();
@@ -36,6 +36,14 @@ const ShipPlacement = () => {
     }, 60000); // 60sec timeout if no transaction is validated
     executeWriteContract({ functionName: "placeShips", args: [shipPositions] });
   }
+
+  useEffect(() => {
+    setIsLoading(false);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null
+    }
+  },[transactionCancelCount])
 
   useWatchContractEventListener({
     eventName: "ShipPlacement",

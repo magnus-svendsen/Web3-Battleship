@@ -1,4 +1,4 @@
-import { Button, Loader } from "@mantine/core";
+import { Button, Loader, Switch } from "@mantine/core";
 import { useAccount, useDisconnect } from "wagmi";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import type { GameResetEvent } from "../types/eventTypes";
@@ -10,7 +10,7 @@ const Navbar = () => {
   const account = useAccount();
   const { disconnect } = useDisconnect();
 
-  const { gameReset, setGameReset, setErrorMessage } = useGameContext();
+  const { autoConfirmTransactions, gameReset, setGameReset, setErrorMessage, setAutoConfirmTransactions, transactionCancelCount } = useGameContext();
   const executeWriteContract = useGameWriteContract();
 
   const timeoutRef = useRef<number | null>(null);
@@ -69,11 +69,29 @@ const Navbar = () => {
     }
   }, [gameReset]);
 
+  useEffect(() => {
+    setIsLoading(false);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null
+    }
+  },[transactionCancelCount])
+
   return (
     <div className="pt-4 pb-12 flex justify-between w-full">
       <h2 className="font-bold text-2xl ml-3">Web3 Battleship</h2>
       {account.status === "connected" && (
         <div className="flex">
+          {account.connector.id === "privateKey" && (
+            <div className="pr-2 pt-2">
+            <Switch
+              checked={autoConfirmTransactions}
+              onChange={(event) => setAutoConfirmTransactions(event.currentTarget.checked)}
+              label="Autoconfirm transactions"
+            />
+            </div>
+          )}
+
           <Button
             variant="white"
             color="teal"
@@ -109,6 +127,9 @@ const Navbar = () => {
               Reset game
             </Button>
           }
+          <Button>
+            FAQ
+          </Button>
         </div>
       )}
     </div>

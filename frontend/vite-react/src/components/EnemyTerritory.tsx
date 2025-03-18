@@ -21,6 +21,7 @@ const EnemyTerritory = () => {
     bothPlayersPlacedShips,
     setErrorMessage,
     moveResultTimeoutRef,
+    transactionCancelCount
   } = useGameContext();
 
   const executeWriteContract = useGameWriteContract();
@@ -46,6 +47,14 @@ const EnemyTerritory = () => {
       setGrid(JSON.parse(savedGrid));
     }
   }, []);
+
+  useEffect(() => {
+    setLoadingCell(null);
+    if (moveResultTimeoutRef.current) {
+      clearTimeout(moveResultTimeoutRef.current);
+      moveResultTimeoutRef.current = null
+    }
+  },[transactionCancelCount])
 
   const handleMoveTransaction = (rowIndex: number, colIndex: number) => {
     setLoadingCell({ row: rowIndex, col: colIndex });

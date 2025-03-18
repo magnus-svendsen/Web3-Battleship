@@ -10,7 +10,7 @@ import useGameWriteContract from "../hooks/useGameWriteContract";
 const GameLobby = () => {
   const account = useAccount();
 
-  const { setErrorMessage, firstPlayerJoined, setFirstPlayerJoined, secondPlayerJoined, setSecondPlayerJoined, setGameStarted, setShowGameUnderway } = useGameContext();
+  const { setErrorMessage, firstPlayerJoined, setFirstPlayerJoined, secondPlayerJoined, setSecondPlayerJoined, setGameStarted, setShowGameUnderway, transactionCancelCount } = useGameContext();
   
   const executeWriteContract = useGameWriteContract();
 
@@ -26,6 +26,13 @@ const GameLobby = () => {
     }, 60000); // 60sec timeout if no transaction is validated
     executeWriteContract({ functionName: "join" });
   }
+
+  useEffect(() => {
+    setIsLoading(false)
+    if(timeoutRef.current) {
+      timeoutRef.current = null;
+    }
+  },[transactionCancelCount])
 
   useWatchContractEventListener({
     eventName: "FirstPlayerJoined",
