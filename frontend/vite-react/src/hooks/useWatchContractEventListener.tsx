@@ -1,6 +1,6 @@
 import { useWatchContractEvent } from "wagmi";
-import { contractAddress } from "../utils/contractAddress";
-import { abi } from "../utils/abi";
+import { multiplayerContractAddress } from "../utils/contractAddress";
+import { multiplayerAbi } from "../utils/abi/multiplayerAbi";
 
 interface WatchEventParams {
   eventName: "FirstPlayerJoined" | "SecondPlayerJoined" | "ShipPlacement" | "BothPlayersPlacedShips" | "MoveResult" | "GameReset";
@@ -9,8 +9,8 @@ interface WatchEventParams {
 
 const useWatchContractEventListener = ({ eventName, onEvent }: WatchEventParams) => {
   useWatchContractEvent({
-    address: contractAddress,
-    abi,
+    address: multiplayerContractAddress,
+    abi: multiplayerAbi,
     eventName,
     onLogs(logs) {
       onEvent(logs);

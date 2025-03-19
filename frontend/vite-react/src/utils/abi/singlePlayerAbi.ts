@@ -1,4 +1,4 @@
-export const abi = [
+export const singlePlayerAbi = [
   {
     "inputs": [],
     "stateMutability": "nonpayable",
@@ -6,52 +6,7 @@ export const abi = [
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "placed",
-        "type": "bool"
-      }
-    ],
-    "name": "BothPlayersPlacedShips",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "player",
-        "type": "address"
-      }
-    ],
-    "name": "FirstPlayerJoined",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "newGameId",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [],
     "name": "GameReset",
     "type": "event"
   },
@@ -59,15 +14,9 @@ export const abi = [
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
         "indexed": true,
         "internalType": "address",
-        "name": "player",
+        "name": "shooter",
         "type": "address"
       },
       {
@@ -96,30 +45,18 @@ export const abi = [
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
         "indexed": true,
         "internalType": "address",
         "name": "player",
         "type": "address"
       }
     ],
-    "name": "SecondPlayerJoined",
+    "name": "PlayerJoined",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
       {
         "indexed": true,
         "internalType": "address",
@@ -132,7 +69,27 @@ export const abi = [
   },
   {
     "inputs": [],
-    "name": "gameId",
+    "name": "aiMove",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "aiRemainingCells",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "aiShips",
     "outputs": [
       {
         "internalType": "uint256",
@@ -157,10 +114,29 @@ export const abi = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "join",
+    "inputs": [
+      {
+        "internalType": "uint8[]",
+        "name": "positions",
+        "type": "uint8[]"
+      }
+    ],
+    "name": "placePlayerShips",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "player",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -176,53 +152,71 @@ export const abi = [
         "type": "uint8"
       }
     ],
-    "name": "move",
+    "name": "playerMove",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "playerRemainingCells",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "playerShips",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "playerShipsPlaced",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
       {
-        "internalType": "uint8[]",
-        "name": "positions",
-        "type": "uint8[]"
+        "internalType": "uint256",
+        "name": "newPlayerShips",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "newRemainingCells",
+        "type": "uint8"
       }
     ],
-    "name": "placeShips",
+    "name": "resetGame",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "player1",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "player2",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "resetGame",
+    "name": "startGame",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

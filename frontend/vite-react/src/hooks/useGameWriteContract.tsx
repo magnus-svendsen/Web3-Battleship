@@ -1,6 +1,6 @@
 import { useWriteContract } from "wagmi";
-import { abi } from "../utils/abi";
-import { contractAddress } from "../utils/contractAddress";
+import { multiplayerContractAddress } from "../utils/contractAddress";
+import { multiplayerAbi } from "../utils/abi/multiplayerAbi";
 
 interface WriteContractParams {
   functionName: "join" | "move" | "placeShips" | "resetGame";
@@ -13,8 +13,8 @@ const useGameWriteContract = () => {
   // Destructure the parameter and assign a default empty array to args.
   const executeWriteContract = ({ functionName, args = [] }: WriteContractParams) => {
     return writeContract({
-      abi,
-      address: contractAddress,
+      abi: multiplayerAbi,
+      address: multiplayerContractAddress,
       functionName,
       args,
     });
