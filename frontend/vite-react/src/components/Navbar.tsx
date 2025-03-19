@@ -92,7 +92,6 @@ const Navbar = () => {
             />
             </div>
           )}
-          <AccountInfoHandle/>
           <Button
             variant="white"
             color="teal"

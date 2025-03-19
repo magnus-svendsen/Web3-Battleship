@@ -7,6 +7,7 @@ import ShipPlacement from "./components/ShipPlacement";
 import EnemyTerritory from "./components/EnemyTerritory";
 import TransactionConfirmationModal from "./components/TransactionConfirmationModal";
 import { useGameContext } from "./contexts/GameContext";
+import AccountInfoHandle from "./components/AccountInfoHandle";
 
 function App() {
   const account = useAccount();
@@ -25,6 +26,7 @@ function App() {
       <div className="flex flex-col items-center">
         {account.status !== "connected" && <Login />}
       </div>
+          <AccountInfoHandle/>
 
       {account.status === "connected" && (
         <>
