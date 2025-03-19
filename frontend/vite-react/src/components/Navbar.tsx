@@ -5,6 +5,7 @@ import type { GameResetEvent } from "../types/eventTypes";
 import { useEffect, useRef, useState } from "react";
 import { useGameContext } from "../contexts/GameContext";
 import useGameWriteContract from "../hooks/useGameWriteContract";
+import AccountInfoHandle from "./AccountInfoHandle";
 
 const Navbar = () => {
   const account = useAccount();
@@ -91,7 +92,7 @@ const Navbar = () => {
             />
             </div>
           )}
-
+          <AccountInfoHandle/>
           <Button
             variant="white"
             color="teal"
