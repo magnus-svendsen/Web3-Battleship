@@ -2,22 +2,20 @@ import { useAccount } from "wagmi";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
 import ErrorDialog from "./components/ErrorDialog";
-import GameLobby from "./components/GameLobby";
-import ShipPlacement from "./components/ShipPlacement";
-import EnemyTerritory from "./components/EnemyTerritory";
+
 import TransactionConfirmationModal from "./components/TransactionConfirmationModal";
-import { useGameContext } from "./contexts/GameContext";
+import { useState } from "react";
+import { Button } from "@mantine/core";
+import PersonIcon from "@mui/icons-material/Person";
+import GroupIcon from "@mui/icons-material/Group";
+import Multiplayer from "./components/Multiplayer";
+import SinglePlayer from "./components/SinglePlayer";
 
 function App() {
   const account = useAccount();
-  const {
-    gameStarted,
-    showGameUnderway,
-    shipPlacementPlayer,
-    bothPlayersPlacedShips,
-    moveMessage,
-    turnMessage,
-  } = useGameContext();
+
+  const [showSinglePlayerGame, setShowSinglePlayerGame] = useState<boolean>(localStorage.getItem("showSinglePlayerGame") === "true");
+  const [showMultiplayerGame, setShowMultiplayerGame] = useState<boolean>(localStorage.getItem("showMultiplayerGame") === "true");
 
   return (
     <div className="min-h-screen bg-[#002642] text-white">
@@ -28,57 +26,76 @@ function App() {
 
       {account.status === "connected" && (
         <>
-          <TransactionConfirmationModal />
-          {showGameUnderway ? (
-            <h2 className="flex justify-center font-bold text-2xl py-20">
-              Game already underway, please wait for the next game...
-            </h2>
-          ) : (
-            <div className="flex flex-col items-center gap-2.5 mt-[60px]">
-              {!gameStarted && <GameLobby />}
-              <h2
-                className={`font-bold text-2xl flex justify-center mt-40 mb-10 ${
-                  moveMessage === "Opponent shot and hit!" ||
-                  moveMessage === "You lost the game!"
-                    ? "text-red-600"
-                    : ""
-                } ${
-                  moveMessage === "You shot and hit!" ||
-                  moveMessage === "You won the game!"
-                    ? "text-green-400"
-                    : ""
-                }`}
+          {!showSinglePlayerGame && !showMultiplayerGame && (
+            <div className="flex justify-center gap-5 mt-20">
+              <Button
+                onClick={() => { 
+                  setShowSinglePlayerGame(true); 
+                  localStorage.setItem("showSinglePlayerGame", JSON.stringify(true)); 
+                }}
+                className="mt-5"
+                size="xl"
+                color="red"
+                radius="xl"
               >
-                {moveMessage}
-              </h2>
-              <div className="flex">
-                {gameStarted && <ShipPlacement />}
-                {bothPlayersPlacedShips && <EnemyTerritory />}
-              </div>
-              {!bothPlayersPlacedShips && (
-                <div className="flex justify-center font-bold text-2xl py-6">
-                  {shipPlacementPlayer && (
-                    <div>
-                      {shipPlacementPlayer === account.address ? (
-                        <h2>
-                          Waiting for opponent to place their ships...
-                        </h2>
-                      ) : (
-                        <h2>Your opponent has placed their ships...</h2>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-              <div className="font-bold text-2xl py-8 flex justify-center">
-                <h2 className={`${turnMessage === "Your turn" ? "text-green-400" : ""}`}>
-                  {turnMessage}
-                </h2>
-              </div>
+                <PersonIcon className="mr-0.5" />
+                Single Player
+              </Button>
+
+              <Button
+                onClick={() => {
+                  setShowMultiplayerGame(true)
+                  localStorage.setItem("showMultiplayerGame", JSON.stringify(true));
+                }}
+                className="mt-5"
+                size="xl"
+                color="blue"
+                radius="xl"
+              >
+                <GroupIcon className="mr-1" />
+                Multiplayer
+              </Button>
+            </div>
+          )}
+
+          {showSinglePlayerGame && (
+            <div className="">
+              <Button
+                onClick={() => {
+                  setShowSinglePlayerGame(false);
+                  localStorage.setItem("showSinglePlayerGame", JSON.stringify(false));
+                }}
+                className=""
+                size="xl"
+                color="red"
+                radius="xl"
+              >
+                Back
+              </Button>
+              <SinglePlayer />
+            </div>
+          )}
+
+          {showMultiplayerGame && (
+            <div className="">
+              <Button
+                onClick={() => {
+                  setShowMultiplayerGame(false);
+                  localStorage.setItem("showMultiplayerGame", JSON.stringify(false));
+                }}
+                className=""
+                size="xl"
+                color="blue"
+                radius="xl"
+              >
+                Back
+              </Button>
+              <Multiplayer />
             </div>
           )}
         </>
       )}
+      <TransactionConfirmationModal />
       <ErrorDialog />
     </div>
   );
