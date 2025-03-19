@@ -40,7 +40,6 @@ export const getUserInfo = async (req: Request, res: Response) => {
       },
     });
 
-    console.log(userInfoResponse.data)
     res.json(userInfoResponse.data)
   } catch (error) {
     console.error(error);

@@ -3,15 +3,17 @@ import axios from 'axios';
 import { serverUserinfoURL } from '../utils/serverURL';
 import { useEffect, useState } from 'react';
 import { useAccount, useBalance } from 'wagmi';
+import PersonIcon from '@mui/icons-material/Person';
+import AccountInfoModal from './AccountInfoModal';
 
 function AccountInfoHandle() {
   const [userInfo, setUserInfo] = useState<any>();
-  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const account = useAccount();
 
   const { data, isError, isLoading } = useBalance({
     address: account.address,
-    watch: true, // optional: updates balance on new blocks
   });
 
 
@@ -19,6 +21,7 @@ function AccountInfoHandle() {
     console.log(userInfo)
     console.log(account)
     console.log(data)
+    setIsModalOpen(true)
 
   }
   
@@ -51,17 +54,21 @@ function AccountInfoHandle() {
 
   return (
     <div>
-      <Button onClick={devlog}>temp</Button>
       {userInfo ? (
-        <div>
-          <Text>Name: {userInfo.name}</Text>
+        <div   className="inline-flex items-center border border-gray-300 rounded-full px-4 py-2 cursor-pointer transition-colors duration-200 hover:border-gray-400"
+        onClick={devlog}
+        >
           {account.isConnected ? (
             isLoading ? (
               <Text>Loading balance...</Text>
             ) : isError ? (
               <Text>Error fetching balance.</Text>
             ) : (
-              <Text>Balance: {parseFloat(data!.formatted).toFixed(4)} {data?.symbol}</Text>
+              <><PersonIcon/>
+              <Text>
+                Balance: {parseFloat(data!.formatted).toFixed(4)} {data?.symbol}
+              </Text>
+              </>
             )
           ) : (
             <Text>Please connect your wallet to view balance.</Text>
@@ -69,6 +76,12 @@ function AccountInfoHandle() {
         </div>
       ) : (
         <Text>Loading user info...</Text>
+      )}
+       {isModalOpen && userInfo && (
+        <AccountInfoModal
+          data={userInfo}
+          onClose={() => setIsModalOpen(false)}
+        />
       )}
     </div>
   )

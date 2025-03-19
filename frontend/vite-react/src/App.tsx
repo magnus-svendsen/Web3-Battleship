@@ -26,7 +26,6 @@ function App() {
       <div className="flex flex-col items-center">
         {account.status !== "connected" && <Login />}
       </div>
-          <AccountInfoHandle/>
 
       {account.status === "connected" && (
         <>
