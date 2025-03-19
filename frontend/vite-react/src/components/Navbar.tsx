@@ -56,7 +56,6 @@ const Navbar = () => {
       localStorage.removeItem("grid");
       localStorage.removeItem("shipsSubmitted");
       localStorage.removeItem("placedShips");
-      localStorage.removeItem("shipPositions");
       localStorage.removeItem("bothPlayersPlacedShips");
 
       localStorage.removeItem("enemyGrid");

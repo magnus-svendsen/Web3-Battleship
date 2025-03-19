@@ -11,9 +11,7 @@ const EnemyTerritory = () => {
   useMoveResultListener();
 
   const {
-    setGrid,
     enemyGrid,
-    setEnemyGrid,
     setMoveMessage,
     turnMessage,
     setTurnMessage,
@@ -37,14 +35,6 @@ const EnemyTerritory = () => {
     const savedTurnMessage = localStorage.getItem("turnMessage");
     if (savedTurnMessage) {
       setTurnMessage(JSON.parse(savedTurnMessage));
-    }
-    const savedEnemyGrid = localStorage.getItem("enemyGrid");
-    if (savedEnemyGrid) {
-      setEnemyGrid(JSON.parse(savedEnemyGrid));
-    }
-    const savedGrid = localStorage.getItem("grid");
-    if (savedGrid) {
-      setGrid(JSON.parse(savedGrid));
     }
   }, []);
 

@@ -17,7 +17,7 @@ import PlacementHelpIcon from "./PlacementHelpIcon";
 const ShipPlacement = () => {
   const account = useAccount();
 
-  const { grid, tempGrid, placedShips, setPlacedShips, shipPositions, isDragging, setIsDragging, shipOrientations, setShipsOrientations, firstPlayerJoined, setShipPlacementPlayer, setBothPlayersPlacedShips, setTurnMessage, setErrorMessage, transactionCancelCount } = useGameContext();
+  const { grid, tempGrid, placedShips, shipPositions, isDragging, setIsDragging, shipOrientations, setShipsOrientations, firstPlayerJoined, setShipPlacementPlayer, setBothPlayersPlacedShips, setTurnMessage, setErrorMessage, transactionCancelCount } = useGameContext();
   
   const executeWriteContract = useGameWriteContract();
   const { handleDragEnd } = useShipDragEnd();
@@ -25,7 +25,7 @@ const ShipPlacement = () => {
 
   const timeoutRef = useRef<number | null>(null);
 
-  const [shipsSubmitted, setShipsSubmitted] = useState(false);
+  const [shipsSubmitted, setShipsSubmitted] = useState<boolean>(localStorage.getItem("shipsSubmitted") === "true");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   
   const handleSubmitShips = () => {
@@ -89,29 +89,6 @@ const ShipPlacement = () => {
       }
     },
   });
-
-  useEffect(() => {
-    const storedShipPlacementPlayer = localStorage.getItem("shipPlacementPlayer");
-    if (storedShipPlacementPlayer) {
-      setShipPlacementPlayer(JSON.parse(storedShipPlacementPlayer));
-    }
-    const storedShipsSubmitted = localStorage.getItem("shipsSubmitted");
-    if (storedShipsSubmitted) {
-      setShipsSubmitted(JSON.parse(storedShipsSubmitted));
-    }
-    const storedPlacedShips = localStorage.getItem("placedShips");
-    if (storedPlacedShips) {
-      setPlacedShips(JSON.parse(storedPlacedShips));
-    }
-    const storedBothPlayersPlacedShips = localStorage.getItem("bothPlayersPlacedShips");
-    if (storedBothPlayersPlacedShips) {
-      setBothPlayersPlacedShips(JSON.parse(storedBothPlayersPlacedShips));
-    }
-    const savedTurnMessage = localStorage.getItem("turnMessage");
-    if (savedTurnMessage) {
-      setTurnMessage(JSON.parse(savedTurnMessage));
-    }
-  }, []);
 
   const handleOrientationChange = (id: number) => {
     const oldShipOrientation = shipOrientations;
