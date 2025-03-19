@@ -5,6 +5,8 @@ import type { GridData } from "../types/gridTypes";
 
 // Define the shape of our game context.
 interface GameContextType {
+  mode: "none" | "singleplayer" | "multiplayer";
+  setMode: React.Dispatch<React.SetStateAction<"none" | "singleplayer" | "multiplayer">>;
   grid: GridData;
   setGrid: React.Dispatch<React.SetStateAction<GridData>>;
   tempGrid: GridData;
@@ -44,6 +46,8 @@ interface GameContextType {
   setAutoConfirmTransactions: React.Dispatch<React.SetStateAction<boolean>>;
   transactionCancelCount: number;
   setTransactionCancelCount: React.Dispatch<React.SetStateAction<number>>;
+  singlePlayerShipPlacementPlayer: string;
+  setSinglePlayerShipPlacementPlayer: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // Create the context with a default value (which will be overridden by the provider).
@@ -51,6 +55,8 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 
 // Create a provider component.
 export const GameProvider = ({ children }: { children: ReactNode }) => {
+  const [mode, setMode] = useState<"none" | "singleplayer" | "multiplayer">(localStorage.getItem("mode") as "none" | "singleplayer" | "multiplayer" || "none");
+  
   // Initialize state variables
   const [grid, setGrid] = useState<GridData>(() => {
     const savedGrid = localStorage.getItem("grid");
@@ -123,11 +129,15 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [autoConfirmTransactions, setAutoConfirmTransactions] = useState<boolean>(false);
   const [transactionCancelCount, setTransactionCancelCount] = useState<number>(0)
 
+  const [singlePlayerShipPlacementPlayer, setSinglePlayerShipPlacementPlayer] = useState<string | null>(localStorage.getItem("singlePlayerShipPlacementPlayer"));
+
 
   // Provide all state values and setters.
   return (
     <GameContext.Provider
       value={{
+        mode,
+        setMode,
         grid,
         setGrid,
         tempGrid,
@@ -166,7 +176,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         autoConfirmTransactions,
         setAutoConfirmTransactions,
         transactionCancelCount,
-        setTransactionCancelCount
+        setTransactionCancelCount,
+        singlePlayerShipPlacementPlayer,
+        setSinglePlayerShipPlacementPlayer,
       }}
     >
       {children}

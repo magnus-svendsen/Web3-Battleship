@@ -10,12 +10,12 @@ import PersonIcon from "@mui/icons-material/Person";
 import GroupIcon from "@mui/icons-material/Group";
 import Multiplayer from "./components/Multiplayer";
 import SinglePlayer from "./components/SinglePlayer";
+import { useGameContext } from "./contexts/GameContext";
 
 function App() {
   const account = useAccount();
 
-  const [showSinglePlayerGame, setShowSinglePlayerGame] = useState<boolean>(localStorage.getItem("showSinglePlayerGame") === "true");
-  const [showMultiplayerGame, setShowMultiplayerGame] = useState<boolean>(localStorage.getItem("showMultiplayerGame") === "true");
+  const { mode, setMode } = useGameContext();
 
   return (
     <div className="min-h-screen bg-[#002642] text-white">
@@ -26,12 +26,12 @@ function App() {
 
       {account.status === "connected" && (
         <>
-          {!showSinglePlayerGame && !showMultiplayerGame && (
+          {mode === "none" && (
             <div className="flex justify-center gap-5 mt-20">
               <Button
                 onClick={() => { 
-                  setShowSinglePlayerGame(true); 
-                  localStorage.setItem("showSinglePlayerGame", JSON.stringify(true)); 
+                  setMode("singleplayer");
+                  localStorage.setItem("mode", JSON.stringify("singleplayer"));
                 }}
                 className="mt-5"
                 size="xl"
@@ -44,8 +44,8 @@ function App() {
 
               <Button
                 onClick={() => {
-                  setShowMultiplayerGame(true)
-                  localStorage.setItem("showMultiplayerGame", JSON.stringify(true));
+                  setMode("multiplayer");
+                  localStorage.setItem("mode", JSON.stringify("multiplayer"));
                 }}
                 className="mt-5"
                 size="xl"
@@ -58,12 +58,12 @@ function App() {
             </div>
           )}
 
-          {showSinglePlayerGame && (
+          {mode === "singleplayer" && (
             <div className="">
               <Button
                 onClick={() => {
-                  setShowSinglePlayerGame(false);
-                  localStorage.setItem("showSinglePlayerGame", JSON.stringify(false));
+                  setMode("none");
+                  localStorage.setItem("mode", JSON.stringify("none"));
                 }}
                 className=""
                 size="xl"
@@ -76,12 +76,12 @@ function App() {
             </div>
           )}
 
-          {showMultiplayerGame && (
+          {mode === "multiplayer" && (
             <div className="">
               <Button
                 onClick={() => {
-                  setShowMultiplayerGame(false);
-                  localStorage.setItem("showMultiplayerGame", JSON.stringify(false));
+                  setMode("none");
+                  localStorage.setItem("mode", JSON.stringify("none"));
                 }}
                 className=""
                 size="xl"
