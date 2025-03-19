@@ -12,6 +12,7 @@ import type { BothPlayersPlacedShipsEvent, ShipPlacementEvent } from "../types/e
 import useGameWriteContract from "../hooks/useGameWriteContract";
 import { useShipDragEnd } from "../hooks/useShipDragEnd";
 import { useShipDragOver } from "../hooks/useShipDragOver";
+import PlacementHelpIcon from "./PlacementHelpIcon";
 
 const ShipPlacement = () => {
   const account = useAccount();
@@ -166,14 +167,15 @@ const ShipPlacement = () => {
               ))
             )}
           </div>
-          <div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                padding: "20px",
-              }}
-            >
+          <div className="flex flex-col p-5 mb-21">
+            <div className="mb-10">
+              {!placedShips.every(Boolean) &&
+                <div className="flex justify-center">
+                  <PlacementHelpIcon />
+                </div>
+              }
+            </div>
+            <div>
               {[0, 1, 2, 3, 4].map((id) =>
                 !placedShips[id] ? (
                   <Ship
