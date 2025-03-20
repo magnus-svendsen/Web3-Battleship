@@ -1,10 +1,20 @@
-import { Modal, Switch, Text } from "@mantine/core";
+import { Group, Modal, SimpleGrid, Switch, Text, Tooltip } from "@mantine/core";
 import { useGameContext } from "../contexts/GameContext";
+import { useAccount } from "wagmi";
+import {
+  Person as PersonIcon,
+  HelpOutline as HelpOutlineIcon,
+  Phone as PhoneIcon,
+  VpnKey as VpnKeyIcon,
+  AccountBalance as AccountBalanceIcon
+} from '@mui/icons-material';
 
 interface AccountInfoModalProps {
   data: {
     name: string;
     phone_number: string;
+    balance: number;
+    symbol: string;
   };
 
   onClose: () => void;
@@ -12,26 +22,114 @@ interface AccountInfoModalProps {
 function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
   const { autoConfirmTransactions, setAutoConfirmTransactions } = useGameContext();
 
+  const account = useAccount()
+
   return (
     <div>
-      <Modal opened={true} onClose={onClose} title="Account Information" centered>
-        <Text>
-          Name: {data.name}
-        </Text>
-        <Text>
-          Phonenumber: {data.phone_number}
-        </Text>
-        <Text>
-          Account address: 
-        </Text>
-        <Text>
-          Balance: 
-        </Text>
-        <Switch
-          checked={autoConfirmTransactions}
-          onChange={(event) => setAutoConfirmTransactions(event.currentTarget.checked)}
-          label="Autoconfirm transactions"
-        />
+      <Modal opened={true} onClose={onClose} title="Account Information" centered size="auto" >
+        <SimpleGrid cols={2} spacing={"xs"}>
+          <div>
+            <Group gap={0}>
+              <PersonIcon fontSize="small" />
+              <Tooltip label="This is the display name associated with your account.">
+                <HelpOutlineIcon
+                  className="
+                    top-0
+                    right-0
+                    -translate-x-1.5
+                    -translate-y-1
+                    text-gray-500
+                    cursor-pointer
+                  "
+                  sx={{ fontSize: "16px" }}   // Manually set size using sx since mui seems to override the size styling
+                />
+              </Tooltip>
+              <Text>Name:</Text>
+            </Group>
+          </div>
+          <div>
+            <Text>{data.name}</Text>
+          </div>
+          <div>
+            <Group gap={0}>
+              <PhoneIcon fontSize="small" />
+              <Tooltip label="This is the phonenumber associated with your account.">
+                <HelpOutlineIcon
+                  className="
+                    top-0
+                    right-0
+                    -translate-x-1.5
+                    -translate-y-1
+                    text-gray-500
+                    cursor-pointer
+                  "
+                  sx={{ fontSize: "16px" }}   // Manually set size using sx since mui seems to override the size styling
+                />
+              </Tooltip>
+              <Text>Phonenumber:</Text>
+            </Group>
+          </div>
+          <div>
+            <Text>
+              {data.phone_number}
+            </Text>
+          </div>
+          <div>
+            <Group gap={0}>
+              <VpnKeyIcon fontSize="small" />
+              <Tooltip label="This is address to your account. You can think of it as a bank account number for your digital assets. It's a unique public identifier.">
+                <HelpOutlineIcon
+                  className="
+                    top-0
+                    right-0
+                    -translate-x-1.5
+                    -translate-y-1
+                    text-gray-500
+                    cursor-pointer
+                  "
+                  sx={{ fontSize: "16px" }}   // Manually set size using sx since mui seems to override the size styling
+                />
+              </Tooltip>
+              <Text>Address:</Text>
+            </Group>
+          </div>
+          <div>
+            <Text>
+              {account.address}
+            </Text>
+          </div>
+          <div>
+          <Group gap={0}>
+              <AccountBalanceIcon fontSize="small" />
+              <Tooltip label="This is the amount of Ethereum you have. Don't worry, this does not contain any real world value as its test tokens. This is used to conduct transactions.">
+                <HelpOutlineIcon
+                  className="
+                    top-0
+                    right-0
+                    -translate-x-1.5
+                    -translate-y-1
+                    text-gray-500
+                    cursor-pointer
+                  "
+                  sx={{fontSize: "16px"}}   // Manually set size using sx since mui seems to override the size styling
+                />
+              </Tooltip>
+              <Text>Balance:</Text>
+            </Group>
+          </div>
+          <div>
+            <Text>{data.balance + data.symbol}</Text>
+          </div>
+        </SimpleGrid>
+        <div className="pt-10">
+
+          <Switch
+            checked={autoConfirmTransactions}
+            onChange={(event) => setAutoConfirmTransactions(event.currentTarget.checked)}
+            label="Autoconfirm transactions"
+          />
+
+        </div>
       </Modal>
     </div>
   )

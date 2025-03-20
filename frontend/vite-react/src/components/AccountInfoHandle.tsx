@@ -1,10 +1,11 @@
 import {Button, Text} from '@mantine/core';
 import axios from 'axios';
 import { serverUserinfoURL } from '../utils/serverURL';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAccount, useBalance } from 'wagmi';
 import PersonIcon from '@mui/icons-material/Person';
 import AccountInfoModal from './AccountInfoModal';
+import { formatEther } from 'viem';
 
 function AccountInfoHandle() {
   const [userInfo, setUserInfo] = useState<any>();
@@ -16,6 +17,17 @@ function AccountInfoHandle() {
     address: account.address,
   });
 
+
+  const combinedData = useMemo(() => {
+    if (userInfo && data) {
+      return {
+        ...userInfo,
+        balance: data.value ? parseFloat(formatEther(data.value)).toFixed(4) : "0.0000",
+        symbol: data.symbol,
+      };
+    }
+    return null;
+  }, [userInfo, data]);
 
   const devlog = () => {
     console.log(userInfo)
@@ -55,7 +67,7 @@ function AccountInfoHandle() {
   return (
     <div>
       {userInfo ? (
-        <div   className="inline-flex items-center border border-gray-300 rounded-full px-4 py-2 cursor-pointer transition-colors duration-200 hover:border-gray-400"
+        <div   className="inline-flex items-center border border-gray-300 rounded-full px-4 py-1.5 pr-4 mr-4 cursor-pointer transition-colors duration-200 hover:border-gray-400"
         onClick={devlog}
         >
           {account.isConnected ? (
@@ -66,7 +78,7 @@ function AccountInfoHandle() {
             ) : (
               <><PersonIcon/>
               <Text>
-                Balance: {parseFloat(data!.formatted).toFixed(4)} {data?.symbol}
+                Balance: {data!.value ? parseFloat(formatEther(data!.value)).toFixed(4) : "0.0000"} {data?.symbol}
               </Text>
               </>
             )
@@ -79,7 +91,7 @@ function AccountInfoHandle() {
       )}
        {isModalOpen && userInfo && (
         <AccountInfoModal
-          data={userInfo}
+          data={combinedData}
           onClose={() => setIsModalOpen(false)}
         />
       )}
