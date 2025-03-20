@@ -1,4 +1,4 @@
-import {Button, Text} from '@mantine/core';
+import { Text} from '@mantine/core';
 import axios from 'axios';
 import { serverUserinfoURL } from '../utils/serverURL';
 import { useEffect, useMemo, useState } from 'react';
@@ -29,12 +29,8 @@ function AccountInfoHandle() {
     return null;
   }, [userInfo, data]);
 
-  const devlog = () => {
-    console.log(userInfo)
-    console.log(account)
-    console.log(data)
+  const handleOnClick = () => {
     setIsModalOpen(true)
-
   }
   
   const getUserInfo = async () => {
@@ -59,16 +55,11 @@ function AccountInfoHandle() {
     getUserInfo()
   },[])
 
-  useEffect(() => {
-    console.log(data)
-  },[data])
-
-
   return (
     <div>
       {userInfo ? (
         <div   className="inline-flex items-center border border-gray-300 rounded-full px-4 py-1.5 pr-4 mr-4 cursor-pointer transition-colors duration-200 hover:border-gray-400"
-        onClick={devlog}
+        onClick={handleOnClick}
         >
           {account.isConnected ? (
             isLoading ? (

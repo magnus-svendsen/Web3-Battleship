@@ -8,17 +8,8 @@ import {
   VpnKey as VpnKeyIcon,
   AccountBalance as AccountBalanceIcon
 } from '@mui/icons-material';
+import { AccountInfoModalProps } from "../types/accountInfoModalInterface";
 
-interface AccountInfoModalProps {
-  data: {
-    name: string;
-    phone_number: string;
-    balance: number;
-    symbol: string;
-  };
-
-  onClose: () => void;
-}
 function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
   const { autoConfirmTransactions, setAutoConfirmTransactions } = useGameContext();
 
@@ -36,7 +27,7 @@ function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
                   className="
                     top-0
                     right-0
-                    -translate-x-1.5
+                    -translate-x-1.9
                     -translate-y-1
                     text-gray-500
                     cursor-pointer
@@ -58,7 +49,7 @@ function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
                   className="
                     top-0
                     right-0
-                    -translate-x-1.5
+                    -translate-x-1.9
                     -translate-y-1
                     text-gray-500
                     cursor-pointer
@@ -82,7 +73,7 @@ function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
                   className="
                     top-0
                     right-0
-                    -translate-x-1.5
+                    -translate-x-1.9
                     -translate-y-1
                     text-gray-500
                     cursor-pointer
@@ -101,12 +92,12 @@ function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
           <div>
           <Group gap={0}>
               <AccountBalanceIcon fontSize="small" />
-              <Tooltip label="This is the amount of Ethereum you have. Don't worry, this does not contain any real world value as its test tokens. This is used to conduct transactions.">
+              <Tooltip label="This is the amount of Ethereum you have. Don't worry, this does not contain any real world value as its test tokens. This is used to conduct transactions. Furthermore, assets and currencies in this account is not directly linked to your Vipps account. You are never using 'real' money. ">
                 <HelpOutlineIcon
                   className="
                     top-0
                     right-0
-                    -translate-x-1.5
+                    -translate-x-1.9
                     -translate-y-1
                     text-gray-500
                     cursor-pointer
