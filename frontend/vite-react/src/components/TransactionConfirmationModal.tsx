@@ -3,13 +3,14 @@ import { Button, Group, Modal, Text } from "@mantine/core"
 import { useAccount } from "wagmi";
 import { ExtendedEmitter, ExtendedConnectorEventMap } from "../types/connectorEventTypes";
 import { useGameContext } from "../contexts/GameContext";
+import { formatEther, stringify } from "viem";
 
 const TransactionConfirmationModal = () => {
   const [opened, setOpened] = useState<boolean>(false)
   const [transactionData, setTransactionData] = useState<any>(null)
   const [resolveFn, setResolveFn] = useState<((confirmed: boolean) => void) | null>(null)
   const { autoConfirmTransactions, transactionCancelCount, setTransactionCancelCount} = useGameContext();
-
+  const [ethCost, setEthCost] = useState<string>("")
   const { connector } = useAccount();
 
   useEffect(() => {
@@ -51,6 +52,12 @@ const TransactionConfirmationModal = () => {
     };
   }, [connector, autoConfirmTransactions])
 
+  useEffect(() => {
+    if(transactionData) {
+      setEthCost(calculateEthCost(transactionData).slice(1,11))
+    }
+  },[transactionData])
+
   // On transaction confirmed
   const handleConfirm = () => {
     if (resolveFn) {
@@ -72,13 +79,21 @@ const TransactionConfirmationModal = () => {
     setTransactionCancelCount(transactionCancelCount+1)
   };
 
-  const safeStringify = (value: any) =>
+  const calculateEthCost = (txData: any) => {
+    const gasPrice = BigInt(txData.gasPrice);
+    const gas = BigInt(txData.gas);
+    const costWei = gasPrice*gas;
+    const costEth = formatEther(costWei)
+    return stringify(costEth)
+  }
+
+  const safeStringify = (value: any) => 
     JSON.stringify(value, (_key, val) =>
       typeof val === "bigint" ? val.toString() : val,
       2);
 
   return (
-    <Modal opened={opened} onClose={handleCancel} title="Confirm Transaction" centered>
+    <Modal opened={opened} onClose={handleCancel} title="Confirm Transaction" centered size={"auto"}>
       {transactionData ? (
         <>
           <Text mb="md">
@@ -94,6 +109,9 @@ const TransactionConfirmationModal = () => {
           >
             {safeStringify(transactionData)}
           </pre>
+          <Text>
+            Estimated cost: {ethCost}ETH
+          </Text>
           <Group mt="md">
             <Button variant="outline" color="red" onClick={handleCancel}>
               Cancel
