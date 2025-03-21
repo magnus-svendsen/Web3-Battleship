@@ -44,6 +44,14 @@ interface GameContextType {
   setAutoConfirmTransactions: React.Dispatch<React.SetStateAction<boolean>>;
   transactionCancelCount: number;
   setTransactionCancelCount: React.Dispatch<React.SetStateAction<number>>;
+  timesHit: number;
+  setTimesHit: React.Dispatch<React.SetStateAction<number>>;
+  timesMiss: number;
+  setTimesMiss: React.Dispatch<React.SetStateAction<number>>;
+  enemyTimesHit: number;
+  setEnemyTimesHit: React.Dispatch<React.SetStateAction<number>>;
+  enemyTimesMiss: number;
+  setEnemyTimesMiss: React.Dispatch<React.SetStateAction<number>>;
 }
 
 // Create the context with a default value (which will be overridden by the provider).
@@ -119,6 +127,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const moveResultTimeoutRef = useRef<number | null>(null);
   const [autoConfirmTransactions, setAutoConfirmTransactions] = useState<boolean>(false);
   const [transactionCancelCount, setTransactionCancelCount] = useState<number>(0)
+  const [timesHit, setTimesHit] = useState<number>(0);
+  const [timesMiss, setTimesMiss] = useState<number>(0);
+  const [enemyTimesHit, setEnemyTimesHit] = useState<number>(0);
+  const [enemyTimesMiss, setEnemyTimesMiss] = useState<number>(0);
 
 
   // Provide all state values and setters.
@@ -163,7 +175,15 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         autoConfirmTransactions,
         setAutoConfirmTransactions,
         transactionCancelCount,
-        setTransactionCancelCount
+        setTransactionCancelCount,
+        timesHit,
+        setTimesHit,
+        timesMiss,
+        setTimesMiss,
+        enemyTimesHit,
+        setEnemyTimesHit,
+        enemyTimesMiss,
+        setEnemyTimesMiss
       }}
     >
       {children}

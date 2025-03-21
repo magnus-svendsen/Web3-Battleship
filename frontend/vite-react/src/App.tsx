@@ -7,6 +7,7 @@ import ShipPlacement from "./components/ShipPlacement";
 import EnemyTerritory from "./components/EnemyTerritory";
 import TransactionConfirmationModal from "./components/TransactionConfirmationModal";
 import { useGameContext } from "./contexts/GameContext";
+import GameStatsBox from "./components/GameStatsBox";
 
 function App() {
   const account = useAccount();
@@ -74,6 +75,7 @@ function App() {
                 <h2 className={`${turnMessage === "Your turn" ? "text-green-400" : ""}`}>
                   {turnMessage}
                 </h2>
+                <GameStatsBox/>
               </div>
             </div>
           )}
