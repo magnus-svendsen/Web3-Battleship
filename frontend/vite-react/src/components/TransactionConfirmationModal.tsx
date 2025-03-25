@@ -141,6 +141,11 @@ const TransactionConfirmationModal = () => {
               <Text>
                 Interracting with: {transactionData.to}
               </Text>
+              <Text>
+                {transactionData.chainId === 11155111 ? (
+                  <Text className="pt-4">On chain: Sepolia Testnet</Text>
+                ) : <Text className="pt-4">On chain: Ethereum</Text>}
+              </Text>
             </div>
           ) : (
             <pre
@@ -154,9 +159,15 @@ const TransactionConfirmationModal = () => {
               {safeStringify(transactionData)}
             </pre>
           )}
-          <Text fw={700}>
+          {transactionData.chainId === 11155111 ? (
+          <Text fw={700} >
+            Estimated network fee: {ethCost} SepoliaETH
+          </Text>
+          ) : (
+            <Text fw={700}>
             Estimated network fee: {ethCost}ETH
           </Text>
+          )}
           <Group mt="md">
             <Button variant="outline" color="red" onClick={handleCancel}>
               Cancel
