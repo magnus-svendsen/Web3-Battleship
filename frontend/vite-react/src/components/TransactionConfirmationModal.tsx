@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Button, Group, Modal, Text } from "@mantine/core"
+import { Button, Group, Modal, Switch, Text } from "@mantine/core"
 import { useAccount } from "wagmi";
 import { ExtendedEmitter, ExtendedConnectorEventMap } from "../types/connectorEventTypes";
 import { useGameContext } from "../contexts/GameContext";
@@ -9,8 +9,9 @@ const TransactionConfirmationModal = () => {
   const [opened, setOpened] = useState<boolean>(false)
   const [transactionData, setTransactionData] = useState<any>(null)
   const [resolveFn, setResolveFn] = useState<((confirmed: boolean) => void) | null>(null)
-  const { autoConfirmTransactions, transactionCancelCount, setTransactionCancelCount} = useGameContext();
+  const { autoConfirmTransactions, transactionCancelCount, setTransactionCancelCount } = useGameContext();
   const [ethCost, setEthCost] = useState<string>("")
+  const [showSimpleInfo, setShowSimpleInfo] = useState<boolean>(true);
   const { connector } = useAccount();
 
   useEffect(() => {
@@ -53,10 +54,11 @@ const TransactionConfirmationModal = () => {
   }, [connector, autoConfirmTransactions])
 
   useEffect(() => {
-    if(transactionData) {
-      setEthCost(calculateEthCost(transactionData).slice(1,11))
+    if (transactionData) {
+      setEthCost(calculateEthCost(transactionData).slice(1, 11))
     }
-  },[transactionData])
+    console.log(transactionData)
+  }, [transactionData])
 
   // On transaction confirmed
   const handleConfirm = () => {
@@ -76,41 +78,63 @@ const TransactionConfirmationModal = () => {
     setOpened(false);
     setTransactionData(null);
     setResolveFn(null);
-    setTransactionCancelCount(transactionCancelCount+1)
+    setTransactionCancelCount(transactionCancelCount + 1)
   };
 
   const calculateEthCost = (txData: any) => {
     const gasPrice = BigInt(txData.gasPrice);
     const gas = BigInt(txData.gas);
-    const costWei = gasPrice*gas;
+    const costWei = gasPrice * gas;
     const costEth = formatEther(costWei)
     return stringify(costEth)
   }
 
-  const safeStringify = (value: any) => 
+  const toggleShowSimpleInfo = () => {
+    setShowSimpleInfo(!showSimpleInfo)
+  }
+
+  const safeStringify = (value: any) =>
     JSON.stringify(value, (_key, val) =>
       typeof val === "bigint" ? val.toString() : val,
       2);
 
   return (
-    <Modal opened={opened} onClose={handleCancel} title="Confirm Transaction" centered size={"auto"}>
+    <Modal opened={opened} onClose={handleCancel} title="Confirm Transaction" size={"lg"}>
       {transactionData ? (
         <>
+          <div className="bg-gray-000 text-white p-0 rounded">
+            <nav className="flex justify-between items-center">
+              <Button fullWidth radius="xs" className="mr-1" disabled={showSimpleInfo} onClick={toggleShowSimpleInfo}>
+                Show simplified information
+              </Button>
+              <Button fullWidth radius="xs" disabled={!showSimpleInfo} onClick={toggleShowSimpleInfo}>
+                Show advanced information
+              </Button>
+            </nav>
+          </div>
           <Text mb="md">
             Please confirm the following transaction:
           </Text>
-          <pre
-            style={{
-              maxHeight: 300,
-              overflow: "auto",
-              background: "#f5f5f5",
-              padding: 10,
-            }}
-          >
-            {safeStringify(transactionData)}
-          </pre>
-          <Text>
-            Estimated cost: {ethCost}ETH
+          {showSimpleInfo ? (
+            <div className="pb-4">
+              <Text>
+                Interracting with: {transactionData.to}
+              </Text>
+            </div>
+          ) : (
+            <pre
+              style={{
+                maxHeight: 300,
+                overflow: "auto",
+                background: "#f5f5f5",
+                padding: 10,
+              }}
+            >
+              {safeStringify(transactionData)}
+            </pre>
+          )}
+          <Text fw={700}>
+            Estimated network fee: {ethCost}ETH
           </Text>
           <Group mt="md">
             <Button variant="outline" color="red" onClick={handleCancel}>
