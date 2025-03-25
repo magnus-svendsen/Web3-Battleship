@@ -1,6 +1,6 @@
-import { Group, Modal, SimpleGrid, Switch, Text, Tooltip } from "@mantine/core";
+import { Button, Group, Modal, SimpleGrid, Switch, Text, Tooltip } from "@mantine/core";
 import { useGameContext } from "../contexts/GameContext";
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import {
   Person as PersonIcon,
   HelpOutline as HelpOutlineIcon,
@@ -14,6 +14,8 @@ function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
   const { autoConfirmTransactions, setAutoConfirmTransactions } = useGameContext();
 
   const account = useAccount()
+  const { disconnect } = useDisconnect();
+
 
   return (
     <div>
@@ -68,7 +70,7 @@ function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
           <div>
             <Group gap={0}>
               <VpnKeyIcon fontSize="small" />
-              <Tooltip label="This is address to your account. You can think of it as a bank account number for your digital assets. It's a unique public identifier.">
+              <Tooltip label="This is address to your account. You can think of it as a bank account number for your digital assets. It's a unique public identifier." multiline >
                 <HelpOutlineIcon
                   className="
                     top-0
@@ -90,9 +92,9 @@ function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
             </Text>
           </div>
           <div>
-          <Group gap={0}>
+            <Group gap={0}>
               <AccountBalanceIcon fontSize="small" />
-              <Tooltip label="This is the amount of Ethereum you have. Don't worry, this does not contain any real world value as its test tokens. This is used to conduct transactions. Furthermore, assets and currencies in this account is not directly linked to your Vipps account. You are never using 'real' money. ">
+              <Tooltip multiline  w={540} label="This is the amount of Ethereum you have. Don't worry, this does not contain any real world value as its test tokens. This is used to conduct transactions. Furthermore, assets and currencies in this account is not directly linked to your Vipps account. You are never using 'real' money. ">
                 <HelpOutlineIcon
                   className="
                     top-0
@@ -102,7 +104,7 @@ function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
                     text-gray-500
                     cursor-pointer
                   "
-                  sx={{fontSize: "16px"}}   // Manually set size using sx since mui seems to override the size styling
+                  sx={{ fontSize: "16px" }}   // Manually set size using sx since mui seems to override the size styling
                 />
               </Tooltip>
               <Text>Balance:</Text>
@@ -120,6 +122,19 @@ function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
             label="Autoconfirm transactions"
           />
 
+        </div>
+        <div className="pt-10 flex flex-row justify-center items-center">
+          <Button
+            variant="filled"
+            color="red"
+            size="sm"
+            radius="sm"
+            className="mr-2 content-center"
+            type="button"
+            onClick={() => disconnect()}
+          >
+            Disconnect
+          </Button>
         </div>
       </Modal>
     </div>

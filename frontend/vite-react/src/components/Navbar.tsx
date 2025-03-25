@@ -83,17 +83,19 @@ const Navbar = () => {
       <h2 className="font-bold text-2xl ml-3">Web3 Battleship</h2>
       {account.status === "connected" && (
         <div className="flex">
-          <Button
-            variant="white"
-            color="teal"
-            size="sm"
-            radius="sm"
-            className="mr-2"
-            type="button"
-            onClick={() => disconnect()}
-          >
-            Disconnect
-          </Button>
+          {account.connector.id !== "privateKey" &&
+            <Button
+              variant="white"
+              color="teal"
+              size="sm"
+              radius="sm"
+              className="mr-2"
+              type="button"
+              onClick={() => disconnect()}
+            >
+              Disconnect
+            </Button>
+          }
           {isLoading ?
             <Button
               variant="red"
