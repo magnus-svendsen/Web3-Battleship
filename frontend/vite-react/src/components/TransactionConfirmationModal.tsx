@@ -93,6 +93,14 @@ const TransactionConfirmationModal = () => {
     setShowSimpleInfo(!showSimpleInfo)
   }
 
+  const setShowSimpleInfoTrue = () => {
+    setShowSimpleInfo(true)
+  }
+
+  const setShowSimpleInfoFalse = () => {
+    setShowSimpleInfo(false)
+  }
+
   const safeStringify = (value: any) =>
     JSON.stringify(value, (_key, val) =>
       typeof val === "bigint" ? val.toString() : val,
@@ -104,12 +112,25 @@ const TransactionConfirmationModal = () => {
         <>
           <div className="bg-gray-000 text-white p-0 rounded">
             <nav className="flex justify-between items-center">
-              <Button fullWidth radius="xs" className="mr-1" disabled={showSimpleInfo} onClick={toggleShowSimpleInfo}>
-                Show simplified information
-              </Button>
-              <Button fullWidth radius="xs" disabled={!showSimpleInfo} onClick={toggleShowSimpleInfo}>
-                Show advanced information
-              </Button>
+              {showSimpleInfo ? (
+                <>
+                  <Button fullWidth radius="xs" className="mr-1" onClick={setShowSimpleInfoTrue} variant="filled">
+                    <p className="underline">Show simplified information</p>
+                  </Button>
+                  <Button fullWidth radius="xs" onClick={setShowSimpleInfoFalse} variant="outline">
+                    <p>Show advanced information</p>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button fullWidth radius="xs" className="mr-1" onClick={setShowSimpleInfoTrue} variant="outline">
+                    <p>Show simplified information</p>
+                  </Button>
+                  <Button fullWidth radius="xs" onClick={setShowSimpleInfoFalse} variant="filled">
+                    <p className="underline">Show advanced information</p>
+                  </Button>
+                </>
+              )}
             </nav>
           </div>
           <Text mb="md">
