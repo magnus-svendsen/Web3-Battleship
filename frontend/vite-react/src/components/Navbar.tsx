@@ -1,4 +1,4 @@
-import { Button, Loader } from "@mantine/core";
+import { Button, Loader, Switch } from "@mantine/core";
 import { useAccount, useDisconnect } from "wagmi";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import type { GameResetEvent } from "../types/eventTypes";
@@ -11,7 +11,7 @@ const Navbar = () => {
   const account = useAccount();
   const { disconnect } = useDisconnect();
 
-  const { gameReset, setGameReset, setErrorMessage, transactionCancelCount } = useGameContext();
+  const { gameReset, setGameReset, setErrorMessage, transactionCancelCount, setAutoConfirmTransactions, autoConfirmTransactions } = useGameContext();
   const executeWriteContract = useGameWriteContract();
 
   const timeoutRef = useRef<number | null>(null);
@@ -120,7 +120,17 @@ const Navbar = () => {
               Reset game
             </Button>
           }
-          {account.connector.id === "privateKey" && <AccountInfoHandle />}
+          {account.connector.id === "privateKey" && <>
+            
+            <Switch
+              checked={autoConfirmTransactions}
+              onChange={(event) => setAutoConfirmTransactions(event.currentTarget.checked)}
+              label="Autoconfirm transactions"
+              className="pt-2 pr-2"
+            />
+            <AccountInfoHandle />
+          </>
+          }
         </div>
       )}
     </div>
