@@ -7,6 +7,7 @@ import ShipPlacement from "./components/ShipPlacement";
 import EnemyTerritory from "./components/EnemyTerritory";
 import TransactionConfirmationModal from "./components/TransactionConfirmationModal";
 import { useGameContext } from "./contexts/GameContext";
+import Footer from "./components/Footer";
 
 function App() {
   const account = useAccount();
@@ -37,17 +38,15 @@ function App() {
             <div className="flex flex-col items-center gap-2.5 mt-[60px]">
               {!gameStarted && <GameLobby />}
               <h2
-                className={`font-bold text-2xl flex justify-center mt-40 mb-10 ${
-                  moveMessage === "Opponent shot and hit!" ||
-                  moveMessage === "You lost the game!"
+                className={`font-bold text-2xl flex justify-center mt-40 mb-10 ${moveMessage === "Opponent shot and hit!" ||
+                    moveMessage === "You lost the game!"
                     ? "text-red-600"
                     : ""
-                } ${
-                  moveMessage === "You shot and hit!" ||
-                  moveMessage === "You won the game!"
+                  } ${moveMessage === "You shot and hit!" ||
+                    moveMessage === "You won the game!"
                     ? "text-green-400"
                     : ""
-                }`}
+                  }`}
               >
                 {moveMessage}
               </h2>
@@ -77,6 +76,7 @@ function App() {
               </div>
             </div>
           )}
+          <Footer/>
         </>
       )}
       <ErrorDialog />
