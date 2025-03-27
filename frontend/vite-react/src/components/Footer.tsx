@@ -90,7 +90,7 @@ const Footer = () => {
             stroke: '4px'
 
           }}
-        > <Loader />
+        > <Loader size="sm" />
         </Button>
         :
         <Button
