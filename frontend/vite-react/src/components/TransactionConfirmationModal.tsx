@@ -89,10 +89,6 @@ const TransactionConfirmationModal = () => {
     return stringify(costEth)
   }
 
-  const toggleShowSimpleInfo = () => {
-    setShowSimpleInfo(!showSimpleInfo)
-  }
-
   const setShowSimpleInfoTrue = () => {
     setShowSimpleInfo(true)
   }
@@ -138,9 +134,6 @@ const TransactionConfirmationModal = () => {
           </Text>
           {showSimpleInfo ? (
             <div className="pb-4">
-              <Text>
-                Interracting with: {transactionData.to}
-              </Text>
               <Text>
                 {transactionData.chainId === 11155111 ? (
                   <Text className="pt-4">On chain: Sepolia Testnet</Text>
