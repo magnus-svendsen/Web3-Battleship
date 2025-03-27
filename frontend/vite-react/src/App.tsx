@@ -52,10 +52,13 @@ function App() {
               >
                 {moveMessage}
               </h2>
+
               <div className="flex">
+                {bothPlayersPlacedShips && <GameStatsBox/>}
                 {gameStarted && <ShipPlacement />}
                 {bothPlayersPlacedShips && <EnemyTerritory />}
               </div>
+
               {!bothPlayersPlacedShips && (
                 <div className="flex justify-center font-bold text-2xl py-6">
                   {shipPlacementPlayer && (
@@ -75,7 +78,6 @@ function App() {
                 <h2 className={`${turnMessage === "Your turn" ? "text-green-400" : ""}`}>
                   {turnMessage}
                 </h2>
-                <GameStatsBox/>
               </div>
             </div>
           )}

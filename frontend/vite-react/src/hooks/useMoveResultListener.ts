@@ -24,6 +24,8 @@ export const useMoveResultListener = () => {
     setEnemyTimesHit,
     enemyTimesMiss,
     setEnemyTimesMiss,
+    turnNumber,
+    setTurnNumber
   } = useGameContext();
 
   const executeWriteContract = useGameWriteContract();
@@ -79,7 +81,7 @@ export const useMoveResultListener = () => {
         if (moveResultTimeoutRef.current) { clearTimeout(moveResultTimeoutRef.current) }
         setMoveMessage(updatedMoveMessage);
         setTurnMessage(updatedTurnMessage);
-  
+        setTurnNumber(turnNumber+1)
         localStorage.setItem("moveMessage", JSON.stringify(updatedMoveMessage));
         localStorage.setItem("turnMessage", JSON.stringify(updatedTurnMessage));
   

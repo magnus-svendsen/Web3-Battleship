@@ -52,6 +52,8 @@ interface GameContextType {
   setEnemyTimesHit: React.Dispatch<React.SetStateAction<number>>;
   enemyTimesMiss: number;
   setEnemyTimesMiss: React.Dispatch<React.SetStateAction<number>>;
+  turnNumber: number;
+  setTurnNumber: React.Dispatch<React.SetStateAction<number>>;
 }
 
 // Create the context with a default value (which will be overridden by the provider).
@@ -131,7 +133,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [timesMiss, setTimesMiss] = useState<number>(0);
   const [enemyTimesHit, setEnemyTimesHit] = useState<number>(0);
   const [enemyTimesMiss, setEnemyTimesMiss] = useState<number>(0);
-
+  const [turnNumber, setTurnNumber] = useState<number>(0);
 
   // Provide all state values and setters.
   return (
@@ -183,7 +185,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         enemyTimesHit,
         setEnemyTimesHit,
         enemyTimesMiss,
-        setEnemyTimesMiss
+        setEnemyTimesMiss,
+        turnNumber,
+        setTurnNumber
       }}
     >
       {children}
