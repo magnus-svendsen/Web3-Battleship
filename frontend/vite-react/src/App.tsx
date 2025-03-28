@@ -15,12 +15,15 @@ import { useGameContext } from "./contexts/GameContext";
 function App() {
   const account = useAccount();
 
-  const { mode, setMode, singlePlayerJoined } = useGameContext();
+  const { gameStarted, mode, setMode, singlePlayerJoined } = useGameContext();
 
+  // On component mount, load saved event values from localStorage.
   useEffect(() => {
-    console.log("mode", mode);
-  }
-  , []);
+    const savedMode = localStorage.getItem("mode");
+    if (savedMode) {
+      setMode(JSON.parse(savedMode));
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#002642] text-white">
@@ -85,18 +88,20 @@ function App() {
 
           {mode === "multiplayer" && (
             <div className="">
-              <Button
-                onClick={() => {
-                  setMode("none");
-                  localStorage.setItem("mode", JSON.stringify("none"));
-                }}
-                className=""
-                size="xl"
-                color="blue"
-                radius="xl"
-              >
-                Back
-              </Button>
+              {!gameStarted && 
+                <Button
+                  onClick={() => {
+                    setMode("none");
+                    localStorage.setItem("mode", JSON.stringify("none"));
+                  }}
+                  className=""
+                  size="xl"
+                  color="blue"
+                  radius="xl"
+                >
+                  Back
+                </Button>
+              }
               <Multiplayer />
             </div>
           )}
