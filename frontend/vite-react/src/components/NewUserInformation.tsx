@@ -32,7 +32,7 @@ function NewUserInformation() {
 
   return (
     <Box className="border w-8/9 rounded-lg" >
-      <ScrollArea scrollbars="y" mx="auto" h={availableHeight} style={{maxHeight: 650}}>
+      <ScrollArea scrollbars="y" mx="auto" h={availableHeight} style={{maxHeight: 700}}>
         <p className="text-center text-2xl font-bold">
           Welcome to Web3 Battleship!
         </p>
