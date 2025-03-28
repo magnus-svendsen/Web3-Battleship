@@ -57,7 +57,6 @@ const TransactionConfirmationModal = () => {
     if (transactionData) {
       setEthCost(calculateEthCost(transactionData).slice(1, 11))
     }
-    console.log(transactionData)
   }, [transactionData])
 
   // On transaction confirmed
