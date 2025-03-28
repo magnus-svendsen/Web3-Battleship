@@ -9,7 +9,7 @@ import TransactionConfirmationModal from "./components/TransactionConfirmationMo
 import { useGameContext } from "./contexts/GameContext";
 import GameStatsBox from "./components/GameStatsBox";
 import Footer from "./components/Footer";
-import Web3Information from "./components/Web3Information";
+import NewUserInformation from "./components/NewUserInformation";
 
 function App() {
   const account = useAccount();
@@ -26,7 +26,7 @@ function App() {
     <div className="min-h-screen bg-[#002642] text-white">
       <Navbar />
       <div className="flex flex-col items-center">
-        {account.status !== "connected" && <><Login /><Web3Information /></>}
+        {account.status !== "connected" && <><Login /><NewUserInformation /></>}
       </div>
 
       {account.status === "connected" && (
