@@ -3,7 +3,7 @@ import { useAccount, useWatchContractEvent, useWriteContract } from "wagmi";
 import { singlePlayerAbi } from "../utils/abi/singlePlayerAbi";
 import { singlePlayerContractAddress } from "../utils/contractAddress";
 import { useGameContext } from "../contexts/GameContext";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ShipPlacement from "./ShipPlacement";
 import EnemyTerritory from "./EnemyTerritory";
 
@@ -12,11 +12,15 @@ const SinglePlayer = () => {
 
   const { writeContract } = useWriteContract();
 
-  const { setErrorMessage, singlePlayerShipPlacementPlayer } = useGameContext();
+  const {
+    singlePlayerJoined,
+    setSinglePlayerJoined,
+    setErrorMessage,
+    singlePlayerShipPlacementPlayer,
+    moveMessage,
+    turnMessage,
+  } = useGameContext();
 
-  const [singlePlayerJoined, setSinglePlayerJoined] = useState<string | null>(
-    localStorage.getItem("singlePlayerJoined")
-  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const timeoutRef = useRef<number | null>(null);
 
@@ -32,6 +36,7 @@ const SinglePlayer = () => {
       abi: singlePlayerAbi,
       address: singlePlayerContractAddress,
       functionName: "startGame",
+      args: [],
     });
   };
 
@@ -50,25 +55,59 @@ const SinglePlayer = () => {
     },
   });
 
+  useEffect(() => {
+    console.log(singlePlayerShipPlacementPlayer === account.address);
+  }, [singlePlayerShipPlacementPlayer]);
+
   return (
     <div>
       {singlePlayerJoined !== account.address ? (
-        <Button
-          variant="filled"
-          color="green"
-          size="xl"
-          radius="xl"
-          type="button"
-          onClick={handleStartGame}
-          disabled={isLoading}
-        >
-          {isLoading ? <Loader /> : <>Start game</>}
-        </Button>
+        <div className="flex justify-center mt-40">
+          <Button
+            variant="filled"
+            color="green"
+            size="xl"
+            radius="xl"
+            type="button"
+            onClick={handleStartGame}
+            disabled={isLoading}
+          >
+            {isLoading ? <Loader /> : <>Start game</>}
+          </Button>
+        </div>
       ) : (
-        <ShipPlacement />
-      )}
-      {singlePlayerShipPlacementPlayer === account.address && (
-        <EnemyTerritory />
+        <div>
+          <div className="font-bold text-2xl mt-12 flex justify-center">
+            <h2
+              className={`${turnMessage === "Your turn" ? "text-green-400" : ""}`}
+            >
+              {turnMessage}
+            </h2>
+          </div>
+          <div className="mt-10 flex justify-center">
+            <ShipPlacement />
+            {singlePlayerShipPlacementPlayer === account.address && (
+              <EnemyTerritory />
+            )}
+          </div>
+          <div className="flex justify-center">
+            <h2
+              className={`font-bold text-2xl flex justify-center mt-10 mb-10 ${
+                moveMessage === "Opponent shot and hit!" ||
+                moveMessage === "You lost the game!"
+                  ? "text-red-600"
+                  : ""
+              } ${
+                moveMessage === "You shot and hit!" ||
+                moveMessage === "You won the game!"
+                  ? "text-green-400"
+                  : ""
+              }`}
+            >
+              {moveMessage}
+            </h2>
+          </div>
+        </div>
       )}
     </div>
   );
