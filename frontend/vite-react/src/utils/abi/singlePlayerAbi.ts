@@ -6,17 +6,11 @@ export const singlePlayerAbi = [
   },
   {
     "anonymous": false,
-    "inputs": [],
-    "name": "GameReset",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
     "inputs": [
       {
         "indexed": true,
         "internalType": "address",
-        "name": "shooter",
+        "name": "player",
         "type": "address"
       },
       {
@@ -35,6 +29,12 @@ export const singlePlayerAbi = [
         "indexed": false,
         "internalType": "bool",
         "name": "gameOver",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isPlayerMove",
         "type": "bool"
       }
     ],
@@ -56,6 +56,12 @@ export const singlePlayerAbi = [
   },
   {
     "anonymous": false,
+    "inputs": [],
+    "name": "SinglePlayerGameReset",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
     "inputs": [
       {
         "indexed": true,
@@ -64,7 +70,7 @@ export const singlePlayerAbi = [
         "type": "address"
       }
     ],
-    "name": "ShipPlacement",
+    "name": "SinglePlayerShipPlacementPlayer",
     "type": "event"
   },
   {
@@ -197,18 +203,7 @@ export const singlePlayerAbi = [
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "newPlayerShips",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint8",
-        "name": "newRemainingCells",
-        "type": "uint8"
-      }
-    ],
+    "inputs": [],
     "name": "resetGame",
     "outputs": [],
     "stateMutability": "nonpayable",
