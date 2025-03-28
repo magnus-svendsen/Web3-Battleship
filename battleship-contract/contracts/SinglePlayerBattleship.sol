@@ -29,9 +29,9 @@ contract SinglePlayerBattleship {
     // Events
     // ---------------------------
     event PlayerJoined(address indexed player);
-    event ShipPlacement(address indexed player);
-    event MoveResult(address indexed shooter, bool hit, uint8 pos, bool gameOver);
-    event GameReset();
+    event SinglePlayerShipPlacementPlayer(address indexed player);
+    event MoveResult(address indexed player, bool hit, uint8 pos, bool gameOver, bool isPlayerMove);
+    event SinglePlayerGameReset();
 
     constructor() {
         // Generate AI board using five ships of sizes: 5, 4, 3, 3, and 2.
@@ -75,7 +75,7 @@ contract SinglePlayerBattleship {
         // Set remaining cells based on number of positions provided.
         playerRemainingCells = uint8(positions.length);
         playerShipsPlaced = true;
-        emit ShipPlacement(player);
+        emit SinglePlayerShipPlacementPlayer(player);
     }
 
     /// @notice Player fires a move at the AI board.
@@ -83,7 +83,6 @@ contract SinglePlayerBattleship {
     function playerMove(uint8 x, uint8 y) public {
         require(!gameOver, "Game is over");
         require(player != address(0), "Game not started");
-        require(msg.sender == player, "Only the player can move");
         require(x < 10 && y < 10, "Coordinates out of range");
 
         uint8 pos = x * 10 + y;
@@ -96,7 +95,7 @@ contract SinglePlayerBattleship {
                 gameOver = true;
             }
         }
-        emit MoveResult(player, hit, pos, gameOver);
+        emit MoveResult(player, hit, pos, gameOver, true);
     }
 
     /// @notice AI fires a move at the player's board.
@@ -129,16 +128,16 @@ contract SinglePlayerBattleship {
                 gameOver = true;
             }
         }
-        emit MoveResult(player, hit, pos, gameOver);
+        emit MoveResult(player, hit, pos, gameOver, false);
     }
 
     /// @notice Resets the game state for a new session.
     /// The player can re-place their ships by providing a new bitmask and remaining cells.
-    function resetGame(uint256 newPlayerShips, uint8 newRemainingCells) public {
-        // Reset the player's board.
-        playerShips = newPlayerShips;
-        playerRemainingCells = newRemainingCells;
+    function resetGame() public {
+        player = address(0);
         playerShipsPlaced = false;
+        playerShips = 0;
+        playerRemainingCells = 0;
 
         // Reset the AI board to its initial configuration.
         aiShips = 0;
@@ -150,6 +149,6 @@ contract SinglePlayerBattleship {
         aiRemainingCells = 5 + 4 + 3 + 3 + 2; // 17 cells total
 
         gameOver = false;
-        emit GameReset();
+        emit SinglePlayerGameReset();
     }
 }
