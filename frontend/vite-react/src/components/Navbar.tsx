@@ -1,10 +1,12 @@
 import { Button, Loader, Switch } from "@mantine/core";
-import { useAccount, useDisconnect } from "wagmi";
+import { useAccount, useDisconnect, useWatchContractEvent, useWriteContract } from "wagmi";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import type { GameResetEvent } from "../types/eventTypes";
 import { useEffect, useRef, useState } from "react";
 import { useGameContext } from "../contexts/GameContext";
 import useGameWriteContract from "../hooks/useGameWriteContract";
+import { singlePlayerAbi } from "../utils/abi/singlePlayerAbi";
+import { singlePlayerContractAddress } from "../utils/contractAddress";
 
 const Navbar = () => {
   const account = useAccount();
@@ -12,6 +14,8 @@ const Navbar = () => {
 
   const { autoConfirmTransactions, gameReset, setGameReset, setErrorMessage, setAutoConfirmTransactions, transactionCancelCount } = useGameContext();
   const executeWriteContract = useGameWriteContract();
+
+  const { writeContract } = useWriteContract();
 
   const timeoutRef = useRef<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -27,7 +31,7 @@ const Navbar = () => {
     },
   });
 
-  const handleGameReset = () => {
+  const handleGameResetMultiplayer = () => {
     setIsLoading(true)
     timeoutRef.current = window.setTimeout(() => {
       setIsLoading(false)
@@ -36,6 +40,31 @@ const Navbar = () => {
     }, 60000); // 60sec timeout if no transaction is validated
     executeWriteContract({ functionName: "resetGame" });
   }
+
+  const handleGameResetSinglePlayer = () => {
+    setIsLoading(true)
+    timeoutRef.current = window.setTimeout(() => {
+      setIsLoading(false)
+      timeoutRef.current = null;
+      setErrorMessage("Failed to reset game. Please try again")
+    }, 60000); // 60sec timeout if no transaction is validated
+
+    writeContract({
+      abi: singlePlayerAbi,
+      address: singlePlayerContractAddress,
+      functionName: "resetGame",
+      args: [],
+    });
+  }
+
+  useWatchContractEvent({
+    eventName: "SinglePlayerGameReset",
+    address: singlePlayerContractAddress,
+    abi: singlePlayerAbi,
+    onLogs() {
+      setGameReset(true);
+    },
+  });
 
   useWatchContractEventListener({
     eventName: "GameReset",
@@ -62,6 +91,10 @@ const Navbar = () => {
       localStorage.removeItem("shipPositions");
       localStorage.removeItem("moveMessage");
       localStorage.removeItem("turnMessage");
+
+      localStorage.removeItem("mode");
+      localStorage.removeItem("singlePlayerJoined");
+      localStorage.removeItem("singlePlayerShipPlacementPlayer");
 
       // Then trigger a page refresh.
       window.location.reload();
@@ -121,9 +154,31 @@ const Navbar = () => {
               radius="sm"
               className="mr-2"
               type="button"
-              onClick={() => handleGameReset()}
+              onClick={() => handleGameResetMultiplayer()}
             >
-              Reset game
+              Reset Mulltiplayer
+            </Button>
+          }
+          {isLoading ?
+            <Button
+              color="red"
+              size="sm"
+              radius="sm"
+              className="mr-2"
+              type="button"
+              disabled={true}
+            > <Loader />
+            </Button>
+            :
+            <Button
+              color="red"
+              size="sm"
+              radius="sm"
+              className="mr-2"
+              type="button"
+              onClick={() => handleGameResetSinglePlayer()}
+            >
+              Reset Single Player
             </Button>
           }
         </div>
