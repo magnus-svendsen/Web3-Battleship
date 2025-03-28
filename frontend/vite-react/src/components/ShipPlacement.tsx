@@ -124,11 +124,6 @@ const ShipPlacement = () => {
   };
 
   const regretShipPlacement = () => {
-    console.log("PlacedShips: ",placedShips)
-    console.log("shipPos: ", shipPositions)
-    console.log("Grid: ", grid)
-    console.log("Orientation: ", shipOrientations)
-
     //Reset data
     setPlacedShips([false,false,false,false,false])
     setShipPositions([])
