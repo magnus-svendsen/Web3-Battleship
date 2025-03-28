@@ -6,6 +6,12 @@ export const singlePlayerAbi = [
   },
   {
     "anonymous": false,
+    "inputs": [],
+    "name": "GameReset",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
     "inputs": [
       {
         "indexed": true,
@@ -56,12 +62,6 @@ export const singlePlayerAbi = [
   },
   {
     "anonymous": false,
-    "inputs": [],
-    "name": "SinglePlayerGameReset",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
     "inputs": [
       {
         "indexed": true,
@@ -70,7 +70,7 @@ export const singlePlayerAbi = [
         "type": "address"
       }
     ],
-    "name": "SinglePlayerShipPlacementPlayer",
+    "name": "ShipPlacement",
     "type": "event"
   },
   {
@@ -78,6 +78,19 @@ export const singlePlayerAbi = [
     "name": "aiMove",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "aiMoves",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -122,12 +135,30 @@ export const singlePlayerAbi = [
   {
     "inputs": [
       {
+        "internalType": "uint8",
+        "name": "x",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "y",
+        "type": "uint8"
+      }
+    ],
+    "name": "move",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint8[]",
         "name": "positions",
         "type": "uint8[]"
       }
     ],
-    "name": "placePlayerShips",
+    "name": "placeShips",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -143,24 +174,6 @@ export const singlePlayerAbi = [
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "x",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "y",
-        "type": "uint8"
-      }
-    ],
-    "name": "playerMove",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
