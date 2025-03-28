@@ -4,8 +4,9 @@ import { useGameContext } from "../contexts/GameContext";
 import useWatchContractEventListener from "./useWatchContractEventListener";
 import useGameWriteContract from "./useGameWriteContract";
 import type { MoveResultEvent } from "../types/eventTypes";
+import type { GameMode } from "../types/gameTypes";
 
-export const useMoveResultListener = () => {
+export const useMoveResultListener = (mode: GameMode) => {
   const account = useAccount();
 
   const {
@@ -37,7 +38,7 @@ export const useMoveResultListener = () => {
           moveResultTimeoutRef.current = null;
         }
   
-        if (data.player === account.address) {
+        if (mode === "singleplayer" ? data.isPlayerMove : data.player === account.address) {
           // Our move: update enemy grid.
           if (data.hit) {
             enemyGrid[coordinate.x][coordinate.y] = 3;
@@ -74,10 +75,11 @@ export const useMoveResultListener = () => {
         // If the game is over, reset the game after 5 seconds
         if (data.gameOver) {
           setTimeout(() => {
-            executeWriteContract({ functionName: "resetGame" });
+            executeWriteContract({ functionName: "resetGame", mode });
           }, 5000);
         }
       },
+      mode,
     });
 
 }

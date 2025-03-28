@@ -1,29 +1,31 @@
 import { Button, Loader } from "@mantine/core";
-import { useAccount, useWatchContractEvent, useWriteContract } from "wagmi";
+import { useAccount, useWatchContractEvent } from "wagmi";
 import { singlePlayerAbi } from "../utils/abi/singlePlayerAbi";
 import { singlePlayerContractAddress } from "../utils/contractAddress";
 import { useGameContext } from "../contexts/GameContext";
 import { useEffect, useRef, useState } from "react";
+import useGameWriteContract from "../hooks/useGameWriteContract";
 import ShipPlacement from "./ShipPlacement";
 import EnemyTerritory from "./EnemyTerritory";
 
 const SinglePlayer = () => {
   const account = useAccount();
 
-  const { writeContract } = useWriteContract();
-
   const {
+    shipPlacementPlayer,
+    setShipPlacementPlayer,
     singlePlayerJoined,
     setSinglePlayerJoined,
     setErrorMessage,
-    singlePlayerShipPlacementPlayer,
-    setSinglePlayerShipPlacementPlayer,
     moveMessage,
     turnMessage,
     setMoveMessage,
     setTurnMessage,
     setEnemyGrid,
+    mode,
   } = useGameContext();
+
+  const executeWriteContract = useGameWriteContract();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const timeoutRef = useRef<number | null>(null);
@@ -35,13 +37,7 @@ const SinglePlayer = () => {
       timeoutRef.current = null;
       setErrorMessage("Failed to join game. Please try again");
     }, 60000); // 60sec timeout if no transaction is validated
-
-    writeContract({
-      abi: singlePlayerAbi,
-      address: singlePlayerContractAddress,
-      functionName: "startGame",
-      args: [],
-    });
+    executeWriteContract({ functionName: "startGame", mode });
   };
 
   useWatchContractEvent({
@@ -50,7 +46,6 @@ const SinglePlayer = () => {
     eventName: "PlayerJoined",
     onLogs(logs) {
       const player = logs[0].args.player ?? "";
-
       setSinglePlayerJoined(player);
       localStorage.setItem("singlePlayerJoined", JSON.stringify(player));
     },
@@ -64,12 +59,10 @@ const SinglePlayer = () => {
     if (savedSinglePlayerJoined) {
       setSinglePlayerJoined(JSON.parse(savedSinglePlayerJoined));
     }
-    const savedSinglePlayerShipPlacementPlayer = localStorage.getItem(
-      "singlePlayerShipPlacementPlayer"
-    );
-    if (savedSinglePlayerShipPlacementPlayer) {
-      setSinglePlayerShipPlacementPlayer(
-        JSON.parse(savedSinglePlayerShipPlacementPlayer)
+    const savedShipPlacementPlayer = localStorage.getItem("shipPlacementPlayer");
+    if (savedShipPlacementPlayer) {
+      setShipPlacementPlayer(
+        JSON.parse(savedShipPlacementPlayer)
       );
     }
     const savedMoveMessage = localStorage.getItem("moveMessage");
@@ -113,7 +106,7 @@ const SinglePlayer = () => {
           </div>
           <div className="mt-10 flex justify-center">
             <ShipPlacement />
-            {singlePlayerShipPlacementPlayer === account.address && (
+            {shipPlacementPlayer === account.address && (
               <EnemyTerritory />
             )}
           </div>

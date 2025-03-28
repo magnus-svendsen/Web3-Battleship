@@ -3,7 +3,7 @@ import Ship from "./ship";
 import DroppableGridCell from "./DroppableGridCell";
 import { useEffect, useRef, useState } from "react";
 import { Button, Loader } from "@mantine/core";
-import { useAccount, useWatchContractEvent, useWriteContract } from "wagmi";
+import { useAccount } from "wagmi";
 import { useGameContext } from "../contexts/GameContext";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import type {
@@ -14,8 +14,6 @@ import useGameWriteContract from "../hooks/useGameWriteContract";
 import { useShipDragEnd } from "../hooks/useShipDragEnd";
 import { useShipDragOver } from "../hooks/useShipDragOver";
 import PlacementHelpIcon from "./PlacementHelpIcon";
-import { singlePlayerAbi } from "../utils/abi/singlePlayerAbi";
-import { singlePlayerContractAddress } from "../utils/contractAddress";
 
 const ShipPlacement = () => {
   const account = useAccount();
@@ -36,10 +34,8 @@ const ShipPlacement = () => {
     setTurnMessage,
     setErrorMessage,
     transactionCancelCount,
-    setSinglePlayerShipPlacementPlayer,
   } = useGameContext();
 
-  const { writeContract } = useWriteContract();
   const executeWriteContract = useGameWriteContract();
   const { handleDragEnd } = useShipDragEnd();
   const { handleDragOver } = useShipDragOver();
@@ -58,19 +54,11 @@ const ShipPlacement = () => {
       timeoutRef.current = null;
       setErrorMessage("Failed to submit ships. Please try again");
     }, 60000); // 60sec timeout if no transaction is validated
-    if (mode === "singleplayer") {
-      writeContract({
-        abi: singlePlayerAbi,
-        address: singlePlayerContractAddress,
-        functionName: "placePlayerShips",
-        args: [shipPositions],
-      });
-    } else {
-      executeWriteContract({
-        functionName: "placeShips",
-        args: [shipPositions],
-      });
-    }
+    executeWriteContract({
+      functionName: "placeShips",
+      args: [shipPositions],
+      mode,
+    });
   };
 
   useEffect(() => {
@@ -80,35 +68,6 @@ const ShipPlacement = () => {
       timeoutRef.current = null;
     }
   }, [transactionCancelCount]);
-
-  useWatchContractEvent({
-      eventName: "SinglePlayerShipPlacementPlayer",
-      address: singlePlayerContractAddress,
-      abi: singlePlayerAbi,
-      onLogs(logs) {
-        const singlePlayerShipPlacementPlayer = logs[0].args.player ?? "";
-        setSinglePlayerShipPlacementPlayer(singlePlayerShipPlacementPlayer);
-        localStorage.setItem("singlePlayerShipPlacementPlayer", JSON.stringify(singlePlayerShipPlacementPlayer));
-
-        setIsLoading(false);
-        if (timeoutRef.current != null) {
-          clearTimeout(timeoutRef.current);
-          timeoutRef.current = null;
-        }
-        localStorage.setItem("grid", JSON.stringify(grid));
-        setShipsSubmitted(true);
-        localStorage.setItem("shipsSubmitted", JSON.stringify(true));
-        localStorage.setItem(
-          "placedShips",
-          JSON.stringify([true, true, true, true, true])
-        );
-        localStorage.setItem("shipPositions", JSON.stringify(shipPositions));
-
-        const message = "Your turn";
-        setTurnMessage(message);
-        localStorage.setItem("turnMessage", JSON.stringify(message));
-      },
-    });
 
   useWatchContractEventListener({
     eventName: "ShipPlacement",
@@ -136,7 +95,14 @@ const ShipPlacement = () => {
         );
         localStorage.setItem("shipPositions", JSON.stringify(shipPositions));
       }
+
+      if (mode === "singleplayer") {
+        const message = "Your turn";
+        setTurnMessage(message);
+        localStorage.setItem("turnMessage", JSON.stringify(message));
+      }
     },
+    mode,
   });
 
   useWatchContractEventListener({
