@@ -65,9 +65,6 @@ const ShipPlacement = () => {
         functionName: "placePlayerShips",
         args: [shipPositions],
       });
-      const message = "Your turn";
-      setTurnMessage(message);
-      localStorage.setItem("turnMessage", JSON.stringify(message));
     } else {
       executeWriteContract({
         functionName: "placeShips",
