@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Button, Group, Modal, Switch, Text } from "@mantine/core"
+import { Button, Group, Modal, Text } from "@mantine/core"
 import { useAccount } from "wagmi";
 import { ExtendedEmitter, ExtendedConnectorEventMap } from "../types/connectorEventTypes";
 import { useGameContext } from "../contexts/GameContext";
