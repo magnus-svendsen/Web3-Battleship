@@ -122,8 +122,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [showGameUnderway, setShowGameUnderway] = useState<boolean>(localStorage.getItem("showGameUnderway") === "true");
   const [shipPlacementPlayer, setShipPlacementPlayer] = useState<string | null>(localStorage.getItem("shipPlacementPlayer"));
   const [bothPlayersPlacedShips, setBothPlayersPlacedShips] = useState<boolean>(localStorage.getItem("bothPlayersPlacedShips") === "true");
-  const [moveMessage, setMoveMessage] = useState<string | null>(localStorage.getItem("moveMessage"));
-  const [turnMessage, setTurnMessage] = useState<string | null>(localStorage.getItem("turnMessage"));
+  const [moveMessage, setMoveMessage] = useState<string>("");
+  const [turnMessage, setTurnMessage] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [gameReset, setGameReset] = useState<boolean>(false);
   

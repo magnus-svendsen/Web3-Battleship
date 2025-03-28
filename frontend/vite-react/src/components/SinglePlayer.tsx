@@ -17,8 +17,12 @@ const SinglePlayer = () => {
     setSinglePlayerJoined,
     setErrorMessage,
     singlePlayerShipPlacementPlayer,
+    setSinglePlayerShipPlacementPlayer,
     moveMessage,
     turnMessage,
+    setMoveMessage,
+    setTurnMessage,
+    setEnemyGrid,
   } = useGameContext();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -56,8 +60,31 @@ const SinglePlayer = () => {
   });
 
   useEffect(() => {
-    console.log(singlePlayerShipPlacementPlayer === account.address);
-  }, [singlePlayerShipPlacementPlayer]);
+    const savedSinglePlayerJoined = localStorage.getItem("singlePlayerJoined");
+    if (savedSinglePlayerJoined) {
+      setSinglePlayerJoined(JSON.parse(savedSinglePlayerJoined));
+    }
+    const savedSinglePlayerShipPlacementPlayer = localStorage.getItem(
+      "singlePlayerShipPlacementPlayer"
+    );
+    if (savedSinglePlayerShipPlacementPlayer) {
+      setSinglePlayerShipPlacementPlayer(
+        JSON.parse(savedSinglePlayerShipPlacementPlayer)
+      );
+    }
+    const savedMoveMessage = localStorage.getItem("moveMessage");
+    if (savedMoveMessage) {
+      setMoveMessage(JSON.parse(savedMoveMessage));
+    }
+    const savedTurnMessage = localStorage.getItem("turnMessage");
+    if (savedTurnMessage) {
+      setTurnMessage(JSON.parse(savedTurnMessage));
+    }
+    const savedEnemyGrid = localStorage.getItem("enemyGrid");
+    if (savedEnemyGrid) {
+      setEnemyGrid(JSON.parse(savedEnemyGrid));
+    }
+  }, []);
 
   return (
     <div>

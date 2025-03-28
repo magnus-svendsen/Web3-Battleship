@@ -93,6 +93,13 @@ const GameLobby = () => {
     }
   }, [secondPlayerJoined]);
 
+  useEffect(() => {
+    const savedFirstPlayerJoined = localStorage.getItem("firstPlayerJoined");
+    if (savedFirstPlayerJoined) {
+      setFirstPlayerJoined(JSON.parse(savedFirstPlayerJoined));
+    }
+  }, []);
+
   return (
     <div>
       {account.address === firstPlayerJoined ? (
