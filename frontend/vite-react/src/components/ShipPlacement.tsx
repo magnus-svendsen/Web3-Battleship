@@ -17,8 +17,8 @@ import PlacementHelpIcon from "./PlacementHelpIcon";
 const ShipPlacement = () => {
   const account = useAccount();
 
-  const { grid, tempGrid, placedShips, setPlacedShips, shipPositions, isDragging, setIsDragging, shipOrientations, setShipsOrientations, firstPlayerJoined, setShipPlacementPlayer, setBothPlayersPlacedShips, setTurnMessage, setErrorMessage, transactionCancelCount } = useGameContext();
-  
+  const { grid, setGrid, tempGrid, setTempGrid, placedShips, setPlacedShips, shipPositions, setShipPositions, isDragging, setIsDragging, shipOrientations, setShipsOrientations, firstPlayerJoined, setShipPlacementPlayer, setBothPlayersPlacedShips, setTurnMessage, setErrorMessage, transactionCancelCount } = useGameContext();
+
   const executeWriteContract = useGameWriteContract();
   const { handleDragEnd } = useShipDragEnd();
   const { handleDragOver } = useShipDragOver();
@@ -27,7 +27,7 @@ const ShipPlacement = () => {
 
   const [shipsSubmitted, setShipsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  
+
   const handleSubmitShips = () => {
     setIsLoading(true)
     timeoutRef.current = window.setTimeout(() => {
@@ -44,7 +44,7 @@ const ShipPlacement = () => {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null
     }
-  },[transactionCancelCount])
+  }, [transactionCancelCount])
 
   useWatchContractEventListener({
     eventName: "ShipPlacement",
@@ -123,6 +123,44 @@ const ShipPlacement = () => {
     setIsDragging(true);
   };
 
+  const regretShipPlacement = () => {
+    console.log("PlacedShips: ",placedShips)
+    console.log("shipPos: ", shipPositions)
+    console.log("Grid: ", grid)
+    console.log("Orientation: ", shipOrientations)
+
+    //Reset data
+    setPlacedShips([false,false,false,false,false])
+    setShipPositions([])
+    setShipsOrientations([false,false,false,false,false])
+    setGrid([
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ])
+    setTempGrid([
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ])
+    
+    
+  }
+
   const lengthByIDShipRendering = (id: number) => {
     if (id === 0) return 5;
     if (id === 1) return 4;
@@ -187,9 +225,13 @@ const ShipPlacement = () => {
                 ) : null
               )}
             </div>
+            <Button onClick={regretShipPlacement}>
+              Regret Ship Placement
+            </Button>
           </div>
         </div>
       </DndContext>
+
       {placedShips.every(Boolean) && !shipsSubmitted && (
         <div className="flex justify-center mt-5">
           {isLoading ? (
@@ -214,8 +256,8 @@ const ShipPlacement = () => {
             </Button>
           )}
         </div>
-    )}
-  </div>
+      )}
+    </div>
   )
 };
 
