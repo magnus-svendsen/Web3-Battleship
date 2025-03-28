@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import ErrorDialog from "./components/ErrorDialog";
 
 import TransactionConfirmationModal from "./components/TransactionConfirmationModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@mantine/core";
 import PersonIcon from "@mui/icons-material/Person";
 import GroupIcon from "@mui/icons-material/Group";
@@ -15,7 +15,12 @@ import { useGameContext } from "./contexts/GameContext";
 function App() {
   const account = useAccount();
 
-  const { mode, setMode } = useGameContext();
+  const { mode, setMode, singlePlayerJoined } = useGameContext();
+
+  useEffect(() => {
+    console.log("mode", mode);
+  }
+  , []);
 
   return (
     <div className="min-h-screen bg-[#002642] text-white">
@@ -60,18 +65,20 @@ function App() {
 
           {mode === "singleplayer" && (
             <div className="">
-              <Button
-                onClick={() => {
-                  setMode("none");
-                  localStorage.setItem("mode", JSON.stringify("none"));
-                }}
-                className=""
-                size="xl"
-                color="red"
-                radius="xl"
-              >
-                Back
-              </Button>
+              {singlePlayerJoined !== account.address &&
+                <Button
+                  onClick={() => {
+                    setMode("none");
+                    localStorage.setItem("mode", JSON.stringify("none"));
+                  }}
+                  className=""
+                  size="xl"
+                  color="red"
+                  radius="xl"
+                >
+                  Back
+                </Button>
+              }
               <SinglePlayer />
             </div>
           )}

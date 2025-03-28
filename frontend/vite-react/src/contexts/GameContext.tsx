@@ -46,6 +46,8 @@ interface GameContextType {
   setAutoConfirmTransactions: React.Dispatch<React.SetStateAction<boolean>>;
   transactionCancelCount: number;
   setTransactionCancelCount: React.Dispatch<React.SetStateAction<number>>;
+  singlePlayerJoined: string;
+  setSinglePlayerJoined: React.Dispatch<React.SetStateAction<string>>;
   singlePlayerShipPlacementPlayer: string;
   setSinglePlayerShipPlacementPlayer: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -129,6 +131,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [autoConfirmTransactions, setAutoConfirmTransactions] = useState<boolean>(false);
   const [transactionCancelCount, setTransactionCancelCount] = useState<number>(0)
 
+  const [singlePlayerJoined, setSinglePlayerJoined] = useState<string | null>(
+    localStorage.getItem("singlePlayerJoined")
+  );
   const [singlePlayerShipPlacementPlayer, setSinglePlayerShipPlacementPlayer] = useState<string | null>(localStorage.getItem("singlePlayerShipPlacementPlayer"));
 
 
@@ -177,6 +182,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setAutoConfirmTransactions,
         transactionCancelCount,
         setTransactionCancelCount,
+        singlePlayerJoined,
+        setSinglePlayerJoined,
         singlePlayerShipPlacementPlayer,
         setSinglePlayerShipPlacementPlayer,
       }}
