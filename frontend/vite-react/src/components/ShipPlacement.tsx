@@ -3,7 +3,7 @@ import Ship from "./ship";
 import DroppableGridCell from "./DroppableGridCell";
 import { useEffect, useRef, useState } from "react";
 import { Button, Loader } from "@mantine/core";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useWatchContractEvent, useWriteContract } from "wagmi";
 import { useGameContext } from "../contexts/GameContext";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import type {
@@ -65,6 +65,9 @@ const ShipPlacement = () => {
         functionName: "placePlayerShips",
         args: [shipPositions],
       });
+      const message = "Your turn";
+      setTurnMessage(message);
+      localStorage.setItem("turnMessage", JSON.stringify(message));
     } else {
       executeWriteContract({
         functionName: "placeShips",
@@ -81,10 +84,11 @@ const ShipPlacement = () => {
     }
   }, [transactionCancelCount]);
 
-  useWatchContractEventListener({
-    eventName: "ShipPlacement",
-    onEvent: (logs: ShipPlacementEvent[]) => {
-      if (mode === "singleplayer") {
+  useWatchContractEvent({
+      eventName: "SinglePlayerShipPlacementPlayer",
+      address: singlePlayerContractAddress,
+      abi: singlePlayerAbi,
+      onLogs(logs) {
         const singlePlayerShipPlacementPlayer = logs[0].args.player ?? "";
         setSinglePlayerShipPlacementPlayer(singlePlayerShipPlacementPlayer);
         localStorage.setItem("singlePlayerShipPlacementPlayer", JSON.stringify(singlePlayerShipPlacementPlayer));
@@ -106,30 +110,34 @@ const ShipPlacement = () => {
         const message = "Your turn";
         setTurnMessage(message);
         localStorage.setItem("turnMessage", JSON.stringify(message));
-      } else {
-        const shipPlayer = logs[0].args.player ?? "";
-        setShipPlacementPlayer(shipPlayer);
-        localStorage.setItem("shipPlacementPlayer", JSON.stringify(shipPlayer));
-        // If player is equal to the current account, reset timer
-        if (logs[0].args.player === account.address) {
-          setIsLoading(false);
-          if (timeoutRef.current != null) {
-            clearTimeout(timeoutRef.current);
-            timeoutRef.current = null;
-          }
-        }
+      },
+    });
 
-        // Only update local storage for the correct account.
-        if (shipPlayer === account.address) {
-          localStorage.setItem("grid", JSON.stringify(grid));
-          setShipsSubmitted(true);
-          localStorage.setItem("shipsSubmitted", JSON.stringify(true));
-          localStorage.setItem(
-            "placedShips",
-            JSON.stringify([true, true, true, true, true])
-          );
-          localStorage.setItem("shipPositions", JSON.stringify(shipPositions));
+  useWatchContractEventListener({
+    eventName: "ShipPlacement",
+    onEvent: (logs: ShipPlacementEvent[]) => {
+      const shipPlayer = logs[0].args.player ?? "";
+      setShipPlacementPlayer(shipPlayer);
+      localStorage.setItem("shipPlacementPlayer", JSON.stringify(shipPlayer));
+      // If player is equal to the current account, reset timer
+      if (logs[0].args.player === account.address) {
+        setIsLoading(false);
+        if (timeoutRef.current != null) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
         }
+      }
+
+      // Only update local storage for the correct account.
+      if (shipPlayer === account.address) {
+        localStorage.setItem("grid", JSON.stringify(grid));
+        setShipsSubmitted(true);
+        localStorage.setItem("shipsSubmitted", JSON.stringify(true));
+        localStorage.setItem(
+          "placedShips",
+          JSON.stringify([true, true, true, true, true])
+        );
+        localStorage.setItem("shipPositions", JSON.stringify(shipPositions));
       }
     },
   });
