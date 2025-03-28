@@ -48,8 +48,6 @@ interface GameContextType {
   setTransactionCancelCount: React.Dispatch<React.SetStateAction<number>>;
   singlePlayerJoined: string;
   setSinglePlayerJoined: React.Dispatch<React.SetStateAction<string>>;
-  singlePlayerShipPlacementPlayer: string;
-  setSinglePlayerShipPlacementPlayer: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // Create the context with a default value (which will be overridden by the provider).
@@ -134,8 +132,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [singlePlayerJoined, setSinglePlayerJoined] = useState<string | null>(
     localStorage.getItem("singlePlayerJoined")
   );
-  const [singlePlayerShipPlacementPlayer, setSinglePlayerShipPlacementPlayer] = useState<string | null>(localStorage.getItem("singlePlayerShipPlacementPlayer"));
-
 
   // Provide all state values and setters.
   return (
@@ -184,8 +180,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setTransactionCancelCount,
         singlePlayerJoined,
         setSinglePlayerJoined,
-        singlePlayerShipPlacementPlayer,
-        setSinglePlayerShipPlacementPlayer,
       }}
     >
       {children}
