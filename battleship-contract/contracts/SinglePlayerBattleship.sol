@@ -24,14 +24,23 @@ contract SinglePlayerBattleship {
     uint256 public aiShips;
     // Number of ship cells remaining on the AI board
     uint8 public aiRemainingCells;
+    // Nonce for randomness
+    uint256 public aiMoves; // Bitmask for AI moves (cells 0–99)
+    uint256 private nonce;
 
     // ---------------------------
     // Events
     // ---------------------------
     event PlayerJoined(address indexed player);
-    event SinglePlayerShipPlacementPlayer(address indexed player);
-    event MoveResult(address indexed player, bool hit, uint8 pos, bool gameOver, bool isPlayerMove);
-    event SinglePlayerGameReset();
+    event ShipPlacement(address indexed player);
+    event MoveResult(
+        address indexed player,
+        bool hit,
+        uint8 pos,
+        bool gameOver,
+        bool isPlayerMove
+    );
+    event GameReset();
 
     constructor() {
         // Generate AI board using five ships of sizes: 5, 4, 3, 3, and 2.
@@ -60,7 +69,7 @@ contract SinglePlayerBattleship {
 
     /// @notice Player places their ships by providing an array of encoded positions.
     /// Each position is a number between 0 and 99 (calculated as row * 10 + col).
-    function placePlayerShips(uint8[] calldata positions) public {
+    function placeShips(uint8[] calldata positions) public {
         require(msg.sender == player, "Only the player can place ships");
         require(!playerShipsPlaced, "Ships already placed");
         require(positions.length > 0, "No positions provided");
@@ -69,18 +78,21 @@ contract SinglePlayerBattleship {
             uint8 pos = positions[i];
             require(pos < 100, "Position out of range");
             // Check for duplicate placements using the bitmask.
-            require((playerShips & (1 << pos)) == 0, "Duplicate position provided");
+            require(
+                (playerShips & (1 << pos)) == 0,
+                "Duplicate position provided"
+            );
             playerShips |= (1 << pos);
         }
         // Set remaining cells based on number of positions provided.
         playerRemainingCells = uint8(positions.length);
         playerShipsPlaced = true;
-        emit SinglePlayerShipPlacementPlayer(player);
+        emit ShipPlacement(player);
     }
 
     /// @notice Player fires a move at the AI board.
     /// Coordinates are encoded as (x * 10 + y).
-    function playerMove(uint8 x, uint8 y) public {
+    function move(uint8 x, uint8 y) public {
         require(!gameOver, "Game is over");
         require(player != address(0), "Game not started");
         require(x < 10 && y < 10, "Coordinates out of range");
@@ -98,30 +110,45 @@ contract SinglePlayerBattleship {
         emit MoveResult(player, hit, pos, gameOver, true);
     }
 
-    /// @notice AI fires a move at the player's board.
-    /// Uses pseudo-randomness and ensures that the same cell is not targeted twice.
     function aiMove() public {
         require(player != address(0), "No player");
         require(!gameOver, "Game is over");
 
-        // Generate a pseudo-random position between 0 and 99.
-        uint8 pos = uint8(uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, playerShips, aiShips))) % 100);
+        // Increase nonce so we get a different random value on each call.
+        nonce++;
 
-        // Ensure the AI hasn't already shot this cell by checking if the cell still contains a ship.
-        bool found = false;
-        for (uint8 i = 0; i < 100; i++) {
-            // Check for any cell that still has a ship (bit is set).
-            if ((playerShips & (1 << i)) != 0) {
-                pos = i;
-                found = true;
-                break;
-            }
+        // Generate a pseudo-random number between 0 and 99.
+        uint8 pos = uint8(
+            uint256(
+                keccak256(
+                    abi.encodePacked(block.timestamp, block.difficulty, nonce)
+                )
+            ) % 100
+        );
+
+        // If this position has already been shot, keep generating a new one.
+        while ((aiMoves & (1 << pos)) != 0) {
+            nonce++;
+            pos = uint8(
+                uint256(
+                    keccak256(
+                        abi.encodePacked(
+                            block.timestamp,
+                            block.difficulty,
+                            nonce
+                        )
+                    )
+                ) % 100
+            );
         }
-        require(found, "No available cells");
+        // Mark this cell as shot.
+        aiMoves |= (1 << pos);
 
         bool hit = false;
+        // Check if the position contains a player's ship.
         if ((playerShips & (1 << pos)) != 0) {
             hit = true;
+            // Remove the hit ship cell.
             playerShips &= ~(1 << pos);
             playerRemainingCells--;
             if (playerRemainingCells == 0) {
@@ -142,13 +169,13 @@ contract SinglePlayerBattleship {
         // Reset the AI board to its initial configuration.
         aiShips = 0;
         aiShips |= (1 << 11) | (1 << 12) | (1 << 13) | (1 << 14) | (1 << 15); // 5 cells
-        aiShips |= (1 << 35) | (1 << 36) | (1 << 37) | (1 << 38);               // 4 cells
-        aiShips |= (1 << 65) | (1 << 66) | (1 << 67);                           // 3 cells
-        aiShips |= (1 << 75) | (1 << 76) | (1 << 77);                           // 3 cells
-        aiShips |= (1 << 90) | (1 << 91);                                         // 2 cells
+        aiShips |= (1 << 35) | (1 << 36) | (1 << 37) | (1 << 38); // 4 cells
+        aiShips |= (1 << 65) | (1 << 66) | (1 << 67); // 3 cells
+        aiShips |= (1 << 75) | (1 << 76) | (1 << 77); // 3 cells
+        aiShips |= (1 << 90) | (1 << 91); // 2 cells
         aiRemainingCells = 5 + 4 + 3 + 3 + 2; // 17 cells total
 
         gameOver = false;
-        emit SinglePlayerGameReset();
+        emit GameReset();
     }
 }
