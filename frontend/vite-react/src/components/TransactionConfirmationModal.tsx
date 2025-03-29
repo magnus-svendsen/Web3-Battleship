@@ -110,7 +110,7 @@ const TransactionConfirmationModal = () => {
               {showSimpleInfo ? (
                 <>
                   <Button fullWidth radius="xs" className="mr-1" onClick={setShowSimpleInfoTrue} variant="filled">
-                    <p className="underline">Show simplified information</p>
+                    <p>Show simplified information</p>
                   </Button>
                   <Button fullWidth radius="xs" onClick={setShowSimpleInfoFalse} variant="outline">
                     <p>Show advanced information</p>
@@ -122,7 +122,7 @@ const TransactionConfirmationModal = () => {
                     <p>Show simplified information</p>
                   </Button>
                   <Button fullWidth radius="xs" onClick={setShowSimpleInfoFalse} variant="filled">
-                    <p className="underline">Show advanced information</p>
+                    <p>Show advanced information</p>
                   </Button>
                 </>
               )}

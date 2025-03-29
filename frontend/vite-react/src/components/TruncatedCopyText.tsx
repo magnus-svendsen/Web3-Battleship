@@ -28,15 +28,15 @@ const TruncatedCopyText: React.FC<TruncatedCopyTextProps> = ({
       {({ copied, copy }) => (
         //Show full address on hover
         <Group>
-          <Tooltip label={inputString} withArrow>
-            <Text onClick={copy}>
+          <Tooltip w={540} label="This is address to your account. You can think of it as a bank account number for your digital assets. It's a unique public identifier." multiline>
+            <Text size='lg' onClick={copy}>
               {truncatedString}
             </Text>
           </Tooltip>
 
           <Tooltip label={copied ? "Copied" : "Copy"} withArrow>
             <ActionIcon color={copied ? "teal" : "gray"} variant="subtle" onClick={copy}> 
-              <ContentCopyIcon style={{ fontSize: 16 }} />
+              <ContentCopyIcon style={{ fontSize: 18 }} />
             </ActionIcon>
           </Tooltip>
         </Group>

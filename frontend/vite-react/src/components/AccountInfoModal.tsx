@@ -1,126 +1,49 @@
-import { Button, Group, Modal, SimpleGrid, Text, Tooltip } from "@mantine/core";
+import { Button, Group, Modal, Text, Tooltip } from "@mantine/core";
 import { useAccount, useDisconnect } from "wagmi";
-import {
-  Person as PersonIcon,
-  HelpOutline as HelpOutlineIcon,
-  Phone as PhoneIcon,
-  VpnKey as VpnKeyIcon,
-  AccountBalance as AccountBalanceIcon
-} from '@mui/icons-material';
-import { AccountInfoModalProps } from "../types/accountInfoModalInterface";
+import { Phone as PhoneIcon } from "@mui/icons-material";
+import type { AccountInfoModalProps } from "../types/accountInfoModalInterface";
 import TruncatedCopyText from "./TruncatedCopyText";
 
 function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
-  const account = useAccount()
+  const account = useAccount();
   const { disconnect } = useDisconnect();
 
-
   return (
-    <div>
-      <Modal opened={true} onClose={onClose} title="Account Information" centered size="auto" >
-        <SimpleGrid cols={2} spacing={4}>
-          <div>
-            <Group gap={0}>
-              <PersonIcon fontSize="small" />
-              <Tooltip label="This is the display name associated with your account.">
-                <HelpOutlineIcon
-                  className="
-                    top-0
-                    right-0
-                    -translate-x-1.9
-                    -translate-y-1
-                    text-gray-500
-                    cursor-pointer
-                  "
-                  sx={{ fontSize: "16px" }}   // Manually set size using sx since mui seems to override the size styling
-                />
-              </Tooltip>
-              <Text>Name:</Text>
-            </Group>
-          </div>
-          <div>
-            <Text>{data.name}</Text>
-          </div>
-          <div>
-            <Group gap={0}>
-              <PhoneIcon fontSize="small" />
-              <Tooltip label="This is the phonenumber associated with your account.">
-                <HelpOutlineIcon
-                  className="
-                    top-0
-                    right-0
-                    -translate-x-1.9
-                    -translate-y-1
-                    text-gray-500
-                    cursor-pointer
-                  "
-                  sx={{ fontSize: "16px" }}   // Manually set size using sx since mui seems to override the size styling
-                />
-              </Tooltip>
-              <Text>Phone:</Text>
-            </Group>
-          </div>
-          <div>
-            <Text>
-              {data.phone_number}
-            </Text>
-          </div>
-          <div>
-            <Group gap={0}>
-              <VpnKeyIcon fontSize="small" />
-              <Tooltip w={540} label="This is address to your account. You can think of it as a bank account number for your digital assets. It's a unique public identifier." multiline >
-                <HelpOutlineIcon
-                  className="
-                    top-0
-                    right-0
-                    -translate-x-1.9
-                    -translate-y-1
-                    text-gray-500
-                    cursor-pointer
-                  "
-                  sx={{ fontSize: "16px" }}   // Manually set size using sx since mui seems to override the size styling
-                />
-              </Tooltip>
-              <Text>Address:</Text>
-            </Group>
-          </div>
-          <div>
-            <Text
-              style={{
-                maxWidth: 200,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {account.address && <TruncatedCopyText inputString={account.address} />}
-            </Text>
-          </div>
-          <div>
-            <Group gap={0}>
-              <AccountBalanceIcon fontSize="small" />
-              <Tooltip multiline w={540} label="This is the amount of Ethereum you have. Don't worry, this does not contain any real world value as its test tokens. This is used to conduct transactions. Furthermore, assets and currencies in this account is not directly linked to your Vipps account. You are never using 'real' money. ">
-                <HelpOutlineIcon
-                  className="
-                    top-0
-                    right-0
-                    -translate-x-1.9
-                    -translate-y-1
-                    text-gray-500
-                    cursor-pointer
-                  "
-                  sx={{ fontSize: "16px" }}   // Manually set size using sx since mui seems to override the size styling
-                />
-              </Tooltip>
-              <Text>Balance:</Text>
-            </Group>
-          </div>
-          <div>
-            <Text>{data.balance + " Sepolia"+data.symbol}</Text>
-          </div>
-        </SimpleGrid>
-        <div className="pt-10">
+    <Modal opened={true} onClose={onClose} centered size="md" radius={"md"}>
+      <div className="flex items-center flex-col gap-3">
+        {/* Name: Spans both columns; tooltip on the name */}
+        <div className="">
+          <Tooltip label="This is the display name associated with your account.">
+            <p className="text-2xl">{data.name}</p>
+          </Tooltip>
         </div>
+
+        {/* Phone: Spans both columns; only icon and number, wrapped in tooltip */}
+        <div>
+          <Tooltip label="This is the phone number associated with your account.">
+            <Group gap={0}>
+              <PhoneIcon fontSize="medium" />
+              <p className="ml-1 text-lg">{data.phone_number}</p>
+            </Group>
+          </Tooltip>
+        </div>
+        <div>
+          {account.address && (
+            <TruncatedCopyText inputString={account.address} />
+          )}
+        </div>
+
+        {/* Balance: Spans both columns and in bold */}
+        <div className="font-bold text-3xl">
+          <Tooltip
+            multiline
+            w={540}
+            label="This is the amount of Ethereum you have. Don't worry, this does not contain any real world value as its test tokens. This is used to conduct transactions. Furthermore, assets and currencies in this account is not directly linked to your Vipps account. You are never using 'real' money. "
+          >
+            <p>{data.balance + " Sepolia" + data.symbol}</p>
+          </Tooltip>
+        </div>
+
         <div className="pt-10 flex flex-row justify-center items-center">
           <Button
             variant="filled"
@@ -134,8 +57,9 @@ function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
             Disconnect
           </Button>
         </div>
-      </Modal>
-    </div>
-  )
+      </div>
+    </Modal>
+  );
 }
+
 export default AccountInfoModal;
