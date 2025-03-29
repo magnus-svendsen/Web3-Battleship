@@ -28,37 +28,43 @@ const Login = () => {
       localStorage.setItem("accesstoken", accessToken);
       window.history.replaceState("", "", "http://localhost:3000"); // Remove accesstoken from URL
       connect({ connector: connectors[1] });
-
     }
   }, [connect, connectors]);
 
   return (
-    <div className="flex items-center my-28 gap-10">
-      <vipps-mobilepay-button
-        type="button"
-        brand="vipps"
-        language="en"
-        variant="primary"
-        rounded="true"
-        verb="login"
-        stretched="false"
-        branded="true"
-        loading="false"
-        onClick={vippsAPI}
-        onKeyUp={(e) => {
-          if (e.key === "Enter") vippsAPI();
-        }}
-      />
-      <Button
-        variant="white"
-        color="orange"
-        size="md"
-        radius="xl"
-        type="button"
-        onClick={() => connect({ connector: connectors[0] })}
-      >
-        Log in with Metamask
-      </Button>
+    <div>
+      <h1 className="font-bold">
+        Welcome to Web3 Battleship!
+      </h1>
+      <div className="flex items-center justify-center mt-24 mb-12 gap-16 max-w-5xl">
+        <div className="scale-114 transform-gpu">
+          <vipps-mobilepay-button
+            type="button"
+            brand="vipps"
+            language="en"
+            variant="primary"
+            rounded="true"
+            verb="login"
+            stretched="true"
+            branded="true"
+            loading="false"
+            onClick={vippsAPI}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") vippsAPI();
+            }}
+          />
+        </div>
+        <Button
+          variant="white"
+          color="orange"
+          size="lg"
+          radius="xl"
+          type="button"
+          onClick={() => connect({ connector: connectors[0] })}
+        >
+          Log in with Metamask
+        </Button>
+      </div>
     </div>
   );
 };
