@@ -3,6 +3,7 @@ import GameLobby from "./GameLobby";
 import ShipPlacement from "./ShipPlacement";
 import EnemyTerritory from "./EnemyTerritory";
 import { useAccount } from "wagmi";
+import GameStatsBox from "./GameStatsBox";
 
 const Multiplayer = () => {
   const account = useAccount();
@@ -41,6 +42,7 @@ const Multiplayer = () => {
             {moveMessage}
           </h2>
           <div className="flex">
+            {bothPlayersPlacedShips && <GameStatsBox/>}
             {gameStarted && <ShipPlacement />}
             {bothPlayersPlacedShips && <EnemyTerritory />}
           </div>

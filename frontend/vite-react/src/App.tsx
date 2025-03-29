@@ -4,13 +4,14 @@ import Navbar from "./components/Navbar";
 import ErrorDialog from "./components/ErrorDialog";
 
 import TransactionConfirmationModal from "./components/TransactionConfirmationModal";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Button } from "@mantine/core";
 import PersonIcon from "@mui/icons-material/Person";
 import GroupIcon from "@mui/icons-material/Group";
 import Multiplayer from "./components/Multiplayer";
 import SinglePlayer from "./components/SinglePlayer";
 import { useGameContext } from "./contexts/GameContext";
+import Footer from "./components/Footer";
 
 function App() {
   const account = useAccount();
@@ -105,6 +106,7 @@ function App() {
               <Multiplayer />
             </div>
           )}
+          <Footer/>
         </>
       )}
       <TransactionConfirmationModal />

@@ -15,7 +15,7 @@ export const authWithVipps = async (req: Request, res: Response) => {
   try {
     const nonce = "123hemmelig";
     const state = "321hemmelig";
-    const scope = "phoneNumber sub";
+    const scope = "phoneNumber sub name";
 
     const authParams = qs.stringify({
       client_id: VIPPS_CLIENT_ID,

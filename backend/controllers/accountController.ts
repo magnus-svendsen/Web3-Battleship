@@ -29,3 +29,20 @@ export const getOrGeneratePrivateKey = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to retrieve or create private key" });
   }
 };
+
+export const getUserInfo = async (req: Request, res: Response) => {
+  try {
+    const access_token = req.body["accesstoken"];
+
+    const userInfoResponse = await axios.get(VIPPS_USERINFO_URL as string, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    res.json(userInfoResponse.data)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to retrieve user info"})
+  }
+}
