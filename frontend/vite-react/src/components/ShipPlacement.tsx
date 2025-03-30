@@ -21,9 +21,13 @@ const ShipPlacement = () => {
   const {
     mode,
     grid,
+    setGrid,
     tempGrid,
+    setTempGrid,
     placedShips,
+    setPlacedShips,
     shipPositions,
+    setShipPositions,
     isDragging,
     setIsDragging,
     shipOrientations,
@@ -133,6 +137,37 @@ const ShipPlacement = () => {
     setIsDragging(true);
   };
 
+  const regretShipPlacement = () => {
+    //Reset data
+    setPlacedShips([false, false, false, false, false]);
+    setShipPositions([]);
+    setShipsOrientations([false, false, false, false, false]);
+    setGrid([
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ]);
+    setTempGrid([
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ]);
+  };
+
   const lengthByIDShipRendering = (id: number) => {
     if (id === 0) return 5;
     if (id === 1) return 4;
@@ -197,9 +232,13 @@ const ShipPlacement = () => {
                 ) : null
               )}
             </div>
+            {placedShips.some((isPlaced) => isPlaced) && !shipsSubmitted && (
+              <Button color="orange" onClick={regretShipPlacement}>Reset ships</Button>
+            )}
           </div>
         </div>
       </DndContext>
+
       {placedShips.every(Boolean) && !shipsSubmitted && (
         <div className="flex justify-center mt-5">
           {isLoading ? (
