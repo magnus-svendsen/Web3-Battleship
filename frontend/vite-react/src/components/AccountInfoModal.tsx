@@ -9,7 +9,7 @@ function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
   const { disconnect } = useDisconnect();
 
   return (
-    <Modal opened={true} onClose={onClose} centered size="md" radius={"md"}>
+    <Modal opened={true} onClose={onClose} size="md" radius={"md"}>
       <div className="flex items-center flex-col gap-3">
         {/* Name: Spans both columns; tooltip on the name */}
         <div className="">
