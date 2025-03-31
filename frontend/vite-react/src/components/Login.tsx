@@ -33,7 +33,7 @@ const Login = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-center mt-24 mb-12 gap-16 max-w-5xl">
+      <div className="flex items-center justify-center mt-8 mb-12 gap-16 max-w-5xl">
         <div className="scale-114 transform-gpu">
           <vipps-mobilepay-button
             type="button"
