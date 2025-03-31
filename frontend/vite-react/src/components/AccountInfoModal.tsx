@@ -1,8 +1,8 @@
-import { Button, Group, Modal, Text, Tooltip } from "@mantine/core";
+import { Button, Group, Modal, Tooltip } from "@mantine/core";
 import { useAccount, useDisconnect } from "wagmi";
 import { Phone as PhoneIcon } from "@mui/icons-material";
 import type { AccountInfoModalProps } from "../types/accountInfoModalInterface";
-import TruncatedCopyText from "./TruncatedCopyText";
+import TruncatedAddressWithCopy from "./TruncatedAddressWithCopy";
 
 function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
   const account = useAccount();
@@ -29,7 +29,7 @@ function AccountInfoModal({ data, onClose }: AccountInfoModalProps) {
         </div>
         <div>
           {account.address && (
-            <TruncatedCopyText inputString={account.address} />
+            <TruncatedAddressWithCopy inputString={account.address} />
           )}
         </div>
 

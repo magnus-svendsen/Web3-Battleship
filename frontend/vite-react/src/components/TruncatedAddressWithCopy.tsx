@@ -1,14 +1,14 @@
-import React from 'react';
+import type React from 'react';
 import { Group, Tooltip, Text, CopyButton, ActionIcon } from '@mantine/core';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
-interface TruncatedCopyTextProps {
+interface TruncatedAddressWithCopyProps {
   inputString: string;
   startChars?: number;
   endChars?: number;
 }
 
-const TruncatedCopyText: React.FC<TruncatedCopyTextProps> = ({
+const TruncatedAddressWithCopy: React.FC<TruncatedAddressWithCopyProps> = ({
   inputString,
   startChars = 6,
   endChars = 5,
@@ -45,4 +45,4 @@ const TruncatedCopyText: React.FC<TruncatedCopyTextProps> = ({
   );
 };
 
-export default TruncatedCopyText;
+export default TruncatedAddressWithCopy;
