@@ -70,7 +70,6 @@ contract SinglePlayerBattleship {
     /// @notice Player places their ships by providing an array of encoded positions.
     /// Each position is a number between 0 and 99 (calculated as row * 10 + col).
     function placeShips(uint8[] calldata positions) public {
-        require(msg.sender == player, "Only the player can place ships");
         require(!playerShipsPlaced, "Ships already placed");
         require(positions.length > 0, "No positions provided");
 
@@ -114,10 +113,12 @@ contract SinglePlayerBattleship {
         require(player != address(0), "No player");
         require(!gameOver, "Game is over");
 
-        // Increase nonce so we get a different random value on each call.
+        /* 
+        * To determine a target cell, we generate a pseudo-random number between 0 and 99.
+        * We do this by incrementing a nonce and hashing it along with the current block timestamp
+        * and difficulty. This ensures that each call produces a different number.
+        */
         nonce++;
-
-        // Generate a pseudo-random number between 0 and 99.
         uint8 pos = uint8(
             uint256(
                 keccak256(
