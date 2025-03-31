@@ -1,29 +1,4 @@
-import { useEffect, useState } from "react";
-
-function useWindowSize() {
-  const [size, setSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  });
-
-  useEffect(() => {
-    const handleResize = () =>
-      setSize({ width: window.innerWidth, height: window.innerHeight });
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  return size;
-}
-
 function NewUserInformation() {
-  const { height } = useWindowSize();
-
-  let availableHeight = height - 380;
-  if (availableHeight <= 200) {
-    availableHeight = 200;
-  }
-
   return (
     <div className="flex justify-center mb-10">
       <div className="max-w-5xl px-8 py-10">        
