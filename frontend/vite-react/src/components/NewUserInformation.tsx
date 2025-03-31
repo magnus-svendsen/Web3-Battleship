@@ -26,7 +26,7 @@ function NewUserInformation() {
 
   return (
     <div className="flex justify-center mb-10">
-      <div className="max-w-5xl px-8 py-10 rounded-lg shadow-md">        
+      <div className="max-w-5xl px-8 py-10 rounded-lg">        
         <h2 className="text-2xl font-bold mb-4">
           What is Web3?
         </h2>
