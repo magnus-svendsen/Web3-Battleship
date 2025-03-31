@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import useGameWriteContract from "../hooks/useGameWriteContract";
 import ShipPlacement from "./ShipPlacement";
 import EnemyTerritory from "./EnemyTerritory";
+import GameStatsBox from "./GameStatsBox";
 
 const SinglePlayer = () => {
   const account = useAccount();
@@ -105,6 +106,9 @@ const SinglePlayer = () => {
             </h2>
           </div>
           <div className="mt-10 flex justify-center">
+            {shipPlacementPlayer === account.address && (
+              <GameStatsBox />
+            )}
             <ShipPlacement />
             {shipPlacementPlayer === account.address && (
               <EnemyTerritory />
