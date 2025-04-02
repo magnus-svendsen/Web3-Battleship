@@ -52,6 +52,13 @@ const Footer = () => {
       localStorage.removeItem("enemyGrid");
       localStorage.removeItem("moveMessage");
       localStorage.removeItem("turnMessage");
+      
+      localStorage.removeItem("timesHit");
+      localStorage.removeItem("timesMiss");
+      localStorage.removeItem("enemyTimesHit");
+      localStorage.removeItem("enemyTimesMiss");
+      localStorage.removeItem("turnNumber");
+
       localStorage.removeItem("mode");
       localStorage.removeItem("singlePlayerJoined");
       // Then trigger a full page refresh.

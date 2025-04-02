@@ -142,11 +142,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [singlePlayerJoined, setSinglePlayerJoined] = useState<string | null>(
     localStorage.getItem("singlePlayerJoined")
   );
-  const [timesHit, setTimesHit] = useState<number>(0);
-  const [timesMiss, setTimesMiss] = useState<number>(0);
-  const [enemyTimesHit, setEnemyTimesHit] = useState<number>(0);
-  const [enemyTimesMiss, setEnemyTimesMiss] = useState<number>(0);
-  const [turnNumber, setTurnNumber] = useState<number>(0);
+  const [timesHit, setTimesHit] = useState<number>(Number(localStorage.getItem("timesHit")) || 0);
+  const [timesMiss, setTimesMiss] = useState<number>(Number(localStorage.getItem("timesMiss")) || 0);
+  const [enemyTimesHit, setEnemyTimesHit] = useState<number>(Number(localStorage.getItem("enemyTimesHit")) || 0);
+  const [enemyTimesMiss, setEnemyTimesMiss] = useState<number>(Number(localStorage.getItem("enemyTimesMiss")) || 0);
+  const [turnNumber, setTurnNumber] = useState<number>(Number(localStorage.getItem("turnNumber")) || 0);
 
   // Provide all state values and setters.
   return (

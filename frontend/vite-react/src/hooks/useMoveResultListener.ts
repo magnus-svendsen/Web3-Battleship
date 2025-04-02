@@ -53,10 +53,12 @@ export const useMoveResultListener = (mode: GameMode) => {
           if (data.hit) {
             enemyGrid[coordinate.x][coordinate.y] = 3;
             setTimesHit(timesHit+1)
+            localStorage.setItem("timesHit", JSON.stringify(timesHit))
             updatedMoveMessage = data.gameOver ? "You won the game!" : "You shot and hit!";
           } else {
             enemyGrid[coordinate.x][coordinate.y] = 2;
             setTimesMiss(timesMiss+1)
+            localStorage.setItem("timesMiss", JSON.stringify(timesMiss))
             updatedMoveMessage = "You shot and missed!";
           }
           // If the game is over, no next turn.
@@ -68,10 +70,12 @@ export const useMoveResultListener = (mode: GameMode) => {
           if (data.hit) {
             grid[coordinate.x][coordinate.y] = 3;
             setEnemyTimesHit(enemyTimesHit+1)
+            localStorage.setItem("enemyTimesHit", JSON.stringify(enemyTimesHit))
             updatedMoveMessage = data.gameOver ? "You lost the game!" : "Opponent shot and hit!";
           } else {
             grid[coordinate.x][coordinate.y] = 2;
             setEnemyTimesMiss(enemyTimesMiss+1)
+            localStorage.setItem("enemyTimesMiss", JSON.stringify(enemyTimesMiss))
             updatedMoveMessage = "Opponent shot and missed!";
           }
           updatedTurnMessage = data.gameOver ? "" : "Your turn";
@@ -83,6 +87,7 @@ export const useMoveResultListener = (mode: GameMode) => {
         setMoveMessage(updatedMoveMessage);
         setTurnMessage(updatedTurnMessage);
         setTurnNumber(turnNumber+1)
+        localStorage.setItem("turnNumber", JSON.stringify(turnNumber));
         localStorage.setItem("moveMessage", JSON.stringify(updatedMoveMessage));
         localStorage.setItem("turnMessage", JSON.stringify(updatedTurnMessage));
   

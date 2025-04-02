@@ -3,29 +3,64 @@ import { useGameContext } from "../contexts/GameContext";
 import { useEffect, useState } from "react";
 
 const GameStatsBox = () => {
-  const { timesHit, timesMiss, enemyTimesHit, enemyTimesMiss, turnNumber } = useGameContext();
-  const [accuracy, setAccuracy] = useState<string>("");
-  const [enemyAccuracy, setEnemyAccuracy] = useState<string>("");
+  const { timesHit, setTimesHit, timesMiss, setTimesMiss, enemyTimesHit, setEnemyTimesHit, enemyTimesMiss, setEnemyTimesMiss, turnNumber, setTurnNumber } = useGameContext();
+  const [accuracy, setAccuracy] = useState<string | null>(localStorage.getItem("accuracy"));
+  const [enemyAccuracy, setEnemyAccuracy] = useState<string | null>(localStorage.getItem("enemyAccuracy"));
 
   useEffect(() => {
-    const hitrate = timesHit/(timesMiss+timesHit)
-    if(timesHit == 0 && timesMiss == 0) {
+    if(timesHit === 0 && timesMiss === 0) {
       setAccuracy("No shots yet!")
+      localStorage.setItem("accuracy", JSON.stringify("No shots yet!"))
     }
     else {
-      setAccuracy((hitrate*100)+"%")
+      const hitrate = (((timesHit/(timesMiss+timesHit))*100).toFixed(1) + "%")
+      setAccuracy(hitrate)
+      localStorage.setItem("accuracy", hitrate)
     }
   },[timesHit, timesMiss])
 
   useEffect(() => {
-    const hitrate = timesHit/(timesMiss+timesHit)
-    if(enemyTimesHit == 0 && enemyTimesMiss == 0) {
+    if(enemyTimesHit === 0 && enemyTimesMiss === 0) {
       setEnemyAccuracy("No shots yet!")
+      localStorage.setItem("enemyAccuracy", JSON.stringify("No shots yet!"))
     }
     else {
-      setEnemyAccuracy((hitrate*100)+"%")
+      const enemyHitrate = (((enemyTimesHit/(enemyTimesMiss+enemyTimesHit))*100).toFixed(1) + "%")
+      setEnemyAccuracy(enemyHitrate)
+      localStorage.setItem("enemyAccuracy", enemyHitrate)
     }
   },[enemyTimesHit, enemyTimesMiss])
+
+  useEffect(() => {
+    const savedTimesHit = localStorage.getItem("timesHit");
+    if (savedTimesHit) {
+      setTimesHit(JSON.parse(savedTimesHit));
+    }
+    const savedTimesMiss = localStorage.getItem("timesMiss");
+    if (savedTimesMiss) {
+      setTimesMiss(JSON.parse(savedTimesMiss));
+    }
+    const savedAccuracy = localStorage.getItem("accuracy");
+    if (savedAccuracy) {
+      setAccuracy(JSON.parse(savedAccuracy));
+    }
+    const savedEnemyTimesHit = localStorage.getItem("enemyTimesHit");
+    if (savedEnemyTimesHit) {
+      setEnemyTimesHit(JSON.parse(savedEnemyTimesHit));
+    }
+    const savedEnemyTimesMiss = localStorage.getItem("enemyTimesMiss");
+    if (savedEnemyTimesMiss) {
+      setEnemyTimesMiss(JSON.parse(savedEnemyTimesMiss));
+    }
+    const savedEnemyAccuracy = localStorage.getItem("enemyAccuracy");
+    if (savedEnemyAccuracy) {
+      setEnemyAccuracy(JSON.parse(savedEnemyAccuracy));
+    }
+    const savedTurnNumber = localStorage.getItem("turnNumber");
+    if (savedTurnNumber) {
+      setTurnNumber(JSON.parse(savedTurnNumber));
+    }
+  }, []);
 
   return (
     <Box className="border grid grid-cols-1 gap-1 mr-12 rounded-md p-4 shadow-md border-color-teal-1000" >
