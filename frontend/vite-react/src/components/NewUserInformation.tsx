@@ -6,7 +6,7 @@ function NewUserInformation() {
         ⛓️What is Web3?⛓️
         </h2>
         <p className="text-lg mb-8 ml-8 leading-relaxed">
-        Web3 is a new paradigm for the internet, emphasizing decentralization and user empowerment.
+        Web3 represents a new vision for the internet, emphasizing decentralization and user empowerment.
         Unlike traditional Web2, where data is controlled by centralized corporations, Web3 uses blockchain-based networks of independent nodes to validate and store transactions.
         This ensures transparency, security, and gives users greater control over their data, identity, and online interactions.
         </p>

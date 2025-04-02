@@ -11,7 +11,7 @@ const Navbar = () => {
     useGameContext();
 
   return (
-    <div className="pt-4 pb-12 flex justify-between w-full">
+    <div className="pt-4 flex justify-between w-full">
       <h2 className="font-bold text-2xl ml-3">Web3 Battleship</h2>
       {account.status === "connected" && (
         <div className="flex">

@@ -18,13 +18,13 @@ const Multiplayer = () => {
   } = useGameContext();
 
   return (
-    <div>
+    <div className="flex justify-center items-center">
       {showGameUnderway ? (
         <h2 className="flex justify-center font-bold text-2xl py-20">
           Game already underway, please wait for the next game...
         </h2>
       ) : (
-        <div className="flex flex-col items-center gap-2.5 mt-[60px]">
+        <div className="flex flex-col items-center gap-2.5">
           {!gameStarted && <GameLobby />}
           <h2
             className={`font-bold text-2xl flex justify-center mt-40 mb-10 ${
