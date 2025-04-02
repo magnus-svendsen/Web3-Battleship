@@ -101,7 +101,7 @@ const GameLobby = () => {
   }, []);
 
   return (
-    <div>
+    <div className="mt-16">
       {account.address === firstPlayerJoined ? (
         <h2 className="font-bold text-2xl py-8">Waiting for opponent...</h2>
       ) : (
