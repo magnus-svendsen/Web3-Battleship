@@ -23,7 +23,7 @@ Our aim is to **bridge the gap between Web2 and Web3** by lowering the entry bar
 - [🎮 Game Details](#-game-details)
 - [🔐 Web3 Onboarding with Vipps SSO](#-web3-onboarding-with-vipps-sso)
 - [📲 How to Setup Vipps Test User](#-how-to-setup-vipps-test-user)
-- [💻💡 Developer Guide and Technical Overview](#-developer-guide-and-technical-overview)
+- [🧑‍💻 Developer Guide and Technical Overview](#-developer-guide-and-technical-overview)
 - [🔍 Web3 and Game Overview](#-web3-and-game-overview)
 - [🖼️ Screenshots](#️-screenshots)
 
