@@ -79,28 +79,24 @@ const Footer = () => {
 
   return (
     <>
-      {/* Bottom-Left: Information Button */}
-      {mode !== "none" && (
-        <div className="fixed bottom-4 left-4 z-50">
-          <Button
-            color="blue"
-            variant="filled"
-            size="sm"
-            onClick={() => setInfoModalOpened(true)}
-          >
-            ℹ️ Information
-          </Button>
-        </div>
-      )}
+      <footer className="fixed bottom-0 left-0 w-full px-4 pb-4 flex justify-between items-end z-50">
+        {/* ℹ️ Information Button – Always visible */}
+        <Button
+          color="blue"
+          variant="filled"
+          size="sm"
+          onClick={() => setInfoModalOpened(true)}
+        >
+          ℹ️ Information
+        </Button>
 
-      {/* Bottom-Right: Reset Button */}
-      {mode !== "none" && (
-        <footer className="min-h-15 fixed left-0 bottom-0 w-full text-white text-right pr-4">
-          {isLoading ? (
+        {/* 🔁 Reset Button – Only visible if mode !== "none" */}
+        {mode !== "none" &&
+          (isLoading ? (
             <Button
               size="sm"
               radius="sm"
-              disabled={true}
+              disabled
               style={{
                 background:
                   "repeating-linear-gradient(45deg, rgba(0,0,0,0.7), rgba(0,0,0,0.7) 5px,rgba(255, 214, 79, 0.5) 5px,rgba(255, 214, 79, 0.5) 10px)",
@@ -127,9 +123,8 @@ const Footer = () => {
             >
               <ConstructionIcon /> Reset game <ConstructionIcon />
             </Button>
-          )}
-        </footer>
-      )}
+          ))}
+      </footer>
 
       {/* Modal: Web3 Information */}
       <Modal
