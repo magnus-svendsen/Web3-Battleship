@@ -13,6 +13,7 @@ import SinglePlayer from "./components/SinglePlayer";
 import { useGameContext } from "./contexts/GameContext";
 import Footer from "./components/Footer";
 import NewUserInformation from "./components/NewUserInformation";
+import Header from "./components/Header";
 
 function App() {
   const account = useAccount();
@@ -31,7 +32,7 @@ function App() {
     <div className="min-h-screen bg-[#002642] text-white">
       <Navbar />
       <div className="flex flex-col items-center">
-        {account.status !== "connected" && <><Login /><NewUserInformation /></>}
+        {account.status !== "connected" && <><Header /> <Login /><NewUserInformation /></>}
       </div>
 
       {account.status === "connected" && (
@@ -70,40 +71,12 @@ function App() {
 
           {mode === "singleplayer" && (
             <div className="">
-              {singlePlayerJoined !== account.address &&
-                <Button
-                  onClick={() => {
-                    setMode("none");
-                    localStorage.setItem("mode", JSON.stringify("none"));
-                  }}
-                  className=""
-                  size="xl"
-                  color="red"
-                  radius="xl"
-                >
-                  Back
-                </Button>
-              }
               <SinglePlayer />
             </div>
           )}
 
           {mode === "multiplayer" && (
             <div className="">
-              {!gameStarted && 
-                <Button
-                  onClick={() => {
-                    setMode("none");
-                    localStorage.setItem("mode", JSON.stringify("none"));
-                  }}
-                  className=""
-                  size="xl"
-                  color="blue"
-                  radius="xl"
-                >
-                  Back
-                </Button>
-              }
               <Multiplayer />
             </div>
           )}
