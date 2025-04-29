@@ -2,12 +2,12 @@ import { useGameContext } from "../contexts/GameContext";
 import GameLobby from "./GameLobby";
 import ShipPlacement from "./ShipPlacement";
 import EnemyTerritory from "./EnemyTerritory";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import GameStatsBox from "./GameStatsBox";
 
 const Multiplayer = () => {
   const account = useAccount();
-
+ 
   const {
     gameStarted,
     showGameUnderway,

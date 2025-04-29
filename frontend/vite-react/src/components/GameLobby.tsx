@@ -1,21 +1,96 @@
 import { Button, Loader } from "@mantine/core";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import { useGameContext } from "../contexts/GameContext";
 import PersonIcon from '@mui/icons-material/Person';
 import { useEffect, useRef, useState } from "react";
 import useWatchContractEventListener from "../hooks/useWatchContractEventListener";
 import type { PlayerJoinedEvent } from "../types/eventTypes";
 import useGameWriteContract from "../hooks/useGameWriteContract";
+import OpponentAccountInfo from "./OpponentAccountInfo";
+import { opponentAccountInfoProps } from "../types/opponentAccountInfoProps";
+import { zeroAddress } from "viem";
+import { multiplayerContractAddress } from "../utils/contractAddress";
+import { multiplayerAbi } from "../utils/abi/multiplayerAbi";
+import axios from "axios";
+import { serverCheckVerifyURL } from "../utils/serverURL";
 
 const GameLobby = () => {
   const account = useAccount();
 
   const { setErrorMessage, firstPlayerJoined, setFirstPlayerJoined, secondPlayerJoined, setSecondPlayerJoined, setGameStarted, setShowGameUnderway, transactionCancelCount } = useGameContext();
-  
+
   const executeWriteContract = useGameWriteContract();
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const timeoutRef = useRef<number | null>(null);
+
+  const [opponentInfoProps, setOpponentInfoProps] = useState<opponentAccountInfoProps>({ address: zeroAddress })
+
+  const [opponent, setOpponent] = useState("")
+  const { data: player1, error } = useReadContract({
+    address: multiplayerContractAddress,
+    abi: multiplayerAbi,
+    functionName: "player1"
+  })
+
+  useWatchContractEventListener({
+    eventName: "FirstPlayerJoined",
+    onEvent: (logs) => {
+      console.log(logs)
+      const address = logs[0].args.player
+      if (isZeroAddress(address)) {
+        console.log("No players joined")
+      }
+      if (account.address === address) {
+        console.log("The player that joined was you!")
+      }
+      else {
+        console.log("Player joined! : ", address)
+        setOpponent(address)
+      }
+    },
+  })
+
+  useEffect(() => {
+    console.log("Player1 joined CONTRACT?: ", player1)
+    if (!isZeroAddress(player1)) {
+      if (account.address !== player1) {
+        setOpponent(player1 ?? "")
+      }
+    }
+    if (opponent) {
+      checkIfAddressIsVerifiedAndInitializeProps(opponent)
+    }
+  }, [opponent, player1])
+
+  const checkIfAddressIsVerifiedAndInitializeProps = async (address: string) => {
+    console.log(address)
+    try {
+      await axios
+        .get(serverCheckVerifyURL, { params: { address } })
+        .then((response) => {
+          if (response.status === 200) {
+            const rawData = response.data;
+            if (response.data.verified) {
+              setOpponentInfoProps({ address: address, name: response.data.name })
+            }
+            console.log(rawData)
+          }
+        });
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        setOpponentInfoProps({ address: address })
+      } else {
+        console.error("Server Error")
+      }
+    }
+  }
+
+
+  const isZeroAddress = (address?: string) => {
+    return !address || address === zeroAddress
+  }
+
 
   const handleJoinGame = () => {
     setIsLoading(true)
@@ -29,10 +104,10 @@ const GameLobby = () => {
 
   useEffect(() => {
     setIsLoading(false)
-    if(timeoutRef.current) {
+    if (timeoutRef.current) {
       timeoutRef.current = null;
     }
-  },[transactionCancelCount])
+  }, [transactionCancelCount])
 
   useWatchContractEventListener({
     eventName: "FirstPlayerJoined",
@@ -130,6 +205,11 @@ const GameLobby = () => {
             <>Create a game!</>
           )}
         </Button>
+      )}
+      {(firstPlayerJoined !== account.address) && opponentInfoProps && (
+        <>
+          <OpponentAccountInfo {...opponentInfoProps} />
+        </>
       )}
     </div>
   );

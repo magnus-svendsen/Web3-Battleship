@@ -54,8 +54,10 @@ export const getUserInfo = async (req: Request, res: Response) => {
 
 export const checkIfAddressIsVerified = async (req: Request, res: Response) => {
   try {
-    const address_to_check = req.body["address"];
-    let account = await Account.findOne({ address_to_check });
+    const address_to_check = req.query.address as string;
+    console.log(address_to_check)
+    const account = await Account.findOne({ address: address_to_check });
+    console.log(account)
     if (account) {
       res.status(200).json({
         verified: true,
@@ -63,12 +65,14 @@ export const checkIfAddressIsVerified = async (req: Request, res: Response) => {
       })
     }
     else {
+      console.log("Not found")
       res.status(404).json({
         verified: false,
       })
     }
   }
-  catch {
-    res.status(500)
+  catch (error) {
+    console.error(error)
+    res.status(500).json({error: "Server Error"})
   }
 }
