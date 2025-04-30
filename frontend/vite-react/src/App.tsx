@@ -18,7 +18,7 @@ import Header from "./components/Header";
 function App() {
   const account = useAccount();
 
-  const { gameStarted, mode, setMode, singlePlayerJoined } = useGameContext();
+  const { mode, setMode } = useGameContext();
 
   // On component mount, load saved event values from localStorage.
   useEffect(() => {
@@ -32,7 +32,13 @@ function App() {
     <div className="min-h-screen bg-[#002642] text-white">
       <Navbar />
       <div className="flex flex-col items-center">
-        {account.status !== "connected" && <><Header /> <Login /><NewUserInformation /></>}
+        {account.status !== "connected" && (
+          <>
+            <Header />
+            <Login />
+            <NewUserInformation />
+          </>
+        )}
       </div>
 
       {account.status === "connected" && (
@@ -40,7 +46,7 @@ function App() {
           {mode === "none" && (
             <div className="flex justify-center gap-5 mt-20">
               <Button
-                onClick={() => { 
+                onClick={() => {
                   setMode("singleplayer");
                   localStorage.setItem("mode", JSON.stringify("singleplayer"));
                 }}
@@ -69,18 +75,10 @@ function App() {
             </div>
           )}
 
-          {mode === "singleplayer" && (
-            <div className="">
-              <SinglePlayer />
-            </div>
-          )}
+          {mode === "singleplayer" && <SinglePlayer />}
 
-          {mode === "multiplayer" && (
-            <div className="">
-              <Multiplayer />
-            </div>
-          )}
-          <Footer/>
+          {mode === "multiplayer" && <Multiplayer />}
+          <Footer />
         </>
       )}
       <TransactionConfirmationModal />
