@@ -86,7 +86,7 @@ const EnemyTerritory = () => {
       case 2:
         return "bg-[#ffffff]";
       case 3:
-        return "bg-[#bb1010]";
+        return "bg-[rgb(0,200,100)]";
       default:
         return "bg-black";
     }

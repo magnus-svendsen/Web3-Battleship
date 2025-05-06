@@ -66,13 +66,13 @@ const GameStatsBox = () => {
     <Box className="border grid grid-cols-1 gap-1 mr-12 rounded-md p-4 shadow-md border-color-teal-1000" >
       <Text fw={700} inline className="text-center">Turn no. {turnNumber}</Text>
       <span>
-        <Text fw={500} className="text-center" c="teal.5">My stats</Text>
+        <Text fw={500} className="text-center" c="rgb(0,200,100)">My stats</Text>
         <Text>Hits: {timesHit}</Text>
         <Text>Misses: {timesMiss}</Text>
         <Text>Accuracy: {accuracy}</Text>
       </span>
       <span>
-        <Text className="text-center" c="red.5">Enemy stats</Text>
+        <Text className="text-center" c="rgb(220,60,60)">Enemy stats</Text>
         <Text>Hits: {enemyTimesHit}</Text>
         <Text>Misses: {enemyTimesMiss}</Text>
         <Text>Accuracy: {enemyAccuracy}</Text>
