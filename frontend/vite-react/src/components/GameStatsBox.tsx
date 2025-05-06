@@ -63,7 +63,7 @@ const GameStatsBox = () => {
   }, []);
 
   return (
-    <Box className="border grid grid-cols-1 gap-1 mr-12 rounded-md p-4 shadow-md border-color-teal-1000" >
+    <Box className="h-[550px] border grid grid-cols-1 gap-1 mr-12 rounded-md p-4 shadow-md border-color-teal-1000" >
       <Text fw={700} inline className="text-center">Turn no. {turnNumber}</Text>
       <span>
         <Text fw={500} className="text-center" c="teal.5">My stats</Text>

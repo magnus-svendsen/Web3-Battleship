@@ -6,12 +6,14 @@ interface TruncatedAddressWithCopyProps {
   inputString: string;
   startChars?: number;
   endChars?: number;
+  tooltipString?: string;
 }
 
 const TruncatedAddressWithCopy: React.FC<TruncatedAddressWithCopyProps> = ({
   inputString,
   startChars = 6,
   endChars = 5,
+  tooltipString = "This is address to your account. You can think of it as a bank account number for your digital assets. It's a unique public identifier."
 }) => {
   //Truncated version of the string
   var truncatedString = ""
@@ -28,7 +30,7 @@ const TruncatedAddressWithCopy: React.FC<TruncatedAddressWithCopyProps> = ({
       {({ copied, copy }) => (
         //Show full address on hover
         <Group>
-          <Tooltip w={540} label="This is address to your account. You can think of it as a bank account number for your digital assets. It's a unique public identifier." multiline>
+          <Tooltip w={540} label={tooltipString} multiline>
             <Text size='lg' onClick={copy}>
               {truncatedString}
             </Text>

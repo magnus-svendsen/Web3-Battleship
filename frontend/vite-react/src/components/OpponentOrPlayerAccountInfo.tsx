@@ -1,0 +1,75 @@
+import { useEffect, useState } from "react";
+import { opponentOrUserAccountInfoProps } from "../types/opponentAccountInfoProps";
+import TruncatedAddressWithCopy from "./TruncatedAddressWithCopy";
+import VippsCheck from "../utils/images/Vipps_Checkmark.svg"
+
+const OpponentOrPlayerAccountInfo = (props: opponentOrUserAccountInfoProps) => {
+  const [isVerified, setIsVerified] = useState<boolean>(false);
+  const tooltip = props.isOpponent
+  ? `This is the address to your Opponent! The full address is: ${props.address}`
+  : `This is your address! The full address is: ${props.address}`;
+  useEffect(() => {
+    if ("name" in props) {
+      setIsVerified(true)
+    } else {
+      setIsVerified(false)
+    }
+  }, [props])
+
+  if ("name" in props) {
+    return (
+      <div className="bg-[#112B4E] rounded-2xl p-2 max-w-md w-full mx-0 min-h-32">
+        {props.isOpponent ?
+          <p className="text-red-400 font-semibold text-lg text-center">
+            Opponent
+          </p> :
+          <p className="text-green-400 font-semibold text-lg text-center">
+            You
+          </p>}
+        <p className="text-gray-400 text-xs mt-1 text-center">
+          Verified Vipps User
+        </p>
+        <p className="text-md mt-1 text-center italic">
+          <img src={VippsCheck} className="inline-block w-5 h-5 ml-1 mr-2 mb-1 align-middle" />
+          {props.name}
+        </p>
+
+        <div className="mt-1 w-full flex justify-center">
+          <div className="text-white font-medium text-sm text-base break-all text-center ml-8">
+            <TruncatedAddressWithCopy
+              inputString={props.address}
+              startChars={6}
+              endChars={6}
+              tooltipString={tooltip}
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-[#112B4E] rounded-2xl p-2 max-w-md w-full mx-0 min-h-32">
+      {props.isOpponent ?
+        <p className="text-red-400 font-semibold text-lg text-center">
+          Opponent
+        </p> :
+        <p className="text-green-400 font-semibold text-lg text-center">
+          You
+        </p>}      <p className="text-gray-400 text-xs mt-1 text-center">External MetaMask User</p>
+
+      <div className="mt-1 w-full flex justify-center">
+        <div className="text-white font-medium text-sm text-base break-all text-center ml-8">
+          <TruncatedAddressWithCopy
+            inputString={props.address}
+            startChars={6}
+            endChars={6}
+            tooltipString={tooltip}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default OpponentOrPlayerAccountInfo;

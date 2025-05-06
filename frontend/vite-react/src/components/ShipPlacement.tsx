@@ -14,6 +14,7 @@ import useGameWriteContract from "../hooks/useGameWriteContract";
 import { useShipDragEnd } from "../hooks/useShipDragEnd";
 import { useShipDragOver } from "../hooks/useShipDragOver";
 import PlacementHelpIcon from "./PlacementHelpIcon";
+import OpponentOrPlayerAccountInfo from "./OpponentOrPlayerAccountInfo";
 
 const ShipPlacement = () => {
   const account = useAccount();
@@ -38,6 +39,7 @@ const ShipPlacement = () => {
     setTurnMessage,
     setErrorMessage,
     transactionCancelCount,
+    playerInfoProps 
   } = useGameContext();
 
   const executeWriteContract = useGameWriteContract();
@@ -184,13 +186,8 @@ const ShipPlacement = () => {
         onDragOver={handleDragOver}
         onDragStart={handleDragStart}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+        <OpponentOrPlayerAccountInfo {...playerInfoProps}/>
+        <div className="flex flex-col items-center w-max mx-auto space-y-4">
           <div
             style={{
               display: "grid",

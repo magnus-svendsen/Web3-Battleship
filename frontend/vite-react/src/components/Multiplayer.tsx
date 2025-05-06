@@ -7,7 +7,7 @@ import GameStatsBox from "./GameStatsBox";
 
 const Multiplayer = () => {
   const account = useAccount();
- 
+
   const {
     gameStarted,
     showGameUnderway,
@@ -27,22 +27,20 @@ const Multiplayer = () => {
         <div className="flex flex-col items-center gap-2.5">
           {!gameStarted && <GameLobby />}
           <h2
-            className={`font-bold text-2xl flex justify-center mt-40 mb-10 ${
-              moveMessage === "Opponent shot and hit!" ||
+            className={`font-bold text-2xl flex justify-center mt-40 mb-10 ${moveMessage === "Opponent shot and hit!" ||
               moveMessage === "You lost the game!"
-                ? "text-red-600"
-                : ""
-            } ${
-              moveMessage === "You shot and hit!" ||
-              moveMessage === "You won the game!"
+              ? "text-red-600"
+              : ""
+              } ${moveMessage === "You shot and hit!" ||
+                moveMessage === "You won the game!"
                 ? "text-green-400"
                 : ""
-            }`}
+              }`}
           >
             {moveMessage}
           </h2>
-          <div className="flex">
-            {bothPlayersPlacedShips && <GameStatsBox/>}
+          <div className="flex items-stretch space-x-4">
+            {bothPlayersPlacedShips && <GameStatsBox />}
             {gameStarted && <ShipPlacement />}
             {bothPlayersPlacedShips && <EnemyTerritory />}
           </div>
