@@ -11,7 +11,7 @@ import { multiplayerContractAddress } from "../utils/contractAddress";
 import { multiplayerAbi } from "../utils/abi/multiplayerAbi";
 import axios from "axios";
 import { serverCheckVerifyURL } from "../utils/serverURL";
-import OpponentOrPlayerAccountInfo from "./OpponentOrPlayerAccountInfo";
+import PlayerCard from "./PlayerCard";
 
 const GameLobby = () => {
   const account = useAccount();
@@ -228,7 +228,7 @@ const GameLobby = () => {
         )}
 
         {opponentInfoProps.address !== zeroAddress && (
-          <OpponentOrPlayerAccountInfo {...opponentInfoProps} />
+          <PlayerCard {...opponentInfoProps} />
         )}
 
       </div>

@@ -14,7 +14,7 @@ import useGameWriteContract from "../hooks/useGameWriteContract";
 import { useShipDragEnd } from "../hooks/useShipDragEnd";
 import { useShipDragOver } from "../hooks/useShipDragOver";
 import PlacementHelpIcon from "./PlacementHelpIcon";
-import OpponentOrPlayerAccountInfo from "./OpponentOrPlayerAccountInfo";
+import PlayerCard from "./PlayerCard";
 
 const ShipPlacement = () => {
   const account = useAccount();
@@ -187,7 +187,7 @@ const ShipPlacement = () => {
         onDragOver={handleDragOver}
         onDragStart={handleDragStart}
       >
-        <OpponentOrPlayerAccountInfo {...playerInfoProps} />
+        <PlayerCard {...playerInfoProps} />
 
         <div className="flex justify-center">
           <div className="relative">
