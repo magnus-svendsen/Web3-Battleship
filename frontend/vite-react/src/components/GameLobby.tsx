@@ -219,7 +219,7 @@ const GameLobby = () => {
           >
             {isLoading ? (
               <Loader />
-            ) : firstPlayerJoined ? (
+            ) : opponentInfoProps.address !== zeroAddress ? (
               <div className="flex items-center gap-2">
                 <PersonIcon /> <span>Join a game!</span>
               </div>
