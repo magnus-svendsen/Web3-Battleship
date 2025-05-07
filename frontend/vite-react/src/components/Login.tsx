@@ -70,6 +70,5 @@ const Login = () => {
     </div>
   );
 };
-//<img src={MetaMaskLogo} className="inline-block w-25 h-10 ml-0 mr-0 mb-1 align-middle" />
 
 export default Login;
