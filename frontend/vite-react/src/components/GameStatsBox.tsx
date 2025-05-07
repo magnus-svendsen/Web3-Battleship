@@ -15,7 +15,7 @@ const GameStatsBox = () => {
     else {
       const hitrate = (((timesHit/(timesMiss+timesHit))*100).toFixed(1) + "%")
       setAccuracy(hitrate)
-      localStorage.setItem("accuracy", hitrate)
+      localStorage.setItem("accuracy", JSON.stringify(hitrate))
     }
   },[timesHit, timesMiss])
 
@@ -27,7 +27,7 @@ const GameStatsBox = () => {
     else {
       const enemyHitrate = (((enemyTimesHit/(enemyTimesMiss+enemyTimesHit))*100).toFixed(1) + "%")
       setEnemyAccuracy(enemyHitrate)
-      localStorage.setItem("enemyAccuracy", enemyHitrate)
+      localStorage.setItem("enemyAccuracy", JSON.stringify(enemyHitrate))
     }
   },[enemyTimesHit, enemyTimesMiss])
 

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { opponentOrUserAccountInfoProps } from "../types/opponentOrUserAccountInfoPropsInterface";
 import TruncatedAddressWithCopy from "./TruncatedAddressWithCopy";
-import VippsCheck from "../utils/images/Vipps_Checkmark.svg"
+import VippsCheck from "../utils/images/Vipps_Checkmark.svg";
 
 const OpponentOrPlayerAccountInfo = (props: opponentOrUserAccountInfoProps) => {
   const [isVerified, setIsVerified] = useState<boolean>(false);
   const tooltip = props.isOpponent
-  ? `This is the address to your Opponent! The full address is: ${props.address}`
-  : `This is your address! The full address is: ${props.address}`;
+    ? `This is the address to your Opponent! The full address is: ${props.address}`
+    : `This is your address! The full address is: ${props.address}`;
   useEffect(() => {
     if ("name" in props) {
       setIsVerified(true)
@@ -57,14 +57,14 @@ const OpponentOrPlayerAccountInfo = (props: opponentOrUserAccountInfoProps) => {
         </p> :
         <p className="text-[rgb(0,200,100)] font-semibold text-lg text-center justify-center">
           You
-        </p>}      
-        <p className="text-gray-400 text-xs mt-1 text-center">
-          External MetaMask User
-        </p>
+        </p>}
+      <p className="text-gray-400 text-xs mt-1 text-center">
+        External MetaMask User
+      </p>
 
-        <p className="text-md mt-1 text-center italic text-gray-300">
-          Anonymous
-        </p>
+      <p className="text-md mt-1 text-center italic text-gray-300">
+        Anonymous
+      </p>
 
       <div className="mt-1 w-full flex justify-center">
         <div className="text-white font-medium text-sm text-base break-all text-center ml-8">
