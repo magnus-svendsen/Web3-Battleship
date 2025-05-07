@@ -36,6 +36,7 @@ const ShipPlacement = () => {
     firstPlayerJoined,
     setShipPlacementPlayer,
     setBothPlayersPlacedShips,
+    bothPlayersPlacedShips,
     setTurnMessage,
     setErrorMessage,
     transactionCancelCount,
@@ -213,7 +214,8 @@ const ShipPlacement = () => {
               )}
             </div>
 
-            <div className="absolute top-0 left-full ml-4 flex flex-col p-5">
+            <div className={"absolute top-0 left-full ml-4 flex flex-col p-5"
+             + (bothPlayersPlacedShips ? "-z-10" : "z-0")}>
               <div className="mb-10">
                 {!placedShips.every(Boolean) && (
                   <div className="flex justify-center">
