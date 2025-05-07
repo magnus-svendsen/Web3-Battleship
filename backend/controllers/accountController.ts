@@ -15,7 +15,7 @@ export const getOrGeneratePrivateKey = async (req: Request, res: Response) => {
       },
     });
     const sub = userInfoResponse.data.sub;
-    const name = userInfoResponse.data.name; // TODO: Store name in DB, so that it can be returned for opponent to see. 
+    const name = userInfoResponse.data.name;
 
     let account = await Account.findOne({ sub });
 
