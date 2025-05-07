@@ -7,12 +7,35 @@ const Navbar = () => {
   const account = useAccount();
   const { disconnect } = useDisconnect();
 
-  const { autoConfirmTransactions, setAutoConfirmTransactions } =
-    useGameContext();
+  const {
+    autoConfirmTransactions,
+    setAutoConfirmTransactions,
+    mode,
+    setMode,
+    singlePlayerJoined,
+    gameStarted,
+  } = useGameContext();
 
   return (
     <div className="pt-4 flex justify-between w-full">
-      <h2 className="font-bold text-2xl ml-3">Web3 Battleship</h2>
+      <div className="font-bold text-2xl ml-3">
+        {mode !== "none" &&
+          singlePlayerJoined !== account.address &&
+          !gameStarted && (
+            <Button
+              onClick={() => {
+                setMode("none");
+                localStorage.setItem("mode", JSON.stringify("none"));
+              }}
+              className=""
+              size="xl"
+              color="red"
+              radius="xl"
+            >
+              Back
+            </Button>
+          )}
+      </div>
       {account.status === "connected" && (
         <div className="flex">
           {account.connector.id !== "privateKey" && (

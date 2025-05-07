@@ -20,10 +20,10 @@ const OpponentOrPlayerAccountInfo = (props: opponentOrUserAccountInfoProps) => {
     return (
       <div className="bg-[#112B4E] rounded-2xl p-2 max-w-md w-full mx-0 min-h-32">
         {props.isOpponent ?
-          <p className="text-red-400 font-semibold text-lg text-center">
+          <p className="text-[rgb(220,60,60)] font-semibold text-lg text-center">
             Opponent
           </p> :
-          <p className="text-green-400 font-semibold text-lg text-center">
+          <p className="text-[rgb(0,200,100)] font-semibold text-lg text-center">
             You
           </p>}
         <p className="text-gray-400 text-xs mt-1 text-center">
@@ -41,6 +41,7 @@ const OpponentOrPlayerAccountInfo = (props: opponentOrUserAccountInfoProps) => {
               startChars={6}
               endChars={6}
               tooltipString={tooltip}
+              tooltipWidth={340}
             />
           </div>
         </div>
@@ -49,14 +50,21 @@ const OpponentOrPlayerAccountInfo = (props: opponentOrUserAccountInfoProps) => {
   }
 
   return (
-    <div className="bg-[#112B4E] rounded-2xl p-2 max-w-md w-full mx-0 min-h-32">
+    <div className="bg-[#112B4E] rounded-2xl p-2 max-w-md w-full mx-0 min-h-32 flex-col justify-center">
       {props.isOpponent ?
-        <p className="text-red-400 font-semibold text-lg text-center">
+        <p className="text-[rgb(220,60,60)] font-semibold text-lg text-center">
           Opponent
         </p> :
-        <p className="text-green-400 font-semibold text-lg text-center">
+        <p className="text-[rgb(0,200,100)] font-semibold text-lg text-center justify-center">
           You
-        </p>}      <p className="text-gray-400 text-xs mt-1 text-center">External MetaMask User</p>
+        </p>}      
+        <p className="text-gray-400 text-xs mt-1 text-center">
+          External MetaMask User
+        </p>
+
+        <p className="text-md mt-1 text-center italic text-gray-300">
+          Anonymous
+        </p>
 
       <div className="mt-1 w-full flex justify-center">
         <div className="text-white font-medium text-sm text-base break-all text-center ml-8">
@@ -65,6 +73,7 @@ const OpponentOrPlayerAccountInfo = (props: opponentOrUserAccountInfoProps) => {
             startChars={6}
             endChars={6}
             tooltipString={tooltip}
+            tooltipWidth={340}
           />
         </div>
       </div>

@@ -100,7 +100,7 @@ const SinglePlayer = () => {
         <div>
           <div className="font-bold text-2xl mt-12 flex justify-center">
             <h2
-              className={`${turnMessage === "Your turn" ? "text-green-400" : ""}`}
+              className={`${turnMessage === "Your turn" ? "text-[rgb(0,200,100)]" : ""}`}
             >
               {turnMessage}
             </h2>
@@ -119,12 +119,12 @@ const SinglePlayer = () => {
               className={`font-bold text-2xl flex justify-center mt-10 mb-10 ${
                 moveMessage === "Opponent shot and hit!" ||
                 moveMessage === "You lost the game!"
-                  ? "text-red-600"
+                  ? "text-[rgb(220,60,60)]"
                   : ""
               } ${
                 moveMessage === "You shot and hit!" ||
                 moveMessage === "You won the game!"
-                  ? "text-green-400"
+                  ? "text-[rgb(0,200,100)]"
                   : ""
               }`}
             >

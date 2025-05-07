@@ -29,11 +29,12 @@ const Multiplayer = () => {
           <h2
             className={`font-bold text-2xl flex justify-center mt-40 mb-10 ${moveMessage === "Opponent shot and hit!" ||
               moveMessage === "You lost the game!"
-              ? "text-red-600"
-              : ""
-              } ${moveMessage === "You shot and hit!" ||
-                moveMessage === "You won the game!"
-                ? "text-green-400"
+                ? "text-[rgb(220,60,60)]"
+                : ""
+            } ${
+              moveMessage === "You shot and hit!" ||
+              moveMessage === "You won the game!"
+                ? "text-[rgb(0,200,100)]"
                 : ""
               }`}
           >
@@ -46,8 +47,8 @@ const Multiplayer = () => {
           </div>
           <div className="flex justify-center mt-8">
             <h2
-              className={`text-2xl font-bold ${turnMessage === "Your turn" ? "text-green-400" : ""
-                } ${turnMessage === "Opponent's turn" ? "text-red-500" : ""
+              className={`text-2xl font-bold ${turnMessage === "Your turn" ? "text-[rgb(0,200,100)]" : ""
+                } ${turnMessage === "Opponent's turn" ? "text-[rgb(220,60,60)]" : ""
                 }`}
             >
               {turnMessage}
