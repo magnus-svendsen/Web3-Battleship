@@ -44,6 +44,13 @@ const Multiplayer = () => {
             {gameStarted && <ShipPlacement />}
             {bothPlayersPlacedShips && <EnemyTerritory />}
           </div>
+          <h2
+            className={`absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold ${turnMessage === "Your turn" ? "text-green-400" : ""
+              }`}
+            style={{ bottom: "22rem" }} 
+          >
+            {turnMessage}
+          </h2>
           {!bothPlayersPlacedShips && (
             <div className="flex justify-center font-bold text-2xl py-6">
               {shipPlacementPlayer && (
@@ -57,13 +64,6 @@ const Multiplayer = () => {
               )}
             </div>
           )}
-          <div className="font-bold text-2xl py-8 flex justify-center">
-            <h2
-              className={`${turnMessage === "Your turn" ? "text-green-400" : ""}`}
-            >
-              {turnMessage}
-            </h2>
-          </div>
         </div>
       )}
     </div>

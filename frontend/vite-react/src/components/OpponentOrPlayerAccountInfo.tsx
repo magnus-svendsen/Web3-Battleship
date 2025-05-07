@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { opponentOrUserAccountInfoProps } from "../types/opponentAccountInfoProps";
+import { opponentOrUserAccountInfoProps } from "../types/opponentOrUserAccountInfoPropsInterface";
 import TruncatedAddressWithCopy from "./TruncatedAddressWithCopy";
 import VippsCheck from "../utils/images/Vipps_Checkmark.svg"
 
