@@ -33,7 +33,6 @@ const GameLobby = () => {
   useWatchContractEventListener({
     eventName: "FirstPlayerJoined",
     onEvent: (logs) => {
-      console.log(logs)
       const address = logs[0].args.player
       if (isZeroAddress(address)) {
         console.log("No players joined")
@@ -70,7 +69,6 @@ const GameLobby = () => {
   },[])
 
   const checkIfAddressIsVerifiedAndInitializeProps = async (address: string, isOpponent: boolean) => {
-    console.log(address)
     try {
       await axios
         .get(serverCheckVerifyURL, { params: { address } })
