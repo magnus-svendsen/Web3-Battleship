@@ -39,7 +39,7 @@ const ShipPlacement = () => {
     setTurnMessage,
     setErrorMessage,
     transactionCancelCount,
-    playerInfoProps 
+    playerInfoProps
   } = useGameContext();
 
   const executeWriteContract = useGameWriteContract();
@@ -186,77 +186,84 @@ const ShipPlacement = () => {
         onDragOver={handleDragOver}
         onDragStart={handleDragStart}
       >
-        <OpponentOrPlayerAccountInfo {...playerInfoProps}/>
-        <div className="flex flex-col items-center w-max mx-auto space-y-4">
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(10, 40px)",
-              gap: "2px",
-              backgroundColor: "#1212ab",
-              padding: "2px",
-            }}
-          >
-            {(isDragging ? tempGrid : grid).map((row, rowIndex) =>
-              row.map((cell, colIndex) => (
-                <DroppableGridCell
-                  key={`${rowIndex}-${colIndex}`}
-                  row={rowIndex}
-                  col={colIndex}
-                  state={cell}
-                  isPreview={isDragging}
-                />
-              ))
-            )}
-          </div>
-          <div className="flex flex-col p-5 mb-21">
-            <div className="mb-10">
-              {!placedShips.every(Boolean) && (
-                <div className="flex justify-center">
-                  <PlacementHelpIcon />
-                </div>
-              )}
-            </div>
-            <div>
-              {[0, 1, 2, 3, 4].map((id) =>
-                !placedShips[id] ? (
-                  <Ship
-                    key={id}
-                    id={id}
-                    length={lengthByIDShipRendering(id)}
-                    onOrientationChange={handleOrientationChange}
-                  />
-                ) : null
-              )}
-            </div>
-            {placedShips.some((isPlaced) => isPlaced) && !shipsSubmitted && (
-              <Button color="orange" onClick={regretShipPlacement}>Reset ships</Button>
-            )}
-          </div>
-        </div>
-      </DndContext>
+        <OpponentOrPlayerAccountInfo {...playerInfoProps} />
 
-      {placedShips.every(Boolean) && !shipsSubmitted && (
-        <div className="flex justify-center mt-5">
-          {isLoading ? (
-            <Button
-              variant="red"
-              color="teal"
-              size="lg"
-              radius="lg"
-              className="mr-2"
-              type="button"
-              disabled={true}
+        <div className="flex justify-center">
+          <div className="relative">
+
+            <div
+              className="grid"
+              style={{
+                gridTemplateColumns: "repeat(10, 40px)",
+                gap: "2px",
+                backgroundColor: "#1212ab",
+                padding: "2px",
+              }}
             >
-              <Loader />
-            </Button>
-          ) : (
-            <Button size="lg" radius="lg" onClick={handleSubmitShips}>
-              Submit Ships
-            </Button>
-          )}
+              {(isDragging ? tempGrid : grid).map((row, rowIndex) =>
+                row.map((cell, colIndex) => (
+                  <DroppableGridCell
+                    key={`${rowIndex}-${colIndex}`}
+                    row={rowIndex}
+                    col={colIndex}
+                    state={cell}
+                    isPreview={isDragging}
+                  />
+                ))
+              )}
+            </div>
+
+            <div className="absolute top-0 left-full ml-4 flex flex-col p-5">
+              <div className="mb-10">
+                {!placedShips.every(Boolean) && (
+                  <div className="flex justify-center">
+                    <PlacementHelpIcon />
+                  </div>
+                )}
+              </div>
+              <div>
+                {[0, 1, 2, 3, 4].map((id) =>
+                  !placedShips[id] ? (
+                    <Ship
+                      key={id}
+                      id={id}
+                      length={lengthByIDShipRendering(id)}
+                      onOrientationChange={handleOrientationChange}
+                    />
+                  ) : null
+                )}
+              </div>
+              {placedShips.some((isPlaced) => isPlaced) && !shipsSubmitted && (
+                <Button color="orange" onClick={regretShipPlacement}>
+                  Reset ships
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
-      )}
+
+        {placedShips.every(Boolean) && !shipsSubmitted && (
+          <div className="flex justify-center mt-5">
+            {isLoading ? (
+              <Button
+                variant="red"
+                color="teal"
+                size="lg"
+                radius="lg"
+                className="mr-2"
+                type="button"
+                disabled
+              >
+                <Loader />
+              </Button>
+            ) : (
+              <Button size="lg" radius="lg" onClick={handleSubmitShips}>
+                Submit Ships
+              </Button>
+            )}
+          </div>
+        )}
+      </DndContext>
     </div>
   );
 };
