@@ -136,7 +136,7 @@ const GameLobby = () => {
   
       if (account.address === firstPlayerJoined && player !== zeroAddress) {
         setOpponent(player);
-        checkIfAddressIsVerifiedAndInitializeProps(player, true);
+        verifyAddressAndInitProps(player, true);
       }
   
       setSecondPlayerJoined(player);
