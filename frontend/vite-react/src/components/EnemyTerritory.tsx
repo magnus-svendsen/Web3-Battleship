@@ -4,7 +4,7 @@ import { useGameContext } from "../contexts/GameContext";
 import { Loader } from "@mantine/core";
 import useGameWriteContract from "../hooks/useGameWriteContract";
 import { useMoveResultListener } from "../hooks/useMoveResultListener";
-import OpponentOrPlayerAccountInfo from "./OpponentOrPlayerAccountInfo";
+import PlayerCard from "./PlayerCard";
 
 const EnemyTerritory = () => {
   const account = useAccount();
@@ -104,7 +104,7 @@ const EnemyTerritory = () => {
         </div>
       ) : (
         <div>
-          <OpponentOrPlayerAccountInfo {...opponentInfoProps} />
+          <PlayerCard {...opponentInfoProps} />
           <div
             className={`flex items-center justify-center ${turnMessage === "Your turn"
               ? "pointer-events-auto opacity-100"

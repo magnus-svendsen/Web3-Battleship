@@ -1,8 +1,7 @@
 import { Button } from "@mantine/core";
 import { useEffect } from "react";
 import { useConnect } from "wagmi";
-import MetaMaskLogo from "../utils/images/MetaMask-logo-black.svg";
-import MetaMaskIcon from "../utils/images/MetaMask-icon-fox.svg"
+import MetaMaskIcon from "../utils/images/MetaMask-icon-fox.svg";
 const Login = () => {
   const { connectors, connect } = useConnect();
 
@@ -60,15 +59,16 @@ const Login = () => {
           type="button"
           onClick={() => connect({ connector: connectors[0] })}
         >
-                            <img src={MetaMaskIcon} className="inline-block w-8 h-8 ml-0 mr-2 mb-1 align-middle" />
-
-                  Log in with MetaMask
-
+          <img
+            src={MetaMaskIcon}
+            alt="MetaMask Icon"
+            className="inline-block w-6 h-6 mr-2 mb-0.5 align-middle"
+          />
+          Log in with Metamask
         </Button>
       </div>
     </div>
   );
 };
-//<img src={MetaMaskLogo} className="inline-block w-25 h-10 ml-0 mr-0 mb-1 align-middle" />
 
 export default Login;

@@ -2,7 +2,7 @@ import { useGameContext } from "../contexts/GameContext";
 import GameLobby from "./GameLobby";
 import ShipPlacement from "./ShipPlacement";
 import EnemyTerritory from "./EnemyTerritory";
-import { useAccount, useReadContract } from "wagmi";
+import { useAccount } from "wagmi";
 import GameStatsBox from "./GameStatsBox";
 
 const Multiplayer = () => {
@@ -55,7 +55,7 @@ const Multiplayer = () => {
             </h2>
           </div>
           {!bothPlayersPlacedShips && (
-            <div className="flex justify-center font-bold text-2xl py-6">
+            <div className="flex justify-center font-bold text-2xl">
               {shipPlacementPlayer && (
                 <div>
                   {shipPlacementPlayer === account.address ? (

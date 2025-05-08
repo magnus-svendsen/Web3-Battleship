@@ -2,7 +2,7 @@
 import type React from "react";
 import { createContext, useContext, useRef, useState, type ReactNode } from "react"
 import type { GridData } from "../types/gridTypes";
-import { opponentAccountInfoProps } from "../types/opponentOrUserAccountInfoPropsInterface";
+import type { PlayerCardProps } from "../types/playerCardProps";
 import { zeroAddress } from "viem";
 
 // Define the shape of our game context.
@@ -60,10 +60,10 @@ interface GameContextType {
   setEnemyTimesMiss: React.Dispatch<React.SetStateAction<number>>;
   turnNumber: number;
   setTurnNumber: React.Dispatch<React.SetStateAction<number>>;
-  opponentInfoProps: opponentAccountInfoProps;
-  setOpponentInfoProps: React.Dispatch<React.SetStateAction<opponentAccountInfoProps>>;
-  playerInfoProps: opponentAccountInfoProps;
-  setPlayerInfoProps: React.Dispatch<React.SetStateAction<opponentAccountInfoProps>>;
+  opponentInfoProps: PlayerCardProps;
+  setOpponentInfoProps: React.Dispatch<React.SetStateAction<PlayerCardProps>>;
+  playerInfoProps: PlayerCardProps;
+  setPlayerInfoProps: React.Dispatch<React.SetStateAction<PlayerCardProps>>;
 }
 
 // Create the context with a default value (which will be overridden by the provider).
