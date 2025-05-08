@@ -34,47 +34,35 @@ const GameLobby = () => {
     eventName: "FirstPlayerJoined",
     onEvent: (logs) => {
       const address = logs[0].args.player
-      if (isZeroAddress(address)) {
-        console.log("No players joined")
-      }
-      if (account.address === address) {
-        console.log("The player that joined was you!")
-      }
-      else {
-        console.log("Player joined! : ", address)
+      if (!isZeroAddress(address) && account.address !== address) {
         setOpponent(address)
       }
     },
   })
 
   useEffect(() => {
-    console.log("Player1 joined CONTRACT?: ", player1)
     if (!isZeroAddress(player1)) {
       if (account.address !== player1) {
         setOpponent(player1 ?? "")
       }
-      else {
-
-      }
     }
     if (opponent) {
-      checkIfAddressIsVerifiedAndInitializeProps(opponent,true)
+      verifyAddressAndInitProps(opponent,true)
     }
   }, [opponent, player1])
 
   useEffect(() => {
     if (account.address){
-      checkIfAddressIsVerifiedAndInitializeProps(account.address, false)
+      verifyAddressAndInitProps(account.address, false)
     }
   },[])
 
-  const checkIfAddressIsVerifiedAndInitializeProps = async (address: string, isOpponent: boolean) => {
+  const verifyAddressAndInitProps = async (address: string, isOpponent: boolean) => {
     try {
       await axios
         .get(serverCheckVerifyURL, { params: { address } })
         .then((response) => {
           if (response.status === 200) {
-            const rawData = response.data;
             if (response.data.verified) {
               if (isOpponent) {
                 setOpponentInfoProps({ address: address, name: response.data.name, isOpponent: true })
@@ -134,7 +122,6 @@ const GameLobby = () => {
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
           timeoutRef.current = null
-          console.log("Resetting timer: Join")
 
         }
         setIsLoading(false);
