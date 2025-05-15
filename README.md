@@ -96,7 +96,6 @@ Follow this [guide](https://developer.vippsmobilepay.com/docs/knowledge-base/tes
 ├── frontend/vite-react/                 # Vite + React frontend app
 │   ├── src/                             # Source code for the frontend
 │   │   ├── components/                  # Reusable React components
-│   │   ├── pages/                       # Page views (e.g., Home, Game)
 │   │   ├── hooks/                       # Custom React hooks
 │   │   ├── contexts/                    # React Contexts for global state
 │   │   ├── utils/                       # Utility functions and constants
@@ -114,8 +113,8 @@ Follow this [guide](https://developer.vippsmobilepay.com/docs/knowledge-base/tes
 │
 └── battleship-contract/                 # Smart contracts
     └── contracts/                       # Solidity contract files
-        ├── Contract.sol                 # Multiplayer Battleship contract
-        └── SinglePlayerBattleship.sol   # Singleplayer Battleship contract
+        ├── Multiplayer.sol                 # Multiplayer Battleship contract
+        └── Singleplayer.sol   # Singleplayer Battleship contract
 ```
 
 ---
