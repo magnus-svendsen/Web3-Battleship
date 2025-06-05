@@ -6,8 +6,11 @@ import VippsCheck from "../utils/images/Vipps_Checkmark.svg"
 const PlayerCard = (props: PlayerCardProps) => {
   const [isVerified, setIsVerified] = useState<boolean>(false);
   const tooltip = props.isOpponent
-  ? `This is your opponent's address! The full address is: ${props.address}`
-  : `This is your address! The full address is: ${props.address}`;
+    ? props.isAI 
+      ? "This is a fictional address for your AI opponent: 0x0000000000000000000000000000000000000000"
+      : `This is your opponent's address! The full address is: ${props.address}`
+    : `This is your address! The full address is: ${props.address}`;
+
   useEffect(() => {
     if ("name" in props) {
       setIsVerified(true)
@@ -27,11 +30,17 @@ const PlayerCard = (props: PlayerCardProps) => {
             You
           </p>}
         <p className="text-gray-400 text-xs mt-1 text-center">
-          Verified Vipps User
+          {props.isAI ? "AI User" : "Verified Vipps User"}
         </p>
         <p className="text-md mt-1 text-center italic">
-          <img src={VippsCheck} alt="Verified Vipps Checkmark" className="inline-block w-5 h-5 ml-1 mr-2 mb-1 align-middle" />
-          {props.name}
+          {props.isAI ? (
+            "Anonymous"
+          ) : (
+            <>
+              <img src={VippsCheck} alt="Verified Vipps Checkmark" className="inline-block w-5 h-5 ml-1 mr-2 mb-1 align-middle" />
+              {props.name}
+            </>
+          )}
         </p>
 
         <div className="mt-1 w-full flex justify-center">
@@ -60,7 +69,7 @@ const PlayerCard = (props: PlayerCardProps) => {
           You
         </p>}      
         <p className="text-gray-400 text-xs mt-1 text-center">
-          External MetaMask User
+          {props.isAI ? "AI User" : "External MetaMask User"}
         </p>
 
         <p className="text-md mt-1 text-center italic text-gray-300">
