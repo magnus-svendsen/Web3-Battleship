@@ -17,7 +17,7 @@ const Navbar = () => {
   } = useGameContext();
 
   return (
-    <div className="py-4 flex justify-between items-center">
+    <div className={`py-4 flex justify-between items-center ${account.status === "connected" ? "h-18" : ""}`}>
       <div className="font-bold text-2xl ml-3">
         {mode !== "none" &&
           singlePlayerJoined !== account.address &&
