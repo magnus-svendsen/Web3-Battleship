@@ -17,7 +17,7 @@ const Navbar = () => {
   } = useGameContext();
 
   return (
-    <div className="pt-4 flex justify-between w-full">
+    <div className="py-4 flex justify-between items-center">
       <div className="font-bold text-2xl ml-3">
         {mode !== "none" &&
           singlePlayerJoined !== account.address &&
@@ -27,8 +27,7 @@ const Navbar = () => {
                 setMode("none");
                 localStorage.setItem("mode", JSON.stringify("none"));
               }}
-              className=""
-              size="xl"
+              size="lg"
               color="red"
               radius="xl"
             >
@@ -37,7 +36,7 @@ const Navbar = () => {
           )}
       </div>
       {account.status === "connected" && (
-        <div className="flex">
+        <div className="flex items-center">
           {account.connector.id !== "privateKey" && (
             <Button
               variant="white"
@@ -59,9 +58,11 @@ const Navbar = () => {
                   setAutoConfirmTransactions(event.currentTarget.checked)
                 }
                 label="Autoconfirm transactions"
-                className="pt-2 pr-2"
+                className="mr-2"
               />
-              <AccountInfoHandle />
+              <div className="relative z-20">
+                <AccountInfoHandle />
+              </div>
             </>
           )}
         </div>

@@ -29,58 +29,55 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#002642] text-white">
+    <div className="min-h-screen bg-[#002642] text-white flex flex-col">
       <Navbar />
-      <div className="flex flex-col items-center">
+      <main className={`flex-1 flex flex-col items-center justify-center ${account.status === "connected" ? "-mt-20" : ""}`}>
         {account.status !== "connected" && (
-          <>
+          <div className="flex flex-col items-center justify-center">
             <Header />
             <Login />
             <NewUserInformation />
-          </>
+          </div>
         )}
-      </div>
 
-      {account.status === "connected" && (
-        <>
-          {mode === "none" && (
-            <div className="flex justify-center gap-5 mt-20">
-              <Button
-                onClick={() => {
-                  setMode("singleplayer");
-                  localStorage.setItem("mode", JSON.stringify("singleplayer"));
-                }}
-                className="mt-5"
-                size="xl"
-                color="red"
-                radius="xl"
-              >
-                <PersonIcon className="mr-0.5" />
-                Single Player
-              </Button>
+        {account.status === "connected" && (
+          <div className="flex flex-col items-center justify-center">
+            {mode === "none" && (
+              <div className="flex justify-center gap-12">
+                <Button
+                  onClick={() => {
+                    setMode("singleplayer");
+                    localStorage.setItem("mode", JSON.stringify("singleplayer"));
+                  }}
+                  size="xl"
+                  color="red"
+                  radius="xl"
+                >
+                  <PersonIcon className="mr-0.5" />
+                  Single Player
+                </Button>
 
-              <Button
-                onClick={() => {
-                  setMode("multiplayer");
-                  localStorage.setItem("mode", JSON.stringify("multiplayer"));
-                }}
-                className="mt-5"
-                size="xl"
-                color="blue"
-                radius="xl"
-              >
-                <GroupIcon className="mr-1" />
-                Multiplayer
-              </Button>
-            </div>
-          )}
+                <Button
+                  onClick={() => {
+                    setMode("multiplayer");
+                    localStorage.setItem("mode", JSON.stringify("multiplayer"));
+                  }}
+                  size="xl"
+                  color="blue"
+                  radius="xl"
+                >
+                  <GroupIcon className="mr-1" />
+                  Multiplayer
+                </Button>
+              </div>
+            )}
 
-          {mode === "singleplayer" && <SinglePlayer />}
-
-          {mode === "multiplayer" && <Multiplayer />}
-          <Footer />
-        </>
-      )}
+            {mode === "singleplayer" && <SinglePlayer />}
+            {mode === "multiplayer" && <Multiplayer />}
+          </div>
+        )}
+      </main>
+      {account.status === "connected" && <Footer />}
       <TransactionConfirmationModal />
       <ErrorDialog />
     </div>

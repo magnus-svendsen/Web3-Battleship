@@ -181,7 +181,7 @@ const ShipPlacement = () => {
   };
 
   return (
-    <div>
+    <div className="flex flex-col items-center">
       <DndContext
         onDragEnd={handleDragEnd}
         onDragOver={handleDragOver}
@@ -189,9 +189,8 @@ const ShipPlacement = () => {
       >
         <PlayerCard {...playerInfoProps} />
 
-        <div className="flex justify-center">
-          <div className="relative">
-
+        <div className="flex justify-center items-center">
+          <div className="relative flex items-center">
             <div
               className="grid"
               style={{
@@ -214,16 +213,17 @@ const ShipPlacement = () => {
               )}
             </div>
 
-            <div className={"absolute top-0 left-full ml-4 flex flex-col p-5"
-             + (bothPlayersPlacedShips ? "-z-10" : "z-0")}>
-              <div className="mb-10">
+            <div className={`absolute top-0 left-full ml-4 flex flex-col p-4 ${
+              bothPlayersPlacedShips ? "-z-10" : "z-0"
+            }`}>
+              <div className="mb-4">
                 {!placedShips.every(Boolean) && (
                   <div className="flex justify-center">
                     <PlacementHelpIcon />
                   </div>
                 )}
               </div>
-              <div>
+              <div className="flex flex-col gap-4">
                 {[0, 1, 2, 3, 4].map((id) =>
                   !placedShips[id] ? (
                     <Ship
@@ -236,7 +236,7 @@ const ShipPlacement = () => {
                 )}
               </div>
               {placedShips.some((isPlaced) => isPlaced) && !shipsSubmitted && (
-                <Button color="orange" onClick={regretShipPlacement}>
+                <Button color="orange" onClick={regretShipPlacement} className="mt-4">
                   Reset ships
                 </Button>
               )}
@@ -245,7 +245,7 @@ const ShipPlacement = () => {
         </div>
 
         {placedShips.every(Boolean) && !shipsSubmitted && (
-          <div className="flex justify-center mt-5">
+          <div className="flex justify-center mt-4">
             {isLoading ? (
               <Button
                 variant="red"
