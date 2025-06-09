@@ -8,6 +8,7 @@ import useGameWriteContract from "../hooks/useGameWriteContract";
 import ShipPlacement from "./ShipPlacement";
 import EnemyTerritory from "./EnemyTerritory";
 import GameStatsBox from "./GameStatsBox";
+import { verifyAddressAndInitProps } from "../utils/verifyAddress";
 
 const SinglePlayer = () => {
   const account = useAccount();
@@ -25,12 +26,19 @@ const SinglePlayer = () => {
     setEnemyGrid,
     mode,
     setOpponentInfoProps,
+    setPlayerInfoProps,
   } = useGameContext();
 
   const executeWriteContract = useGameWriteContract();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const timeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (account.address) {
+      verifyAddressAndInitProps(account.address, false, setOpponentInfoProps, setPlayerInfoProps);
+    }
+  }, [account.address]);
 
   const handleStartGame = () => {
     setIsLoading(true);
@@ -56,6 +64,10 @@ const SinglePlayer = () => {
         isOpponent: true,
         isAI: true
       });
+      // Set player info when game starts
+      if (account.address) {
+        verifyAddressAndInitProps(account.address, false, setOpponentInfoProps, setPlayerInfoProps);
+      }
       // Clear the timeout when player successfully joins
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -78,6 +90,10 @@ const SinglePlayer = () => {
         isOpponent: true,
         isAI: true
       });
+      // Set player info when loading saved game
+      if (account.address) {
+        verifyAddressAndInitProps(account.address, false, setOpponentInfoProps, setPlayerInfoProps);
+      }
     }
     const savedShipPlacementPlayer = localStorage.getItem("shipPlacementPlayer");
     if (savedShipPlacementPlayer) {

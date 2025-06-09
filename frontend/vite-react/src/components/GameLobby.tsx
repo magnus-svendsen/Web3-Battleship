@@ -9,9 +9,8 @@ import useGameWriteContract from "../hooks/useGameWriteContract";
 import { zeroAddress } from "viem";
 import { multiplayerContractAddress } from "../utils/contractAddress";
 import { multiplayerAbi } from "../utils/abi/multiplayerAbi";
-import axios from "axios";
-import { serverCheckVerifyURL } from "../utils/serverURL";
 import PlayerCard from "./PlayerCard";
+import { verifyAddressAndInitProps } from "../utils/verifyAddress";
 
 const GameLobby = () => {
   const account = useAccount();
@@ -47,51 +46,19 @@ const GameLobby = () => {
       }
     }
     if (opponent) {
-      verifyAddressAndInitProps(opponent,true)
+      verifyAddressAndInitProps(opponent, true, setOpponentInfoProps, setPlayerInfoProps)
     }
   }, [opponent, player1])
 
   useEffect(() => {
     if (account.address){
-      verifyAddressAndInitProps(account.address, false)
+      verifyAddressAndInitProps(account.address, false, setOpponentInfoProps, setPlayerInfoProps)
     }
   },[])
-
-  const verifyAddressAndInitProps = async (address: string, isOpponent: boolean) => {
-    try {
-      await axios
-        .get(serverCheckVerifyURL, { params: { address } })
-        .then((response) => {
-          if (response.status === 200) {
-            if (response.data.verified) {
-              if (isOpponent) {
-                setOpponentInfoProps({ address: address, name: response.data.name, isOpponent: true })
-              }
-              else {
-                setPlayerInfoProps({ address: address, name: response.data.name, isOpponent: false })
-              }
-            }
-          }
-        });
-    } catch (error: any) {
-      if (error.response?.status === 404) {
-        if (isOpponent) {
-          setOpponentInfoProps({ address: address, isOpponent: true })
-        }
-        else {
-          setPlayerInfoProps({ address: address, isOpponent: false })
-        }
-      } else {
-        console.error("Server Error")
-      }
-    }
-  }
-
 
   const isZeroAddress = (address?: string) => {
     return !address || address === zeroAddress
   }
-
 
   const handleJoinGame = () => {
     setIsLoading(true)
@@ -114,7 +81,6 @@ const GameLobby = () => {
     eventName: "FirstPlayerJoined",
     onEvent: (logs: PlayerJoinedEvent[]) => {
       const player = logs[0].args.player ?? "";
-
       setFirstPlayerJoined(player);
       localStorage.setItem("firstPlayerJoined", JSON.stringify(player));
 
@@ -122,7 +88,6 @@ const GameLobby = () => {
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
           timeoutRef.current = null
-
         }
         setIsLoading(false);
       }
@@ -136,7 +101,7 @@ const GameLobby = () => {
   
       if (account.address === firstPlayerJoined && player !== zeroAddress) {
         setOpponent(player);
-        verifyAddressAndInitProps(player, true);
+        verifyAddressAndInitProps(player, true, setOpponentInfoProps, setPlayerInfoProps);
       }
   
       setSecondPlayerJoined(player);
@@ -183,14 +148,11 @@ const GameLobby = () => {
   return (
     <div className="mt-16 flex justify-center">
       <div className="flex flex-col gap-4 w-full max-w-sm px-4">
-
-
         {account.address === firstPlayerJoined && !secondPlayerJoined && (
           <h2 className="text-white font-bold text-2xl text-center py-4">
             Waiting for opponent…
           </h2>
         )}
-
 
         {!(account.address === firstPlayerJoined && !secondPlayerJoined) && (
           <Button
@@ -217,12 +179,9 @@ const GameLobby = () => {
         {opponentInfoProps.address !== zeroAddress && (
           <PlayerCard {...opponentInfoProps} />
         )}
-
       </div>
     </div>
   );
-
-}
-
+};
 
 export default GameLobby;

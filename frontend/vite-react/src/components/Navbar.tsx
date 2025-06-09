@@ -43,7 +43,7 @@ const Navbar = () => {
               color="teal"
               size="sm"
               radius="sm"
-              className="mr-2"
+              className="mr-4"
               type="button"
               onClick={() => disconnect()}
             >
