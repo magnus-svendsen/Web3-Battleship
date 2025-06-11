@@ -1,13 +1,13 @@
-# 🛳️ Web3 Battleship with Vipps SSO
+# 🛳️ Web3 Battleship with Vipps OIDC
 
-## *Toward Web3: Enhancing User Onboarding and Trust through Vipps SSO*  
+## *Toward Web3: Enhancing User Onboarding and Trust through Vipps OIDC*  
 *A Master's thesis exploring onboarding and identity in decentralized applications.*
 
 ---
 
 ## 🌊 Introduction to the Project
 
-**Web3 can be overwhelming for new users** — cryptographic wallets, gas fees, and decentralized systems can feel intimidating. This project explores how we can make **Web3 more approachable** by introducing a familiar login method: **Vipps SSO**.
+**Web3 can be overwhelming for new users** — cryptographic wallets, gas fees, and decentralized systems can feel intimidating. This project explores how we can make **Web3 more accessible** by introducing a familiar login method: **Vipps OpenID Connect (OIDC)**.
 
 We built a fully functional **Battleship game** on the blockchain to test this idea. Through this game, users can:
 
@@ -21,7 +21,7 @@ Our aim is to **bridge the gap between Web2 and Web3** by lowering the entry bar
 
 ## 🌟 Table of Contents
 - [🎮 Game Details](#-game-details)
-- [🔐 Web3 Onboarding with Vipps SSO](#-web3-onboarding-with-vipps-sso)
+- [🔐 Web3 Onboarding with Vipps OIDC](#-web3-onboarding-with-vipps-oidc)
 - [📲 How to Setup Vipps Test User](#-how-to-setup-vipps-test-user)
 - [🧑‍💻 Developer Guide and Technical Overview](#-developer-guide-and-technical-overview)
 - [🔍 Web3 and Game Overview](#-web3-and-game-overview)
@@ -39,15 +39,15 @@ Our aim is to **bridge the gap between Web2 and Web3** by lowering the entry bar
 
 ---
 
-## 🔐 Web3 Onboarding with Vipps SSO
-To reduce onboarding friction, this project integrates **Vipps SSO** to allow users to sign in using a familiar Web2 login method — no wallet setup or private key management required. Here's how it works:
+## 🔐 Web3 Onboarding with Vipps OIDC
+To streamline Web3 onboarding, this project leverages **Vipps OIDC**, allowing users to sign in with a familiar Web2 method without needing prior wallet setup or private key management. Here's how it works:
 
 1. The user logs in using Vipps through an OAuth 2.0 authentication flow.
-2. We retrieve the user's unique sub identifier from Vipps, which acts as their identity reference.
+2. Using OIDC, we retrieve the user's unique sub identifier from Vipps, which acts as their identity reference.
 3. We check if this user already has a private key stored in our database.
 4. If not, we generate a new **Ethereum-compatible private key**, store it in our MongoDB database, and return it to the frontend.
 
-This private key enables users to sign blockchain transactions without requiring them to manually interact with a wallet. While simplified, this architecture functions similarly to a lightweight **Wallet-as-a-Service (WaaS)** solution, helping onboard users into Web3 without requiring them to manage keys or install tools like MetaMask.
+This private key enables users to sign blockchain transactions without requiring them to manually interact with a wallet. The implementation follows a **custodial embedded wallet** model, where users do not manage their own private keys and are not required to install external tools like MetaMask. By abstracting away key management, this approach significantly reduces onboarding friction and prioritizes usability for Web2-native users.
 
 ---
 
@@ -84,7 +84,7 @@ Follow this [guide](https://developer.vippsmobilepay.com/docs/knowledge-base/tes
 
 #### 🛠 Backend
 - **Node.js + Express** – REST API for user and session handling  
-- **Vipps SSO** – Integration with Vipps' API for user authentication  
+- **Vipps OIDC** – Integration with Vipps' API for user authentication  
 - **MongoDB** – Database for storing user/session data (if used)
 
 #### ⛓ Blockchain
@@ -113,8 +113,8 @@ Follow this [guide](https://developer.vippsmobilepay.com/docs/knowledge-base/tes
 │
 └── battleship-contract/                 # Smart contracts
     └── contracts/                       # Solidity contract files
-        ├── Multiplayer.sol                 # Multiplayer Battleship contract
-        └── Singleplayer.sol   # Singleplayer Battleship contract
+        ├── Multiplayer.sol              # Multiplayer Battleship contract
+        └── Singleplayer.sol             # Singleplayer Battleship contract
 ```
 
 ---
@@ -150,7 +150,7 @@ Follow this [guide](https://developer.vippsmobilepay.com/docs/knowledge-base/tes
 ---
 
 ## 🖼️ Screenshots
-_(coming soon)_
+
 
 ---
 
