@@ -18,36 +18,47 @@ const Multiplayer = () => {
   } = useGameContext();
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex flex-col items-center w-full">
       {showGameUnderway ? (
-        <h2 className="flex justify-center font-bold text-2xl py-20">
+        <h2 className="font-bold text-2xl">
           Game already underway, please wait for the next game...
         </h2>
       ) : (
-        <div className="flex flex-col items-center gap-2.5">
+        <div className="flex flex-col items-center gap-4">
           {!gameStarted && <GameLobby />}
           <h2
-            className={`font-bold text-2xl flex justify-center mt-40 mb-10 ${
+            className={`font-bold text-2xl ${
               moveMessage === "Opponent shot and hit!" ||
               moveMessage === "You lost the game!"
-                ? "text-red-600"
+                ? "text-[rgb(220,60,60)]"
                 : ""
             } ${
               moveMessage === "You shot and hit!" ||
               moveMessage === "You won the game!"
-                ? "text-green-400"
+                ? "text-[rgb(0,200,100)]"
                 : ""
             }`}
           >
             {moveMessage}
           </h2>
-          <div className="flex">
-            {bothPlayersPlacedShips && <GameStatsBox/>}
+          <div className="flex items-center gap-8">
+            {bothPlayersPlacedShips && <GameStatsBox />}
             {gameStarted && <ShipPlacement />}
             {bothPlayersPlacedShips && <EnemyTerritory />}
           </div>
+          <div className="flex justify-center">
+            <h2
+              className={`text-2xl font-bold ${
+                turnMessage === "Your turn" ? "text-[rgb(0,200,100)]" : ""
+              } ${
+                turnMessage === "Opponent's turn" ? "text-[rgb(220,60,60)]" : ""
+              }`}
+            >
+              {turnMessage}
+            </h2>
+          </div>
           {!bothPlayersPlacedShips && (
-            <div className="flex justify-center font-bold text-2xl py-6">
+            <div className="flex justify-center font-bold text-2xl">
               {shipPlacementPlayer && (
                 <div>
                   {shipPlacementPlayer === account.address ? (
@@ -59,13 +70,6 @@ const Multiplayer = () => {
               )}
             </div>
           )}
-          <div className="font-bold text-2xl py-8 flex justify-center">
-            <h2
-              className={`${turnMessage === "Your turn" ? "text-green-400" : ""}`}
-            >
-              {turnMessage}
-            </h2>
-          </div>
         </div>
       )}
     </div>

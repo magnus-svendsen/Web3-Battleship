@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-contract Battleship {
+contract Multiplayer {
     uint256 public gameId; // Current game session identifier
     address public player1;
     address public player2;

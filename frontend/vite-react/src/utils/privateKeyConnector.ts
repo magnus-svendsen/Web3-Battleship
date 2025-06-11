@@ -90,7 +90,7 @@ export function PrivateKeyConnector({
             //Check if gas price is missing, then add if missing
             if (!transaction.gasPrice && !transaction.maxGasPrice) {
               let gasPrice = await publicClient.getGasPrice();
-              gasPrice = gasPrice * (15n / 10n); //Bump gas price by 50%
+              gasPrice = gasPrice * (25n / 10n); //Bump gas price by 150%
               transaction = { ...transaction, gasPrice };
             }
 

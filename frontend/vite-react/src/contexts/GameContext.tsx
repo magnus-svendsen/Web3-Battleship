@@ -2,6 +2,8 @@
 import type React from "react";
 import { createContext, useContext, useRef, useState, type ReactNode } from "react"
 import type { GridData } from "../types/gridTypes";
+import type { PlayerCardProps } from "../types/playerCardProps";
+import { zeroAddress } from "viem";
 
 // Define the shape of our game context.
 interface GameContextType {
@@ -58,6 +60,10 @@ interface GameContextType {
   setEnemyTimesMiss: React.Dispatch<React.SetStateAction<number>>;
   turnNumber: number;
   setTurnNumber: React.Dispatch<React.SetStateAction<number>>;
+  opponentInfoProps: PlayerCardProps;
+  setOpponentInfoProps: React.Dispatch<React.SetStateAction<PlayerCardProps>>;
+  playerInfoProps: PlayerCardProps;
+  setPlayerInfoProps: React.Dispatch<React.SetStateAction<PlayerCardProps>>;
 }
 
 // Create the context with a default value (which will be overridden by the provider).
@@ -147,6 +153,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [enemyTimesHit, setEnemyTimesHit] = useState<number>(Number(localStorage.getItem("enemyTimesHit")) || 0);
   const [enemyTimesMiss, setEnemyTimesMiss] = useState<number>(Number(localStorage.getItem("enemyTimesMiss")) || 0);
   const [turnNumber, setTurnNumber] = useState<number>(Number(localStorage.getItem("turnNumber")) || 0);
+  const [opponentInfoProps, setOpponentInfoProps] = useState<opponentAccountInfoProps>({ address: zeroAddress });
+  const [playerInfoProps, setPlayerInfoProps] = useState<opponentAccountInfoProps>({ address: zeroAddress });
 
   // Provide all state values and setters.
   return (
@@ -204,7 +212,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         enemyTimesMiss,
         setEnemyTimesMiss,
         turnNumber,
-        setTurnNumber
+        setTurnNumber,
+        opponentInfoProps,
+        setOpponentInfoProps,
+        playerInfoProps,
+        setPlayerInfoProps
       }}
     >
       {children}

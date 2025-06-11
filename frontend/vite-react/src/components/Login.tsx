@@ -1,7 +1,7 @@
 import { Button } from "@mantine/core";
 import { useEffect } from "react";
 import { useConnect } from "wagmi";
-
+import MetaMaskIcon from "../utils/images/MetaMask-icon-fox.svg";
 const Login = () => {
   const { connectors, connect } = useConnect();
 
@@ -33,7 +33,7 @@ const Login = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-center mt-20 mb-12 gap-16 max-w-5xl">
+      <div className="flex items-center justify-center mt-20 mb-10 gap-16 max-w-5xl">
         <div className="scale-114 transform-gpu">
           <vipps-mobilepay-button
             type="button"
@@ -53,12 +53,17 @@ const Login = () => {
         </div>
         <Button
           variant="white"
-          color="orange"
+          color="black"
           size="lg"
           radius="xl"
           type="button"
           onClick={() => connect({ connector: connectors[0] })}
         >
+          <img
+            src={MetaMaskIcon}
+            alt="MetaMask Icon"
+            className="inline-block w-6 h-6 mr-2 mb-0.5 align-middle"
+          />
           Log in with Metamask
         </Button>
       </div>

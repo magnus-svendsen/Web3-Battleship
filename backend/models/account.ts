@@ -12,6 +12,14 @@ const accountSchema = new mongoose.Schema({
   privateKey: {
     type: String,
     required: true
+  },
+  address: {
+    type: String,
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
   }
 })
 

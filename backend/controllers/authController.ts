@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import qs from "qs";
 import axios from "axios";
 import {
@@ -66,7 +66,7 @@ export const handleVippsCallback = async (req: Request, res: Response): Promise<
     );
 
     const { access_token } = tokenResponse.data;
-    res.redirect(FRONTEND_URL + `?accesstoken=${access_token}`);
+    res.redirect(`${FRONTEND_URL}?accesstoken=${access_token}`);
   } catch (error) {
     console.error(error);
     res.redirect(FRONTEND_URL!);

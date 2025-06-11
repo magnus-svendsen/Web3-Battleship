@@ -8,6 +8,7 @@ import useGameWriteContract from "../hooks/useGameWriteContract";
 import ShipPlacement from "./ShipPlacement";
 import EnemyTerritory from "./EnemyTerritory";
 import GameStatsBox from "./GameStatsBox";
+import { verifyAddressAndInitProps } from "../utils/verifyAddress";
 
 const SinglePlayer = () => {
   const account = useAccount();
@@ -24,12 +25,20 @@ const SinglePlayer = () => {
     setTurnMessage,
     setEnemyGrid,
     mode,
+    setOpponentInfoProps,
+    setPlayerInfoProps,
   } = useGameContext();
 
   const executeWriteContract = useGameWriteContract();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const timeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (account.address) {
+      verifyAddressAndInitProps(account.address, false, setOpponentInfoProps, setPlayerInfoProps);
+    }
+  }, [account.address]);
 
   const handleStartGame = () => {
     setIsLoading(true);
@@ -49,6 +58,22 @@ const SinglePlayer = () => {
       const player = logs[0].args.player ?? "";
       setSinglePlayerJoined(player);
       localStorage.setItem("singlePlayerJoined", JSON.stringify(player));
+      // Set AI opponent info when game starts
+      setOpponentInfoProps({
+        address: "0x0000000000000000000000000000000000000000",
+        isOpponent: true,
+        isAI: true
+      });
+      // Set player info when game starts
+      if (account.address) {
+        verifyAddressAndInitProps(account.address, false, setOpponentInfoProps, setPlayerInfoProps);
+      }
+      // Clear the timeout when player successfully joins
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      setIsLoading(false);
     },
     onError(error) {
       console.error("Error on event :", error);
@@ -59,6 +84,16 @@ const SinglePlayer = () => {
     const savedSinglePlayerJoined = localStorage.getItem("singlePlayerJoined");
     if (savedSinglePlayerJoined) {
       setSinglePlayerJoined(JSON.parse(savedSinglePlayerJoined));
+      // Set AI opponent info when loading saved game
+      setOpponentInfoProps({
+        address: "0x0000000000000000000000000000000000000000",
+        isOpponent: true,
+        isAI: true
+      });
+      // Set player info when loading saved game
+      if (account.address) {
+        verifyAddressAndInitProps(account.address, false, setOpponentInfoProps, setPlayerInfoProps);
+      }
     }
     const savedShipPlacementPlayer = localStorage.getItem("shipPlacementPlayer");
     if (savedShipPlacementPlayer) {
@@ -81,9 +116,9 @@ const SinglePlayer = () => {
   }, []);
 
   return (
-    <div>
+    <div className="flex flex-col items-center w-full">
       {singlePlayerJoined !== account.address ? (
-        <div className="flex justify-center mt-40">
+        <div className="flex justify-center">
           <Button
             variant="filled"
             color="green"
@@ -97,15 +132,15 @@ const SinglePlayer = () => {
           </Button>
         </div>
       ) : (
-        <div>
-          <div className="font-bold text-2xl mt-12 flex justify-center">
+        <div className="flex flex-col items-center w-full">
+          <div className="font-bold text-2xl mb-4">
             <h2
-              className={`${turnMessage === "Your turn" ? "text-green-400" : ""}`}
+              className={`${turnMessage === "Your turn" ? "text-[rgb(0,200,100)]" : ""}`}
             >
               {turnMessage}
             </h2>
           </div>
-          <div className="mt-10 flex justify-center">
+          <div className="flex justify-center items-center gap-8">
             {shipPlacementPlayer === account.address && (
               <GameStatsBox />
             )}
@@ -114,17 +149,17 @@ const SinglePlayer = () => {
               <EnemyTerritory />
             )}
           </div>
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-4">
             <h2
-              className={`font-bold text-2xl flex justify-center mt-10 mb-10 ${
+              className={`font-bold text-2xl ${
                 moveMessage === "Opponent shot and hit!" ||
                 moveMessage === "You lost the game!"
-                  ? "text-red-600"
+                  ? "text-[rgb(220,60,60)]"
                   : ""
               } ${
                 moveMessage === "You shot and hit!" ||
                 moveMessage === "You won the game!"
-                  ? "text-green-400"
+                  ? "text-[rgb(0,200,100)]"
                   : ""
               }`}
             >

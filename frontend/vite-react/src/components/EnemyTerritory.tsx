@@ -4,6 +4,7 @@ import { useGameContext } from "../contexts/GameContext";
 import { Loader } from "@mantine/core";
 import useGameWriteContract from "../hooks/useGameWriteContract";
 import { useMoveResultListener } from "../hooks/useMoveResultListener";
+import PlayerCard from "./PlayerCard";
 
 const EnemyTerritory = () => {
   const account = useAccount();
@@ -18,13 +19,14 @@ const EnemyTerritory = () => {
     bothPlayersPlacedShips,
     setErrorMessage,
     moveResultTimeoutRef,
-    transactionCancelCount
+    transactionCancelCount,
+    opponentInfoProps
   } = useGameContext();
 
   useMoveResultListener(mode);
 
   const executeWriteContract = useGameWriteContract();
-  
+
   const [loadingCell, setLoadingCell] = useState<{ row: number; col: number } | null>(null);
 
   // On component mount, load saved event values from localStorage.
@@ -45,7 +47,7 @@ const EnemyTerritory = () => {
       clearTimeout(moveResultTimeoutRef.current);
       moveResultTimeoutRef.current = null
     }
-  },[transactionCancelCount])
+  }, [transactionCancelCount])
 
   const handleMoveTransaction = (rowIndex: number, colIndex: number) => {
     setLoadingCell({ row: rowIndex, col: colIndex });
@@ -86,7 +88,7 @@ const EnemyTerritory = () => {
       case 2:
         return "bg-[#ffffff]";
       case 3:
-        return "bg-[#bb1010]";
+        return "bg-[rgb(0,200,100)]";
       default:
         return "bg-black";
     }
@@ -102,6 +104,7 @@ const EnemyTerritory = () => {
         </div>
       ) : (
         <div>
+          <PlayerCard {...opponentInfoProps} />
           <div
             className={`flex items-center justify-center ${turnMessage === "Your turn"
               ? "pointer-events-auto opacity-100"
@@ -111,29 +114,29 @@ const EnemyTerritory = () => {
             <div className="grid grid-cols-10 gap-0.5 bg-[#1212ab] p-0.5">
               {enemyGrid.map((row, rowIndex) =>
                 row.map((cell, colIndex) => (
-                    <button
-                      key={`${row}-${colIndex}`}
-                      disabled={cell === 2 || cell === 3 || loadingCell !== null}
-                      className={`flex items-center justify-center border border-black w-10 h-10 ${colorByState(cell)} ${cell !== 2 && cell !== 3 && "cursor-pointer hover:bg-slate-700"}`}
-                      type="button"
-                      onClick={() =>
-                        handleMoveTransaction(rowIndex, colIndex)
-                      }
-                    >
-                      {loadingCell &&
-                        loadingCell.row === rowIndex &&
-                        loadingCell.col === colIndex ? (
-                        <Loader size="md" />
+                  <button
+                    key={`${row}-${colIndex}`}
+                    disabled={cell === 2 || cell === 3 || loadingCell !== null}
+                    className={`flex items-center justify-center border border-black w-10 h-10 ${colorByState(cell)} ${cell !== 2 && cell !== 3 && "cursor-pointer hover:bg-slate-700"}`}
+                    type="button"
+                    onClick={() =>
+                      handleMoveTransaction(rowIndex, colIndex)
+                    }
+                  >
+                    {loadingCell &&
+                      loadingCell.row === rowIndex &&
+                      loadingCell.col === colIndex ? (
+                      <Loader size="md" />
+                    ) : (
+                      cell === 2 || cell === 3 ? (
+                        <span className="text-black font-bold text-3xl h-full">
+                          x
+                        </span>
                       ) : (
-                        cell === 2 || cell === 3 ? (
-                          <span className="text-black font-bold text-3xl h-full">
-                            x
-                          </span>
-                        ) : (
-                          <span>Fire</span>
-                        )
-                      )}
-                    </button>
+                        <span>Fire</span>
+                      )
+                    )}
+                  </button>
                 ))
               )}
             </div>

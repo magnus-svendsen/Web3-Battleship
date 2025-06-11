@@ -18,7 +18,7 @@ const DroppableGridCell: React.FC<GridCellData> = ({ row, col, state, isPreview 
     }
     if (cellState === 3) {
       // If we're in preview mode, use a different color (e.g. light blue).
-      return isPreview ? "#00ccff" : "#bb1010";
+      return isPreview ? "#00ccff" : "rgb(220,60,60)";
     }
     return "#000000";
   };
