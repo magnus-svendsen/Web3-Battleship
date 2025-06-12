@@ -13,6 +13,12 @@ import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
 import { GameProvider } from "./contexts/GameContext";
 
+declare global {
+  interface Window {
+    Buffer: typeof Buffer;
+  }
+}
+
 globalThis.Buffer = Buffer
 
 const queryClient = new QueryClient()
