@@ -2,6 +2,9 @@ import { Button } from "@mantine/core";
 import { useEffect } from "react";
 import { useConnect } from "wagmi";
 import MetaMaskIcon from "../utils/images/MetaMask-icon-fox.svg";
+import { serverAuthURL } from "../utils/serverURL";
+import { frontendURL } from "../utils/frontendURL";
+
 const Login = () => {
   const { connectors, connect } = useConnect();
 
@@ -13,7 +16,7 @@ const Login = () => {
       connect({ connector: connectors[1] });
     } else {
       try {
-        window.location.href = "http://localhost:5173/auth/vipps";
+        window.location.href = serverAuthURL;
       } catch (error) {
         console.error(error);
       }
@@ -26,7 +29,7 @@ const Login = () => {
     const accessToken = search.get("accesstoken") as string;
     if (accessToken != null) {
       localStorage.setItem("accesstoken", accessToken);
-      window.history.replaceState("", "", "http://localhost:3000"); // Remove accesstoken from URL
+      window.history.replaceState("", "", frontendURL); // Remove accesstoken from URL
       connect({ connector: connectors[1] });
     }
   }, [connect, connectors]);

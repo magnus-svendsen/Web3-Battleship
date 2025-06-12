@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "proxy": "http://localhost:5173/",
+  "proxy": "https://web3-battleship.onrender.com",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

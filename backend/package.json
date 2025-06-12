@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "server.ts",
-  "proxy": "http://localhost:3000/",
+  "proxy": "https://web3-battleship.no",
   "scripts": {
     "dev": "nodemon server.ts",
     "build": "tsc",
