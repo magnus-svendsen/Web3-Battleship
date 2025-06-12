@@ -15,7 +15,19 @@ import { verifyAddressAndInitProps } from "../utils/verifyAddress";
 const GameLobby = () => {
   const account = useAccount();
 
-  const { setErrorMessage, firstPlayerJoined, setFirstPlayerJoined, secondPlayerJoined, setSecondPlayerJoined, setGameStarted, setShowGameUnderway, transactionCancelCount, opponentInfoProps, setOpponentInfoProps, setPlayerInfoProps, playerInfoProps } = useGameContext();
+  const { 
+    setErrorMessage, 
+    firstPlayerJoined, 
+    setFirstPlayerJoined, 
+    secondPlayerJoined, 
+    setSecondPlayerJoined, 
+    setGameStarted, 
+    setShowGameUnderway, 
+    transactionCancelCount, 
+    opponentInfoProps, 
+    setOpponentInfoProps, 
+    setPlayerInfoProps 
+  } = useGameContext();
 
   const executeWriteContract = useGameWriteContract();
 
@@ -23,7 +35,7 @@ const GameLobby = () => {
   const timeoutRef = useRef<number | null>(null);
 
   const [opponent, setOpponent] = useState("")
-  const { data: player1, error } = useReadContract({
+  const { data: player1 } = useReadContract({
     address: multiplayerContractAddress,
     abi: multiplayerAbi,
     functionName: "player1"

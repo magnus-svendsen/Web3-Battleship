@@ -75,7 +75,7 @@ export function PrivateKeyConnector({
 
       config.emitter.emit("message", { type: "connecting" });
       const originalRequest = walletClient.request.bind(walletClient);
-      walletClient.request = async (args) => {
+      walletClient.request = (async (args: any) => {
         if (
           args.method === "eth_sendTransaction" ||
           args.method === "wallet_sendTransaction"
@@ -154,10 +154,11 @@ export function PrivateKeyConnector({
             return txHash;
           } catch (error) {
             console.log("Error while intercepting transaction: ", error);
+            throw error;
           }
         }
-        return originalRequest(args as any);
-      };
+        return originalRequest(args);
+      }) as any;
       return {
         accounts: [account.address as `0x${string}`],
         chainId: chain.id,

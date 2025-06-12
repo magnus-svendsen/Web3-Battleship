@@ -3,6 +3,7 @@ import type { DragEndEvent } from "@dnd-kit/core";
 import { getIntendedCoordinates } from "../utils/shipDragHelpers";
 import { getShipLengthById } from "../utils/shipLengths";
 import { useGameContext } from "../contexts/GameContext";
+import type { GridData } from "../types/gridTypes";
 import type { ShipDataContract } from "../types/shipTypes";
 
 export const useShipDragEnd = () => {
@@ -17,7 +18,7 @@ export const useShipDragEnd = () => {
     setShipPositions,
   } = useGameContext();
 
-  const [shipData, setShipData] = useState<ShipDataContract[]>([]);
+  const [, setShipData] = useState<ShipDataContract[]>([]);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     // Convert active.id to string and use it as the ship identifier.
@@ -48,7 +49,7 @@ export const useShipDragEnd = () => {
         }
         return cell;
       })
-    );
+    ) as GridData;
 
     // Build ship data object for UI purposes.
     const ship: ShipDataContract = {

@@ -23,16 +23,16 @@ interface GameContextType {
   setIsDragging: React.Dispatch<React.SetStateAction<boolean>>;
   shipOrientations: boolean[];
   setShipsOrientations: React.Dispatch<React.SetStateAction<boolean[]>>;
-  firstPlayerJoined: string;
-  setFirstPlayerJoined: React.Dispatch<React.SetStateAction<string>>;
-  secondPlayerJoined: string;
-  setSecondPlayerJoined: React.Dispatch<React.SetStateAction<string>>;
+  firstPlayerJoined: string | null;
+  setFirstPlayerJoined: React.Dispatch<React.SetStateAction<string | null>>;
+  secondPlayerJoined: string | null;
+  setSecondPlayerJoined: React.Dispatch<React.SetStateAction<string | null>>;
   gameStarted: boolean;
   setGameStarted: React.Dispatch<React.SetStateAction<boolean>>;
   showGameUnderway: boolean;
   setShowGameUnderway: React.Dispatch<React.SetStateAction<boolean>>;
-  shipPlacementPlayer: string;
-  setShipPlacementPlayer: React.Dispatch<React.SetStateAction<string>>;
+  shipPlacementPlayer: string | null;
+  setShipPlacementPlayer: React.Dispatch<React.SetStateAction<string | null>>;
   bothPlayersPlacedShips: boolean;
   setBothPlayersPlacedShips: React.Dispatch<React.SetStateAction<boolean>>;
   moveMessage: string;
@@ -48,8 +48,8 @@ interface GameContextType {
   setAutoConfirmTransactions: React.Dispatch<React.SetStateAction<boolean>>;
   transactionCancelCount: number;
   setTransactionCancelCount: React.Dispatch<React.SetStateAction<number>>;
-  singlePlayerJoined: string;
-  setSinglePlayerJoined: React.Dispatch<React.SetStateAction<string>>;
+  singlePlayerJoined: string | null;
+  setSinglePlayerJoined: React.Dispatch<React.SetStateAction<string | null>>;
   timesHit: number;
   setTimesHit: React.Dispatch<React.SetStateAction<number>>;
   timesMiss: number;
@@ -153,8 +153,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [enemyTimesHit, setEnemyTimesHit] = useState<number>(Number(localStorage.getItem("enemyTimesHit")) || 0);
   const [enemyTimesMiss, setEnemyTimesMiss] = useState<number>(Number(localStorage.getItem("enemyTimesMiss")) || 0);
   const [turnNumber, setTurnNumber] = useState<number>(Number(localStorage.getItem("turnNumber")) || 0);
-  const [opponentInfoProps, setOpponentInfoProps] = useState<opponentAccountInfoProps>({ address: zeroAddress });
-  const [playerInfoProps, setPlayerInfoProps] = useState<opponentAccountInfoProps>({ address: zeroAddress });
+  const [opponentInfoProps, setOpponentInfoProps] = useState<PlayerCardProps>({ address: zeroAddress, isOpponent: true });
+  const [playerInfoProps, setPlayerInfoProps] = useState<PlayerCardProps>({ address: zeroAddress, isOpponent: false });
 
   // Provide all state values and setters.
   return (

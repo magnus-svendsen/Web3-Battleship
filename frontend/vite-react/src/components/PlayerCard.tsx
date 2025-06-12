@@ -19,7 +19,7 @@ const PlayerCard = (props: PlayerCardProps) => {
     }
   }, [props])
 
-  if (isVerified) {
+  if (isVerified && "name" in props) {
     return (
       <div className="bg-[#112B4E] rounded-2xl p-2 max-w-md w-full mx-0 min-h-32">
         {props.isOpponent ?

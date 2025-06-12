@@ -3,6 +3,7 @@ import type { DragOverEvent } from "@dnd-kit/core";
 import { getIntendedCoordinates } from "../utils/shipDragHelpers";
 import { getShipLengthById } from "../utils/shipLengths";
 import { useGameContext } from "../contexts/GameContext";
+import type { GridData } from "../types/gridTypes";
 
 export const useShipDragOver = () => {
   const { grid, setTempGrid, shipOrientations } = useGameContext();
@@ -35,7 +36,7 @@ export const useShipDragOver = () => {
         );
         return isInPreview ? 3 : cell;
       })
-    );
+    ) as GridData;
     setTempGrid(updatedTempGrid);
   }, [grid, shipOrientations, setTempGrid]);
 

@@ -19,6 +19,7 @@ export interface MoveResultEvent {
     player: string;
     hit: boolean;
     gameOver: boolean;
+    isPlayerMove: boolean;
   };
 }
 
